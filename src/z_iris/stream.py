@@ -88,10 +88,14 @@ class ServerStream(threading.Thread):
         if registered.get("result") != "success":
             raise RuntimeError(registered.get("msg", "register failed"))
 
+        profile = client.get_profile()
+        if profile.get("result") != "success":
+            raise RuntimeError(profile.get("msg", "could not fetch own profile"))
+
         pipeline = Pipeline(
             self.server.name,
             host_of(client.base_url),
-            registered["user_id"],
+            profile["user_id"],
             MuteState.from_register(registered),
             self.config.notify_channel_messages,
         )

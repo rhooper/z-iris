@@ -33,10 +33,13 @@ class FakeClient:
             "result": "success",
             "queue_id": f"q{self.registered}",
             "last_event_id": -1,
-            "user_id": 5,
+            # The real server returns no user_id from register.
             "subscriptions": [],
             "user_topics": [],
         }
+
+    def get_profile(self):
+        return {"result": "success", "user_id": 5}
 
     def get_events(self, queue_id, last_event_id):
         self.calls += 1
