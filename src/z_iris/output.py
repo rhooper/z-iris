@@ -62,18 +62,32 @@ class Output(Protocol):
     def deliver(self, notification: Notification) -> None: ...
 
 
-def _spawn(command: list[str]) -> None:
+def _spawn(command: list[str]) -> threading.Thread | None:
+    """Run a command without waiting, and report a failure on stderr."""
     try:
         process = subprocess.Popen(
             command,
             stdin=subprocess.DEVNULL,
             stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
         )
     except OSError as error:
         print(f"z-iris: cannot run {command[0]}: {error}", file=sys.stderr)
-        return
-    threading.Thread(target=process.wait, daemon=True).start()
+        return None
+
+    def watch() -> None:
+        _, error_text = process.communicate()
+        if process.returncode:
+            print(
+                f"z-iris: {command[0]} exit {process.returncode}: "
+                f"{(error_text or '').strip()}",
+                file=sys.stderr,
+            )
+
+    thread = threading.Thread(target=watch, daemon=True)
+    thread.start()
+    return thread
 
 
 class RealOutput:

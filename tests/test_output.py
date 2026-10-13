@@ -57,3 +57,21 @@ def test_title_that_looks_like_an_option_is_neutralised():
     n = Notification(channel(sender="-sound x"), "zulip://h/#narrow/x", "dm")
     command = banner_command("terminal-notifier", n)
     assert not command[command.index("-title") + 1].startswith("-")
+
+
+def test_spawn_reports_a_failing_command(capsys):
+    import sys
+
+    from z_iris.output import _spawn
+
+    thread = _spawn([sys.executable, "-c", "import sys; sys.stderr.write('nope'); sys.exit(3)"])
+    thread.join(5)
+    err = capsys.readouterr().err
+    assert "exit 3" in err and "nope" in err
+
+
+def test_spawn_reports_a_missing_binary(capsys):
+    from z_iris.output import _spawn
+
+    assert _spawn(["definitely-not-a-real-binary-xyz"]) is None
+    assert "cannot run definitely-not-a-real-binary-xyz" in capsys.readouterr().err
