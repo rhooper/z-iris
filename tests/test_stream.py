@@ -118,19 +118,38 @@ def test_events_flow_and_queue_expiry_reregisters():
     assert [n.message.id for n in out.items] == [40, 41]
 
 
-def test_errors_are_reported_and_streaming_resumes():
-    client = FakeClient(
-        [
-            RuntimeError("network down"),
-            {"result": "success", "events": [dm_event(0)]},
-        ]
-    )
+def test_a_register_failure_is_reported_and_retried():
+    class FlakyRegister(FakeClient):
+        def register(self, **kwargs):
+            if self.registered == 0:
+                self.registered += 1
+                raise RuntimeError("network down")
+            return super().register(**kwargs)
+
+    client = FlakyRegister([{"result": "success", "events": [dm_event(0)]}])
     out = Collect(want=1)
     stream = make_stream(client, out)
     stream.start()
     assert out.done.wait(5)
     stream.stop()
     assert client.registered == 2
+
+
+def test_a_network_drop_keeps_the_queue_so_missed_events_still_arrive():
+    client = FakeClient(
+        [
+            {"result": "success", "events": [dm_event(0)]},
+            RuntimeError("network down"),
+            {"result": "success", "events": [dm_event(1)]},
+        ]
+    )
+    out = Collect(want=2)
+    stream = make_stream(client, out)
+    stream.start()
+    assert out.done.wait(5)
+    stream.stop()
+    assert client.registered == 1  # same queue, nothing re-registered
+    assert [n.message.id for n in out.items] == [40, 41]
     assert stream.board.snapshot()["w"] == "connected"
 
 

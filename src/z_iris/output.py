@@ -29,9 +29,16 @@ def banner_title(message: Message) -> str:
     return message.sender_name
 
 
+# terminal-notifier reads its values through NSUserDefaults. A leading "-" is
+# taken for another option, and a leading ( { < [ " or ' is parsed as a
+# property list, which drops or mangles the banner text.
+_RISKY_FIRST_CHARACTERS = ("-", "(", "{", "<", "[", '"', "'")
+
+
 def _safe_argument(text: str) -> str:
-    # terminal-notifier would read a value starting with "-" as another option.
-    return _ZERO_WIDTH_SPACE + text if text.startswith("-") else text
+    if text.startswith(_RISKY_FIRST_CHARACTERS):
+        return _ZERO_WIDTH_SPACE + text
+    return text
 
 
 def banner_body(message: Message, limit: int = 200) -> str:

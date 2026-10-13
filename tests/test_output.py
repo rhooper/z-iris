@@ -75,3 +75,17 @@ def test_spawn_reports_a_missing_binary(capsys):
 
     assert _spawn(["definitely-not-a-real-binary-xyz"]) is None
     assert "cannot run definitely-not-a-real-binary-xyz" in capsys.readouterr().err
+
+
+import pytest
+
+
+@pytest.mark.parametrize("text", ["(running late)", "{x}", "<b>", '"quoted"', "[a]", "'q'"])
+def test_text_that_looks_like_a_property_list_is_neutralised(text):
+    # terminal-notifier reads option values through NSUserDefaults, which
+    # parses "(a, b)" as an array and "{...}" as a dictionary.
+    n = Notification(channel(text, sender=text), "zulip://h/#narrow/x", "dm")
+    command = banner_command("terminal-notifier", n)
+    for flag in ("-title", "-message"):
+        value = command[command.index(flag) + 1]
+        assert value[0] == "\u200b" and text in value

@@ -103,8 +103,20 @@ class ServerStream(threading.Thread):
         last_event_id = registered["last_event_id"]
         self.board.set(self.server.name, "connected")
 
+        backoff = self.backoff_start
         while not self._stop_requested.is_set():
-            response = client.get_events(queue_id=queue_id, last_event_id=last_event_id)
+            try:
+                response = client.get_events(
+                    queue_id=queue_id, last_event_id=last_event_id
+                )
+            except Exception as error:
+                # A network drop. The queue stays alive on the server for a
+                # while, so keep polling it to receive what was missed.
+                self.board.set(self.server.name, f"reconnecting: {error}")
+                self._stop_requested.wait(backoff)
+                backoff = min(backoff * 2, self.backoff_max)
+                continue
+            backoff = self.backoff_start
             if response.get("result") != "success":
                 if response.get("code") == "BAD_EVENT_QUEUE_ID":
                     return  # the queue expired; register a new one
