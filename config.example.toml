@@ -1,0 +1,18 @@
+# Copy to ~/.config/z-iris/config.toml
+
+[[server]]
+name = "work"
+zuliprc = "~/.zuliprc"
+
+[defaults]
+# "synth" is a built-in chime. Or give a path to any sound file sox can play.
+sound = "synth"
+# Percent of the system output level, 0 to 100.
+volume = 60
+# Phase 1 notifies for DMs and mentions. Set true to also notify for every
+# unmuted channel message, which is noisy on a busy server.
+notify_channel_messages = false
+
+[output]
+player = ["play", "-q"]
+notifier = "terminal-notifier"
