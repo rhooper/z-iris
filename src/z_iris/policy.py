@@ -1,0 +1,36 @@
+"""Decide whether a message deserves a notification."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+from z_iris.message import Message
+from z_iris.mutes import MuteState
+
+
+@dataclass(frozen=True)
+class Decision:
+    notify: bool
+    reason: str
+
+
+def decide(
+    message: Message, mutes: MuteState, self_id: int, notify_channel_messages: bool
+) -> Decision:
+    if message.sender_id == self_id:
+        return Decision(False, "own message")
+
+    if (
+        message.kind == "channel"
+        and mutes.is_muted(message.channel_id or 0, message.topic or "")
+        and not message.is_mention
+    ):
+        return Decision(False, "muted")
+
+    if message.kind == "dm":
+        return Decision(True, "dm")
+    if message.is_mention or message.is_wildcard_mention or message.has_alert_word:
+        return Decision(True, "mention")
+    if notify_channel_messages:
+        return Decision(True, "channel")
+    return Decision(False, "channel messages not enabled")
