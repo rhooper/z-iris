@@ -3,9 +3,10 @@
 A macOS menubar app that streams your Zulip messages and notifies you with
 custom sounds. Named after Iris, the Greek messenger of the gods.
 
-Phase 1 (this version): streams one or more servers, shows a banner and plays
+Phase 1 and 2a (this version): streams one or more servers, shows a banner and plays
 a sound for DMs and mentions, and opens the right chat in Zulip Desktop when
-you click the banner. See `docs/design.md` for the roadmap.
+you click the banner. Rules set sound, volume and banner per channel, topic,
+keyword, mention, DM or group DM. See `docs/design.md` for the roadmap.
 
 ## Setup
 
@@ -52,8 +53,27 @@ it in System Settings, Notifications, terminal-notifier. Clicking a banner
 opens a `zulip://<host>/#narrow/...` link, which needs a Zulip Desktop build
 with `zulip://` support (the `feat/zulip-url-handler` branch of zulip-desktop).
 
+## Rules and volume
+
+Rules live in `~/.config/z-iris/config.toml` as `[[rule]]` tables, and the file
+reloads while z-iris runs (menubar: Reload config). `config.example.toml` has
+one sample per kind.
+
+- `match`: `channel`, `topic`, `keyword`, `mention`, `dm` or `group_dm`.
+  Topic and keyword values are case-insensitive regular expressions.
+- `sound`: `synth`, `none` or a file sox can play. `volume`: 0 to 100.
+  `banner`: `full`, `title` (no message text) or `off`. `server`: one server.
+- Precedence: higher `priority` first, then topic, keyword, mention, channel,
+  group DM, DM, then file order.
+- Final volume is rule volume (or `[defaults] volume`) times the server's
+  `volume` times `master_volume`, each as a percent.
+- A rule never overrides your own messages or muted topics. A personal
+  @-mention in a muted topic still notifies.
+- A rule with `sound = "none"` and `banner = "off"` drops the message.
+- Server list changes need a restart. A config that fails to parse keeps the
+  old one and shows the problem in the menu.
+
 ## Roadmap
 
-Phase 2: custom sounds and per-rule volume, rule kinds (channel, topic, keyword,
-mention, DM, group DM), and a settings window. Phase 3: repetition, intervals,
-intensity, batching and focus modes. See `docs/design.md`.
+Phase 2b: a settings window. Phase 3: repetition, intervals, intensity,
+batching and focus modes. See `docs/design.md`.
