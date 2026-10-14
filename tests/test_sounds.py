@@ -39,7 +39,8 @@ def test_add_sound_stores_a_playable_file_and_returns_its_name(tmp_path):
     data = make_wav(tmp_path / "src.wav")
     name = add_sound(tmp_path / "sounds", "My Alarm!.wav", data)
     assert name == "My Alarm"
-    assert (tmp_path / "sounds" / "My Alarm.wav").read_bytes() == data
+    assert (tmp_path / "sounds" / "My Alarm.wav").is_file()
+    assert (tmp_path / "sounds" / "originals" / "My Alarm.wav").read_bytes() == data
     assert "My Alarm" in library(tmp_path / "sounds")
 
 

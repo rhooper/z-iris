@@ -106,3 +106,14 @@ runs z-iris as a child process and restarts it when any `.py` or `.html` file
 in `src/z_iris` changes. If the app crashes it waits for the next edit, so
 fixing the code brings it back. Choosing Quit in the menu ends the run. Config
 changes never need this: the config file reloads by itself.
+
+## Sound loudness
+
+Every sound is stored at the same loudness, so 60% means the same level for a
+bell, a knock or a file you added. Bundled tones are generated normalized
+(`scripts/claude/gen_tones.sh`). Sounds you add in the editor are converted to a
+normalized 16-bit wav, and the file as you uploaded it is kept in
+`~/.config/z-iris/sounds/originals/`. For files you dropped into the sounds
+folder by hand, run `uv run z-iris normalize` (`--no-backup` skips keeping
+originals). It is safe to run twice. The target is an RMS level, capped so the
+peak never clips, so a very peaky sound can end up quieter than the rest.

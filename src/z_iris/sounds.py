@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import re
+import shutil
 import subprocess
 import tempfile
 from importlib import resources
@@ -36,7 +37,11 @@ def library(user_dir: Path | None) -> dict[str, Path]:
     sounds["synth"] = sounds["chime"]
     if user_dir is not None and user_dir.is_dir():
         for path in sorted(user_dir.iterdir()):
-            if path.suffix.lower() in SUFFIXES and path.is_file():
+            if (
+                path.suffix.lower() in SUFFIXES
+                and path.is_file()
+                and not path.name.startswith(".")
+            ):
                 sounds[path.stem] = path
     return sounds
 
@@ -45,7 +50,9 @@ def user_names(user_dir: Path | None) -> list[str]:
     if user_dir is None or not user_dir.is_dir():
         return []
     return sorted(
-        p.stem for p in user_dir.iterdir() if p.suffix.lower() in SUFFIXES
+        p.stem
+        for p in user_dir.iterdir()
+        if p.is_file() and not p.name.startswith(".") and p.suffix.lower() in SUFFIXES
     )
 
 
@@ -75,11 +82,24 @@ def add_sound(user_dir: Path, filename: str, data: bytes) -> str:
             raise SoundError(f"cannot check the file: {error}") from error
         if probe.returncode != 0:
             raise SoundError("sox cannot play this file")
+        # Store the sound normalized, as a wav, and keep the file as uploaded.
+        from z_iris.loudness import write_normalized
+
+        stored = user_dir / f"{name}.wav"
+        converted = user_dir / f".convert-{name}.wav"
+        try:
+            write_normalized(Path(temporary), converted)
+        except (RuntimeError, OSError, subprocess.TimeoutExpired) as error:
+            raise SoundError(str(error)) from error
         for old in user_dir.iterdir():
-            if old.stem == name and old.suffix.lower() in SUFFIXES:
+            if old.is_file() and old.stem == name and old.suffix.lower() in SUFFIXES:
                 old.unlink()
-        os.replace(temporary, user_dir / f"{name}{suffix}")
+        originals = user_dir / "originals"
+        originals.mkdir(exist_ok=True)
+        shutil.copyfile(temporary, originals / f"{name}{suffix}")
+        os.replace(converted, stored)
     finally:
-        if os.path.exists(temporary):
-            os.unlink(temporary)
+        for leftover in (temporary, str(user_dir / f".convert-{name}.wav")):
+            if os.path.exists(leftover):
+                os.unlink(leftover)
     return name

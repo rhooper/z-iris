@@ -49,7 +49,13 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="restart when z-iris's own source changes (for development)",
     )
-    parser.add_argument("command", nargs="?", choices=["probe", "edit"])
+    parser.add_argument(
+        "--dir", type=Path, help="normalize: the sounds folder (default: next to the config)"
+    )
+    parser.add_argument(
+        "--no-backup", action="store_true", help="normalize: do not keep originals"
+    )
+    parser.add_argument("command", nargs="?", choices=["probe", "edit", "normalize"])
     args = parser.parse_args(argv)
 
     if args.autoreload:
@@ -60,6 +66,16 @@ def main(argv: list[str] | None = None) -> int:
         return run(
             [sys.executable, "-m", "z_iris", *arguments], Path(z_iris.__file__).parent
         )
+
+    if args.command == "normalize":
+        from z_iris.loudness import normalize_directory
+
+        directory = args.dir or args.config.parent / "sounds"
+        changed = normalize_directory(directory, keep_originals=not args.no_backup)
+        for before, after in changed:
+            print(f"normalized {before.name} -> {after.name}")
+        print(f"{len(changed)} changed in {directory}")
+        return 0
 
     try:
         config = load_config(args.config)
