@@ -224,3 +224,7 @@ def test_a_typo_in_the_default_sound_is_a_config_error():
 def test_alert_word_rule_parses():
     config = rule_config('name = "a"\nmatch = "alert_word"\nvolume = 70\n')
     assert config.rules[0].kind == "alert_word"
+
+
+def test_wildcard_rule_parses():
+    assert rule_config('name = "w"\nmatch = "wildcard"\n').rules[0].kind == "wildcard"

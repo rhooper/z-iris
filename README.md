@@ -59,7 +59,7 @@ Rules live in `~/.config/z-iris/config.toml` as `[[rule]]` tables, and the file
 reloads while z-iris runs (menubar: Reload config). `config.example.toml` has
 one sample per kind.
 
-- `match`: `channel`, `topic`, `keyword`, `mention`, `alert_word`, `dm` or `group_dm`. `mention` is @you or @all;
+- `match`: `channel`, `topic`, `keyword`, `mention`, `wildcard`, `alert_word`, `dm` or `group_dm`. `mention` is @you only and `wildcard` is @all, @everyone, @channel or @topic;
   `alert_word` is your own Zulip alert words, which the server flags separately.
   Topic and keyword values are case-insensitive regular expressions.
 - `sound`: a sound name or `none`. Names are the bundled tones (chime, ping,
@@ -68,7 +68,7 @@ one sample per kind.
   Add your own in the editor, or drop a file in that folder. Older configs
   that give a file path still work. `volume`: 0 to 100.
   `banner`: `full`, `title` (no message text) or `off`. `server`: one server.
-- Precedence: higher `priority` first, then topic, keyword, mention, alert word, channel,
+- Precedence: higher `priority` first, then topic, keyword, mention, wildcard, alert word, channel,
   group DM, DM, then file order.
 - Final volume is rule volume (or `[defaults] volume`) times the server's
   `volume` times `master_volume`, each as a percent.

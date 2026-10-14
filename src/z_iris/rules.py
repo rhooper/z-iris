@@ -8,7 +8,7 @@ from dataclasses import dataclass
 
 from z_iris.message import Message
 
-KINDS = ("topic", "keyword", "mention", "alert_word", "channel", "group_dm", "dm")
+KINDS = ("topic", "keyword", "mention", "wildcard", "alert_word", "channel", "group_dm", "dm")
 _RANK = {kind: rank for rank, kind in enumerate(KINDS)}
 
 
@@ -44,7 +44,9 @@ def _matches(rule: Rule, message: Message) -> bool:
     if rule.kind == "keyword":
         return bool(rule.pattern and rule.pattern.search(message.content))
     if rule.kind == "mention":
-        return message.is_mention or message.is_wildcard_mention
+        return message.is_mention
+    if rule.kind == "wildcard":
+        return message.is_wildcard_mention
     if rule.kind == "alert_word":
         return message.has_alert_word
     if rule.kind == "dm":

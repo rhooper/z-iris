@@ -48,11 +48,21 @@ def test_keyword_rule_matches_content():
     assert pick_rule([r], channel(content="outages")) is None
 
 
-def test_mention_rule_covers_personal_and_wildcard_not_alert_words():
-    r = rule("mention")
-    assert pick_rule([r], channel(flags=["mentioned"])) is r
-    assert pick_rule([r], channel(flags=["wildcard_mentioned"])) is r
-    assert pick_rule([r], channel(flags=["has_alert_word"])) is None
+def test_mention_rule_is_you_only_and_wildcard_rule_is_all_only():
+    you, everyone = rule("mention"), rule("wildcard", index=1)
+    assert pick_rule([you], channel(flags=["mentioned"])) is you
+    assert pick_rule([you], channel(flags=["wildcard_mentioned"])) is None
+    assert pick_rule([you], channel(flags=["has_alert_word"])) is None
+    for flag in ("wildcard_mentioned", "stream_wildcard_mentioned", "topic_wildcard_mentioned"):
+        assert pick_rule([everyone], channel(flags=[flag])) is everyone
+    assert pick_rule([everyone], channel(flags=["mentioned"])) is None
+    assert pick_rule([everyone], channel()) is None
+
+
+def test_a_message_that_mentions_you_and_everyone_prefers_the_mention_rule():
+    you, everyone = rule("mention", index=1), rule("wildcard", index=0)
+    both = channel(flags=["mentioned", "wildcard_mentioned"])
+    assert pick_rule([everyone, you], both) is you
 
 
 def test_dm_and_group_dm_rules():

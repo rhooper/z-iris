@@ -22,10 +22,11 @@ notify_channel_messages = false
 player = ["play", "-q"]
 notifier = "terminal-notifier"
 
-# Rules. The most specific matching rule wins: topic, keyword, mention, channel,
-# alert_word, channel, group_dm, dm. A higher "priority" (default 0) overrides that order, and ties
-# go to file order. Only name and match are always required (channel, topic and keyword rules
-# also need their own field). A silent rule still lets a personal @-mention through.
+# Rules. The most specific matching rule wins: topic, keyword, mention (@you),
+# wildcard (@all and friends), alert_word, channel, group_dm, dm. A higher
+# "priority" (default 0) overrides that order, and ties go to file order. Only
+# name and match are always required (channel, topic and keyword rules also need
+# their own field). A silent rule still lets a personal @-mention through.
 #   sound:  a sound name (see [defaults]) or "none"
 #   volume: 0 to 100, before the server and master scaling
 #   banner: "full", "title" (no message text) or "off"

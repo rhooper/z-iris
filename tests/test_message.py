@@ -72,3 +72,12 @@ def test_dm_to_self():
 def test_malformed_event_raises():
     with pytest.raises((KeyError, TypeError)):
         message_from_event("w", "h", SELF, {"type": "message", "message": {}})
+
+
+def test_new_style_wildcard_flags_count_as_wildcard_mentions():
+    base = {"type": "message", "message": {
+        "id": 1, "type": "stream", "stream_id": 1, "display_recipient": "c",
+        "subject": "t", "sender_id": 2, "sender_full_name": "A", "content": "x"}}
+    for flag in ("wildcard_mentioned", "stream_wildcard_mentioned", "topic_wildcard_mentioned"):
+        m = message_from_event("w", "h", 5, {**base, "flags": [flag]})
+        assert m.is_wildcard_mention and not m.is_mention

@@ -5,6 +5,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
+_WILDCARD_FLAGS = frozenset(
+    {"wildcard_mentioned", "stream_wildcard_mentioned", "topic_wildcard_mentioned"}
+)
+
+
 @dataclass(frozen=True)
 class Message:
     server: str
@@ -26,7 +31,8 @@ class Message:
 
     @property
     def is_wildcard_mention(self) -> bool:
-        return "wildcard_mentioned" in self.flags
+        # Servers send the new per-kind flags and, for older clients, the first.
+        return bool(self.flags & _WILDCARD_FLAGS)
 
     @property
     def has_alert_word(self) -> bool:

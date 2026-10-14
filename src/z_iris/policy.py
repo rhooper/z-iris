@@ -36,8 +36,10 @@ def decide(
 
     if message.kind == "dm":
         return Decision(True, "dm")
-    if message.is_mention or message.is_wildcard_mention:
+    if message.is_mention:
         return Decision(True, "mention")
+    if message.is_wildcard_mention:
+        return Decision(True, "wildcard mention")
     if message.has_alert_word:
         return Decision(True, "alert word")
     if notify_channel_messages:
