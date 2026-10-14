@@ -14,13 +14,27 @@ from z_iris.stream import Controls, StatusBoard
 
 _ACTIVE_TITLE = "◉"
 _PAUSED_TITLE = "◌"
+_ICON = Path(__file__).parent / "static" / "z-iris-menubarTemplate.png"
+
+
+def menubar_icon(path: Path = _ICON) -> str | None:
+    """The template image's path, or None to fall back to the text title."""
+    return str(path) if path.is_file() else None
 
 
 class IrisApp(rumps.App):
     def __init__(
         self, settings: Settings, config_path: Path, controls: Controls, board: StatusBoard
     ) -> None:
-        super().__init__("z-iris", title=_ACTIVE_TITLE, quit_button=None)
+        icon = menubar_icon()
+        super().__init__(
+            "z-iris",
+            title=None if icon else _ACTIVE_TITLE,
+            icon=icon,
+            template=True if icon else None,
+            quit_button=None,
+        )
+        self.has_icon = icon is not None
         self.settings = settings
         self.editor = EditorServer(settings, config_path)
         self.controls = controls
@@ -64,7 +78,11 @@ class IrisApp(rumps.App):
         self._show_pause_state()
 
     def _show_pause_state(self) -> None:
-        self.title = _PAUSED_TITLE if self.controls.paused.is_set() else _ACTIVE_TITLE
+        paused = self.controls.paused.is_set()
+        if self.has_icon:
+            self.title = _PAUSED_TITLE if paused else None
+        else:
+            self.title = _PAUSED_TITLE if paused else _ACTIVE_TITLE
 
     def _show_config_error(self, error: str | None) -> None:
         self.error_item.title = f"Config problem: {error[:80]}" if error else "Config OK"

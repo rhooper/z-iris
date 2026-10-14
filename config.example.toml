@@ -20,7 +20,6 @@ notify_channel_messages = false
 
 [output]
 player = ["play", "-q"]
-notifier = "terminal-notifier"
 
 # Rules. The most specific matching rule wins: topic, keyword, mention (@you),
 # wildcard (@all and friends), alert_word, channel, group_dm, dm. A higher

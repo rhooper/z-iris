@@ -188,3 +188,88 @@ def test_output_steps_can_be_called_separately():
 
 def test_banner_body_shows_plain_text_with_emoji():
     assert banner_body(channel("**Deploy** done :tada: see [log](https://x.y/z)")) == "Deploy done 🎉 see log"
+class FakeNotifier:
+    def __init__(self):
+        self.shown, self.cleared = [], []
+
+    def show(self, title, body, url, image=None, group=None, silent=True):
+        self.shown.append((title, body, url, image, group, silent))
+
+    def clear(self, group):
+        self.cleared.append(group)
+
+
+def native(action, image_for=None, content="hello"):
+    fake = FakeNotifier()
+    out = RealOutput(Settings(CONFIG), spawn=lambda c: None, notifier=fake, image_for=image_for)
+    out.banner(Notification(channel(content), "zulip://h/#narrow/x", "rule", action))
+    return fake.shown
+
+
+def test_banner_goes_to_the_notifier_with_plain_text():
+    (shown,) = native(Action("none", 0, "full", "r"), content="-not an option")
+    assert shown == (
+        "Ada (#ops > deploys)", "-not an option", "zulip://h/#narrow/x", None,
+        "z-iris-work-101", True,
+    )
+
+
+def test_title_mode_hides_text_and_skips_the_image(tmp_path):
+    calls = []
+    (shown,) = native(
+        Action("none", 0, "title", "r"), image_for=lambda m: calls.append(m) or tmp_path
+    )
+    assert shown[1] == "New message" and shown[3] is None and not calls
+
+
+def test_banner_off_shows_nothing():
+    assert native(Action("none", 0, "off", "r")) == []
+
+
+def test_image_for_supplies_the_attachment(tmp_path):
+    image = tmp_path / "a.png"
+    (shown,) = native(Action("none", 0, "full", "r"), image_for=lambda m: image)
+    assert shown[3] == image
+
+
+def test_a_failing_image_lookup_still_shows_the_banner(capsys):
+    def boom(message):
+        raise OSError("disk")
+
+    (shown,) = native(Action("none", 0, "full", "r"), image_for=boom)
+    assert shown[3] is None and "image lookup failed" in capsys.readouterr().err
+
+
+def test_outside_the_bundle_the_default_is_terminal_notifier():
+    from z_iris.output import TerminalNotifier, make_notifier
+
+    assert isinstance(make_notifier(), TerminalNotifier)  # tests never run in the bundle
+
+
+def test_terminal_notifier_clear_uses_remove():
+    from z_iris.output import TerminalNotifier
+
+    calls = []
+    TerminalNotifier(calls.append).clear("g")
+    assert calls == [["terminal-notifier", "-remove", "g"]]
+
+
+def test_a_custom_notifier_setting_is_ignored_with_a_warning(capsys):
+    config = parse_config(
+        '[[server]]\nname = "work"\nzuliprc = "/x"\n[output]\nnotifier = "/x/tn"\n'
+    )
+    RealOutput(Settings(config), spawn=lambda c: None, notifier=FakeNotifier())
+    assert "notifier is ignored" in capsys.readouterr().err
+
+
+def test_menubar_icon_falls_back_to_text_when_missing(tmp_path):
+    from z_iris.menubar import menubar_icon
+
+    assert menubar_icon(tmp_path / "nope.png") is None
+    assert menubar_icon().endswith("z-iris-menubarTemplate.png")
+
+
+def test_a_batch_summary_title_replaces_the_sender_title():
+    n = Notification(channel(), "zulip://h/#narrow/x", "rule", ACTION, summary="3 new in #ops")
+    command = banner_command("terminal-notifier", n)
+    assert command[command.index("-title") + 1] == "3 new in #ops"
