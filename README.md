@@ -151,3 +151,10 @@ images and uploads get a 🖼 or 📎 marker, spoiler text is never shown, and
 emoji shortcodes such as `:tada:` become real emoji, which the notification
 font (Apple Color Emoji) can draw. Custom realm emoji have no Unicode form and
 stay as `:name:`.
+## Screen flash
+
+A rule or `[defaults]` can set `flash` to `screen`, `top`, `bottom`, `left` or `right`, with
+`flash_color` (`#rrggbb`) and `flash_seconds`. The overlay covers every screen, ignores the
+mouse and fades out. Try one without waiting for a message:
+
+    uv run z-iris flash top --color '#0066ff' --seconds 1

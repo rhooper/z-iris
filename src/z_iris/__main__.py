@@ -37,6 +37,11 @@ def _probe(config: Config) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    raw = sys.argv[1:] if argv is None else argv
+    if raw[:1] == ["flash"]:
+        from z_iris.visual import cli
+
+        return cli(raw[1:])
     parser = argparse.ArgumentParser(prog="z-iris")
     parser.add_argument("--config", type=Path, default=DEFAULT_PATH)
     parser.add_argument(
@@ -133,6 +138,10 @@ def main(argv: list[str] | None = None) -> int:
 
     from z_iris.menubar import run_menubar
 
+    if isinstance(output, RealOutput):
+        from z_iris.visual import MacVisual
+
+        output.visual = MacVisual()
     run_menubar(settings, args.config, controls, board)
     engine.stop()
     return 0
