@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import subprocess
+from types import SimpleNamespace
 from pathlib import Path
 
 import rumps
@@ -24,7 +25,12 @@ def menubar_icon(path: Path = _ICON) -> str | None:
 
 class IrisApp(rumps.App):
     def __init__(
-        self, settings: Settings, config_path: Path, controls: Controls, board: StatusBoard
+        self,
+        settings: Settings,
+        config_path: Path,
+        controls: Controls,
+        board: StatusBoard,
+        visual=None,
     ) -> None:
         icon = menubar_icon()
         super().__init__(
@@ -37,6 +43,9 @@ class IrisApp(rumps.App):
         self.has_icon = icon is not None
         self.settings = settings
         self.editor = EditorServer(settings, config_path)
+        if visual is not None:
+            # The editor's Test flash button fires the real overlay.
+            self.editor.flasher = lambda action: visual.flash(SimpleNamespace(**action))
         self.controls = controls
         self.board = board
         self.config_path = config_path
@@ -98,9 +107,13 @@ class IrisApp(rumps.App):
 
 
 def run_menubar(
-    settings: Settings, config_path: Path, controls: Controls, board: StatusBoard
+    settings: Settings,
+    config_path: Path,
+    controls: Controls,
+    board: StatusBoard,
+    visual=None,
 ) -> None:
     NSApplication.sharedApplication().setActivationPolicy_(
         NSApplicationActivationPolicyAccessory
     )
-    IrisApp(settings, config_path, controls, board).run()
+    IrisApp(settings, config_path, controls, board, visual).run()

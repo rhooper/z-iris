@@ -36,6 +36,12 @@ def _probe(config: Config) -> int:
     return 0
 
 
+def _real_output(settings: Settings) -> RealOutput:
+    from z_iris.media import ImageResolver, default_registry
+
+    return RealOutput(settings, image_for=ImageResolver(default_registry).image_for)
+
+
 def main(argv: list[str] | None = None) -> int:
     raw = sys.argv[1:] if argv is None else argv
     if raw[:1] == ["flash"]:
@@ -108,7 +114,7 @@ def main(argv: list[str] | None = None) -> int:
     controls = Controls()
     board = StatusBoard()
     settings = Settings(config, args.config)
-    output = DryRunOutput(settings) if args.dry_run else RealOutput(settings)
+    output = DryRunOutput(settings) if args.dry_run else _real_output(settings)
     engine = Engine(
         output, settings, controls,
         log=(lambda text: print(f"[dry-run] engine {text}", flush=True))
@@ -138,11 +144,12 @@ def main(argv: list[str] | None = None) -> int:
 
     from z_iris.menubar import run_menubar
 
+    visual = None
     if isinstance(output, RealOutput):
         from z_iris.visual import MacVisual
 
-        output.visual = MacVisual()
-    run_menubar(settings, args.config, controls, board)
+        visual = output.visual = MacVisual()
+    run_menubar(settings, args.config, controls, board, visual)
     engine.stop()
     return 0
 
