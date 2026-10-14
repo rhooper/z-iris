@@ -65,6 +65,14 @@ prints one line on stderr and falls back to terminal-notifier, so banners never
 vanish. `[output] notifier` is ignored. `scripts/claude/make_icon.py` regenerates
 the icons in `src/z_iris/static/`.
 
+Notification images: z-iris shows the first image in a message, else the sender's
+avatar. By default it fetches only files on your Zulip server (uploads,
+thumbnails, avatars) and Gravatar avatars. Fetching an image from any other host
+tells that host your IP address and that you are online, so it is off unless you
+set `[output] external_images = true`. Credentials are only sent to your server
+over its own scheme, host and port, and only for `/user_uploads/`,
+`/user_avatars/` and `/thumbnail` paths.
+
 ## Rules and volume
 
 Rules live in `~/.config/z-iris/config.toml` as `[[rule]]` tables, and the file

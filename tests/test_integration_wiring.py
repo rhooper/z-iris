@@ -13,6 +13,25 @@ def test_real_output_gets_an_image_resolver(monkeypatch):
     assert callable(output.image_for)
 
 
+def test_real_output_passes_external_images_setting(monkeypatch):
+    from z_iris import __main__ as entry
+    from z_iris import media
+
+    seen = []
+    real = media.ImageResolver.__init__
+
+    def spy(self, *a, **k):
+        seen.append(k.get("external_images"))
+        real(self, *a, **k)
+
+    monkeypatch.setattr(media.ImageResolver, "__init__", spy)
+    config = parse_config(
+        '[[server]]\nname = "w"\nzuliprc = "/x"\n[output]\nexternal_images = true\n'
+    )
+    entry._real_output(Settings(config))
+    assert seen and seen[0]() is True
+
+
 def test_editor_flasher_accepts_the_action_dict_shape():
     seen = []
     visual = SimpleNamespace(flash=lambda action: seen.append(
