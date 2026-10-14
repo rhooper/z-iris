@@ -3,6 +3,7 @@ import time
 from pathlib import Path
 
 from z_iris.config import Config, ServerConfig
+from z_iris.settings import Settings
 from z_iris.stream import Controls, ServerStream, StatusBoard, host_of
 
 
@@ -84,7 +85,7 @@ def make_stream(client, output, controls=None):
     config = Config(servers=(ServerConfig("w", Path("/x")),))
     stream = ServerStream(
         config.servers[0],
-        config,
+        Settings(config),
         output,
         controls or Controls(),
         StatusBoard(),

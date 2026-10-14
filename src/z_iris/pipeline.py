@@ -4,10 +4,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from z_iris.config import Action, resolve_action
 from z_iris.message import Message, message_from_event
 from z_iris.mutes import MuteState
 from z_iris.narrow import narrow_url
-from z_iris.policy import decide
+from z_iris.policy import blocked, decide
+from z_iris.rules import pick_rule
+from z_iris.settings import Settings
 
 
 @dataclass(frozen=True)
@@ -15,6 +18,7 @@ class Notification:
     message: Message
     url: str
     reason: str
+    action: Action
 
 
 class Pipeline:
@@ -24,13 +28,13 @@ class Pipeline:
         host: str,
         self_id: int,
         mutes: MuteState,
-        notify_channel_messages: bool,
+        settings: Settings,
     ) -> None:
         self.server = server
         self.host = host
         self.self_id = self_id
         self.mutes = mutes
-        self.notify_channel_messages = notify_channel_messages
+        self.settings = settings
 
     def handle(self, event: dict) -> Notification | None:
         if event.get("type") != "message":
@@ -45,9 +49,25 @@ class Pipeline:
         except (KeyError, TypeError):
             return None
 
+        if blocked(message, self.mutes, self.self_id) is not None:
+            return None
+
+        config = self.settings.config
+        rule = pick_rule(config.rules, message)
+        if rule is not None:
+            action = resolve_action(config, self.server, rule)
+            if action.banner == "off" and (action.sound == "none" or action.volume == 0):
+                return None
+            return Notification(message, narrow_url(message), "rule", action)
+
         decision = decide(
-            message, self.mutes, self.self_id, self.notify_channel_messages
+            message, self.mutes, self.self_id, config.notify_channel_messages
         )
         if not decision.notify:
             return None
-        return Notification(message, narrow_url(message), decision.reason)
+        return Notification(
+            message,
+            narrow_url(message),
+            decision.reason,
+            resolve_action(config, self.server, None),
+        )

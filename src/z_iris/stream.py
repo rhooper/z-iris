@@ -6,10 +6,11 @@ import sys
 import threading
 from urllib.parse import urlparse
 
-from z_iris.config import Config, ServerConfig
+from z_iris.config import ServerConfig
 from z_iris.mutes import MuteState
 from z_iris.output import Output
 from z_iris.pipeline import Pipeline
+from z_iris.settings import Settings
 
 EVENT_TYPES = ["message", "subscription", "user_topic", "muted_topics"]
 
@@ -52,7 +53,7 @@ class ServerStream(threading.Thread):
     def __init__(
         self,
         server: ServerConfig,
-        config: Config,
+        settings: Settings,
         output: Output,
         controls: Controls,
         board: StatusBoard,
@@ -60,7 +61,7 @@ class ServerStream(threading.Thread):
     ) -> None:
         super().__init__(daemon=True, name=f"z-iris-{server.name}")
         self.server = server
-        self.config = config
+        self.settings = settings
         self.output = output
         self.controls = controls
         self.board = board
@@ -97,7 +98,7 @@ class ServerStream(threading.Thread):
             host_of(client.base_url),
             profile["user_id"],
             MuteState.from_register(registered),
-            self.config.notify_channel_messages,
+            self.settings,
         )
         queue_id = registered["queue_id"]
         last_event_id = registered["last_event_id"]

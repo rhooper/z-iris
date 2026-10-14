@@ -1,6 +1,10 @@
+from z_iris.config import Action
 from z_iris.message import Message
 from z_iris.output import banner_body, banner_command, banner_title, sound_command
 from z_iris.pipeline import Notification
+
+
+ACTION = Action("synth", 60, "full", None)
 
 
 def channel(content="hello", sender="Ada"):
@@ -44,7 +48,7 @@ def test_body_that_looks_like_an_option_is_neutralised():
 
 
 def test_banner_command_is_argv_only():
-    n = Notification(channel("-open x"), "zulip://h/#narrow/x", "mention")
+    n = Notification(channel("-open x"), "zulip://h/#narrow/x", "mention", ACTION)
     command = banner_command("terminal-notifier", n)
     assert command[0] == "terminal-notifier"
     assert command[command.index("-open") + 1] == "zulip://h/#narrow/x"
@@ -54,7 +58,7 @@ def test_banner_command_is_argv_only():
 
 
 def test_title_that_looks_like_an_option_is_neutralised():
-    n = Notification(channel(sender="-sound x"), "zulip://h/#narrow/x", "dm")
+    n = Notification(channel(sender="-sound x"), "zulip://h/#narrow/x", "dm", ACTION)
     command = banner_command("terminal-notifier", n)
     assert not command[command.index("-title") + 1].startswith("-")
 
@@ -84,7 +88,7 @@ import pytest
 def test_text_that_looks_like_a_property_list_is_neutralised(text):
     # terminal-notifier reads option values through NSUserDefaults, which
     # parses "(a, b)" as an array and "{...}" as a dictionary.
-    n = Notification(channel(text, sender=text), "zulip://h/#narrow/x", "dm")
+    n = Notification(channel(text, sender=text), "zulip://h/#narrow/x", "dm", ACTION)
     command = banner_command("terminal-notifier", n)
     for flag in ("-title", "-message"):
         value = command[command.index(flag) + 1]

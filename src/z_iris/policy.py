@@ -14,18 +14,25 @@ class Decision:
     reason: str
 
 
-def decide(
-    message: Message, mutes: MuteState, self_id: int, notify_channel_messages: bool
-) -> Decision:
+def blocked(message: Message, mutes: MuteState, self_id: int) -> str | None:
+    """Why a message must stay silent whatever any rule says, or None."""
     if message.sender_id == self_id:
-        return Decision(False, "own message")
-
+        return "own message"
     if (
         message.kind == "channel"
         and mutes.is_muted(message.channel_id or 0, message.topic or "")
         and not message.is_mention
     ):
-        return Decision(False, "muted")
+        return "muted"
+    return None
+
+
+def decide(
+    message: Message, mutes: MuteState, self_id: int, notify_channel_messages: bool
+) -> Decision:
+    reason = blocked(message, mutes, self_id)
+    if reason is not None:
+        return Decision(False, reason)
 
     if message.kind == "dm":
         return Decision(True, "dm")
