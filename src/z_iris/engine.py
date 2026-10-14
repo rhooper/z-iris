@@ -70,15 +70,19 @@ def _key(notification: Notification) -> tuple:
     return (message.server, "dm", message.dm_user_ids)
 
 
+def _conversation(notification: Notification):
+    message = notification.message
+    if message.kind == "channel":
+        return (message.server, "channel", message.channel_id)
+    return (message.server, "dm", message.dm_user_ids)
+
+
 def _summary(held: list[Notification]) -> str:
-    places = {
-        (n.message.channel_id, n.message.topic) if n.message.kind == "channel"
-        else n.message.dm_user_ids
-        for n in held
-    }
+    """Conversations are channels (any topic) or DM groups, per server."""
+    conversations = {_conversation(n) for n in held}
     latest = held[-1].message
-    if len(places) > 1:
-        where = f"in {len({_conversation(n) for n in held})} conversations"
+    if len(conversations) > 1:
+        where = f"in {len(conversations)} conversations"
     elif latest.kind == "channel":
         where = f"in #{latest.channel_name}"
     elif len(latest.dm_user_ids) > 1:
@@ -86,13 +90,6 @@ def _summary(held: list[Notification]) -> str:
     else:
         where = f"from {latest.sender_name}"
     return f"{len(held)} new {where}"
-
-
-def _conversation(notification: Notification):
-    message = notification.message
-    if message.kind == "channel":
-        return ("channel", message.channel_id)
-    return ("dm", message.dm_user_ids)
 
 
 @dataclass
@@ -123,24 +120,29 @@ class Engine:
         self._last_sound: dict[tuple, float] = {}
         self._batches: dict[tuple, _Batch] = {}
         self._repeats: dict[tuple[str, int], object] = {}
+        self._max_gap = 0.0
         self._stopped = False
 
     # public
 
     def submit(self, notification: Notification) -> None:
+        acts: list[Callable[[], None]] = []
         with self._lock:
             if self._stopped or self.controls.paused.is_set():
                 return
             try:
-                self._submit(notification)
+                self._submit(notification, acts)
             except Exception as error:  # a broken output must not stop streaming
                 self._report(error)
+        self._perform(acts)
 
     def handle_event(self, server: str, event: dict) -> None:
         try:
             kind = event.get("type")
             if kind == "update_message_flags":
-                if event.get("op") != "add" or event.get("flag") != "read":
+                # servers before feature level 32 send "operation"
+                op = event.get("op", event.get("operation"))
+                if op != "add" or event.get("flag") != "read":
                     return
                 if event.get("all"):
                     self._forget(server, None)
@@ -185,7 +187,7 @@ class Engine:
 
     # submit
 
-    def _submit(self, notification: Notification) -> None:
+    def _submit(self, notification: Notification, acts: list) -> None:
         action = notification.action
         message = notification.message
         verdict = self._verdict(notification)
@@ -208,11 +210,12 @@ class Engine:
             self._say(notification, f"min_gap {action.min_gap}s: banner only")
 
         if quiet or gap:
-            self.output.banner(_stripped(notification))
+            stripped = _stripped(notification)
+            acts.append(lambda: self.output.banner(stripped))
         else:
-            self.output.deliver(notification)
+            acts.append(lambda: self.output.deliver(notification))
             if _audible(notification):
-                self._last_sound[key] = now
+                self._remember_sound(key, now, action.min_gap)
 
         if action.batch_window > 0:
             batch = _Batch()
@@ -227,7 +230,7 @@ class Engine:
 
     # batching
 
-    def _flush(self, key: tuple) -> None:
+    def _flush(self, key: tuple, acts: list) -> None:
         batch = self._batches.pop(key, None)
         if batch is None or not batch.held or self.controls.paused.is_set():
             return
@@ -238,18 +241,21 @@ class Engine:
             _stripped(latest), summary=_summary(batch.held)
         )
         self._say(summary, f"batch: summary {summary.summary!r}")
-        self.output.banner(summary)
+        acts.append(lambda: self.output.banner(summary))
 
     # repeats
 
     def _schedule_repeat(self, notification: Notification, number: int) -> None:
         ident = (notification.message.server, notification.message.id)
+        previous = self._repeats.pop(ident, None)
+        if previous is not None:
+            self._cancel(previous)
         self._repeats[ident] = self.scheduler(
             notification.action.repeat_every,
             lambda: self._guard(self._repeat, notification, number),
         )
 
-    def _repeat(self, notification: Notification, number: int) -> None:
+    def _repeat(self, notification: Notification, number: int, acts: list) -> None:
         ident = (notification.message.server, notification.message.id)
         if self._stopped or ident not in self._repeats:
             return
@@ -258,9 +264,19 @@ class Engine:
             self._say(notification, "repeat: stopped")
             return
         action = notification.action
-        volume = min(100, action.volume + action.repeat_boost * number)
+        # action.volume is already rule x server x master, so the boost is
+        # scaled the same way and the ceiling is what server x master allows.
+        config = self.settings.config
+        server = next(
+            (s.volume for s in config.servers if s.name == notification.message.server),
+            100,
+        )
+        scale = server * config.master_volume
+        ceiling = min(100, round(scale / 100))
+        boost = round(action.repeat_boost * number * scale / 10000)
+        volume = min(ceiling, action.volume + boost)
         self._say(notification, f"repeat {number}/{action.repeat} at {volume}%")
-        self.output.sound(notification, volume)
+        acts.append(lambda: self.output.sound(notification, volume))
         if number < action.repeat:
             self._schedule_repeat(notification, number + 1)
 
@@ -291,11 +307,31 @@ class Engine:
         except Exception:
             pass
 
+    def _remember_sound(self, key: tuple, now: float, gap: float) -> None:
+        """Record a sound, and forget entries older than any gap seen."""
+        self._max_gap = max(self._max_gap, gap)
+        self._last_sound[key] = now
+        if len(self._last_sound) > 1:
+            self._last_sound = {
+                k: t for k, t in self._last_sound.items()
+                if k == key or now - t < self._max_gap
+            }
+
     def _guard(self, fn, *args) -> None:
+        """Run a timer callback: decide under the lock, then call output outside it."""
+        acts: list[Callable[[], None]] = []
         with self._lock:
             try:
-                fn(*args)
+                fn(*args, acts)
             except Exception as error:
+                self._report(error)
+        self._perform(acts)
+
+    def _perform(self, acts: list[Callable[[], None]]) -> None:
+        for act in acts:
+            try:
+                act()
+            except Exception as error:  # a broken output must not stop streaming
                 self._report(error)
 
     def _report(self, error: Exception) -> None:

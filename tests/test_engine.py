@@ -463,3 +463,152 @@ def test_default_timer_is_a_daemon_that_can_be_cancelled():
     assert not fired.wait(0.1)
     thread_timer(0.01, fired.set)
     assert fired.wait(2)
+
+
+# review fixes
+
+def _lock_free(engine):
+    """Whether another thread can take the engine lock right now."""
+    result = []
+
+    def probe():
+        got = engine._lock.acquire(blocking=False)
+        if got:
+            engine._lock.release()
+        result.append(got)
+
+    thread = threading.Thread(target=probe)
+    thread.start()
+    thread.join()
+    return result[0]
+
+
+class Probing(Recorder):
+    def __init__(self):
+        super().__init__()
+        self.engine = None
+        self.free = []
+
+    def _look(self):
+        self.free.append(_lock_free(self.engine))
+
+    def deliver(self, n):
+        self._look()
+        super().deliver(n)
+
+    def banner(self, n):
+        self._look()
+        super().banner(n)
+
+    def sound(self, n, volume=None):
+        self._look()
+        super().sound(n, volume)
+
+
+def test_output_is_called_without_the_engine_lock():
+    clock = FakeClock()
+    out = Probing()
+    engine = Engine(out, Settings(Config(servers=(ServerConfig("work", None),))),
+                    Controls(), clock=clock, scheduler=clock.schedule,
+                    local_minutes=lambda: 0)
+    out.engine = engine
+    engine.submit(note(channel(1), batch_window=30, repeat=1, repeat_every=10, min_gap=5))
+    engine.submit(note(channel(2), batch_window=30))
+    clock.advance(10)   # the repeat
+    clock.advance(30)   # the batch summary
+    assert out.kinds() == ["deliver", "sound", "banner"]
+    assert out.free == [True, True, True]
+    engine.submit(note(channel(3, topic="q"), min_gap=60))
+    engine.submit(note(channel(4, topic="q"), min_gap=60))  # banner only
+    assert all(out.free)
+
+
+def test_a_slow_output_does_not_block_other_submits():
+    entered, release = threading.Event(), threading.Event()
+
+    class Slow(Recorder):
+        def deliver(self, n):
+            if n.message.id == 1:
+                entered.set()
+                release.wait(5)
+            super().deliver(n)
+
+    engine = Engine(Slow(), Settings(Config(servers=(ServerConfig("work", None),))),
+                    Controls(), local_minutes=lambda: 0)
+    first = threading.Thread(target=engine.submit, args=(note(channel(1)),))
+    first.start()
+    assert entered.wait(5)
+    second = threading.Thread(target=engine.submit, args=(note(channel(2, topic="z")),))
+    second.start()
+    second.join(2)
+    finished = not second.is_alive()
+    release.set()
+    first.join(5)
+    second.join(5)
+    assert finished
+
+
+def scaled(server, master):
+    return Config(servers=(ServerConfig("work", None, server),), master_volume=master)
+
+
+def test_repeat_boost_is_scaled_by_server_and_master_volume():
+    # rule 50 x server 50 x master 40 -> final 10; boost 30 scales to 6;
+    # the ceiling is server x master = 20, not 100
+    engine, out, clock, _ = make(scaled(50, 40))
+    engine.submit(note(channel(1), volume=10, repeat=4, repeat_every=10, repeat_boost=30))
+    for _ in range(4):
+        clock.advance(10)
+    assert [c[2] for c in out.calls[1:]] == [16, 20, 20, 20]
+
+
+def test_repeat_boost_at_full_master_is_unchanged_and_capped_at_100():
+    engine, out, clock, _ = make(scaled(100, 100))
+    engine.submit(note(channel(1), volume=80, repeat=2, repeat_every=10, repeat_boost=30))
+    clock.advance(10)
+    clock.advance(10)
+    assert [c[2] for c in out.calls[1:]] == [100, 100]
+
+
+def test_summary_counts_conversations_consistently_with_wording():
+    engine, out, clock, _ = make()
+    engine.submit(note(channel(1), batch_window=30, rule="r"))
+    engine.submit(note(channel(2, topic="a"), batch_window=30, rule="r"))
+    engine.submit(note(channel(3, topic="b"), batch_window=30, rule="r"))
+    clock.advance(30)
+    assert out.calls[1][1].summary == "2 new in #ops"
+
+
+def test_summary_counts_servers_apart():
+    engine, out, clock, _ = make()
+    other = replace(channel(2), server="home")
+    engine.submit(note(channel(1), batch_window=30, rule="r"))
+    engine.submit(note(other, batch_window=30, rule="r"))
+    engine.submit(note(channel(3), batch_window=30, rule="r"))
+    clock.advance(30)
+    assert out.calls[1][1].summary == "2 new in 2 conversations"
+
+
+def test_old_servers_send_operation_instead_of_op():
+    engine, out, clock, _ = make()
+    engine.submit(note(channel(1), repeat=2, repeat_every=10))
+    engine.handle_event("work", {"type": "update_message_flags", "operation": "add",
+                                 "flag": "read", "messages": [1]})
+    clock.advance(100)
+    assert len(out.calls) == 1
+
+
+def test_a_repeat_timer_is_never_orphaned_by_a_duplicate_message():
+    engine, out, clock, _ = make()
+    n = note(channel(1), repeat=2, repeat_every=10)
+    engine.submit(n)
+    engine.submit(replace(n, action=replace(n.action, min_gap=0)))  # same id again
+    assert len(clock.pending()) == 1
+
+
+def test_last_sound_is_pruned():
+    engine, out, clock, _ = make()
+    for i in range(50):
+        engine.submit(note(channel(i, topic=f"t{i}"), min_gap=5))
+        clock.advance(6)
+    assert len(engine._last_sound) <= 2
