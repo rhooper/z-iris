@@ -92,6 +92,11 @@ def _focus(data: dict) -> FocusConfig:
         a, b, c, d = (int(g) for g in match.groups())
         if not (a < 24 and c < 24 and b < 60 and d < 60):
             raise ConfigError(f"focus: bad time in quiet hours {entry!r}")
+        if (a, b) == (c, d):
+            raise ConfigError(
+                f"focus: quiet hours {entry!r} start and end together, so it would "
+                "never be quiet; use 00:00-23:59 for all day"
+            )
         hours.append((a * 60 + b, c * 60 + d))
     return FocusConfig(mode, tuple(hours), quiet_mode)
 

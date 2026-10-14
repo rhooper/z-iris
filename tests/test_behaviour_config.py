@@ -59,3 +59,8 @@ def test_focus_section():
 
 def test_action_can_still_be_built_positionally():
     assert Action("none", 0, "off", None).repeat == 0
+
+
+def test_equal_quiet_hours_are_rejected():
+    with pytest.raises(ConfigError, match="focus.*22:00-22:00"):
+        parse_config(BASE + '[focus]\nquiet_hours = ["22:00-22:00"]\n')
