@@ -66,3 +66,14 @@ def test_blank_fields_are_omitted():
                                         "volume": None, "server": "", "priority": 0}]})
     assert "sound" not in new.split("[[rule]]")[1]
     assert parse_config(new).rules[0].sound is None
+
+
+def test_enabled_false_round_trips_and_true_is_not_written():
+    rules = [{"name": "a", "match": "mention", "enabled": False},
+             {"name": "b", "match": "mention", "enabled": True}]
+    new = apply_edit(TEXT, {"rules": rules})
+    assert new.count("enabled") == 1
+    assert [r.enabled for r in parse_config(new).rules] == [False, True]
+    data = read_editable(new)
+    assert data["rules"][0]["enabled"] is False
+    assert data["rules"][1].get("enabled", True) is True

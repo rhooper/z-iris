@@ -137,13 +137,17 @@ def _rules(
         if sound is not None:
             sound = _sound(sound, label, sounds)
 
+        enabled = raw.get("enabled", True)
+        if not isinstance(enabled, bool):
+            raise ConfigError(f"{label}: enabled must be true or false")
+
         priority = raw.get("priority", 0)
         if not isinstance(priority, int) or isinstance(priority, bool):
             raise ConfigError(f"{label}: priority must be an integer")
 
         rules.append(
             Rule(name, kind, channel, pattern, server, sound, volume, banner,
-                 priority, index)
+                 priority, index, enabled)
         )
     return tuple(rules)
 

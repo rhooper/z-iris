@@ -228,3 +228,14 @@ def test_alert_word_rule_parses():
 
 def test_wildcard_rule_parses():
     assert rule_config('name = "w"\nmatch = "wildcard"\n').rules[0].kind == "wildcard"
+
+
+def test_rules_can_be_disabled():
+    config = parse_config(
+        MINIMAL
+        + '[[rule]]\nname = "a"\nmatch = "mention"\nenabled = false\n'
+        + '[[rule]]\nname = "b"\nmatch = "mention"\n'
+    )
+    assert [r.enabled for r in config.rules] == [False, True]
+    with pytest.raises(ConfigError, match="rule 'r'"):
+        rule_config('name = "r"\nmatch = "mention"\nenabled = "no"\n')

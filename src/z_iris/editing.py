@@ -10,7 +10,7 @@ from z_iris.config import parse_config
 
 RULE_FIELDS = (
     "name", "match", "channel", "topic", "keyword", "server", "sound",
-    "volume", "banner", "priority",
+    "volume", "banner", "priority", "enabled",
 )
 DEFAULT_FIELDS = ("sound", "volume", "master_volume", "notify_channel_messages")
 
@@ -68,7 +68,9 @@ def apply_edit(text: str, payload: dict, sounds_dir: Path | None = None) -> str:
             table = tomlkit.table()
             for key in RULE_FIELDS:
                 value = raw.get(key)
-                if _blank(value) or (key == "priority" and value == 0):
+                if _blank(value) or (key == "priority" and value == 0) or (
+                    key == "enabled" and value is True
+                ):
                     continue
                 table[key] = value
             rules.append(table)

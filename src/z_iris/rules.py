@@ -24,6 +24,7 @@ class Rule:
     banner: str | None
     priority: int
     index: int
+    enabled: bool = True
 
 
 def _same(a: str | None, b: str | None) -> bool:
@@ -57,7 +58,7 @@ def _matches(rule: Rule, message: Message) -> bool:
 
 
 def pick_rule(rules: Sequence[Rule], message: Message) -> Rule | None:
-    hits = [rule for rule in rules if _matches(rule, message)]
+    hits = [rule for rule in rules if rule.enabled and _matches(rule, message)]
     if not hits:
         return None
     return min(hits, key=lambda rule: (-rule.priority, _RANK[rule.kind], rule.index))

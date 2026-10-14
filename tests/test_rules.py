@@ -99,3 +99,10 @@ def test_alert_word_rule_matches_only_alert_word_messages():
     assert pick_rule([r], dm(flags=["has_alert_word"])) is r
     assert pick_rule([r], channel(flags=["mentioned"])) is None
     assert pick_rule([r], channel()) is None
+
+
+def test_disabled_rules_never_match_and_keep_their_index():
+    off = Rule("off", "mention", None, None, None, None, None, None, 9, 0, enabled=False)
+    on = rule("mention", index=1)
+    assert pick_rule([off, on], channel(flags=["mentioned"])) is on
+    assert pick_rule([off], channel(flags=["mentioned"])) is None
