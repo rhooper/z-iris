@@ -7,6 +7,7 @@ import threading
 from urllib.parse import urlparse
 
 from z_iris.config import ServerConfig
+from z_iris.media import default_registry
 from z_iris.mutes import MuteState
 from z_iris.output import Output
 from z_iris.pipeline import Pipeline
@@ -85,6 +86,7 @@ class ServerStream(threading.Thread):
 
     def _session(self) -> None:
         client = self.client_factory(self.server.zuliprc)
+        default_registry.set(self.server.name, client)
         registered = client.register(event_types=EVENT_TYPES, apply_markdown=False)
         if registered.get("result") != "success":
             raise RuntimeError(registered.get("msg", "register failed"))

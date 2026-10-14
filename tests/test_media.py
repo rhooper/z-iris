@@ -374,3 +374,15 @@ def test_sips_argv_only(monkeypatch, tmp_path):
     argv, kw = calls[0]
     assert isinstance(argv, list) and argv[0] == "sips" and "256" in argv
     assert not kw.get("shell") and kw.get("timeout")
+
+
+def test_stream_registers_its_client():
+    from tests.test_stream import Collect, FakeClient as StreamClient, dm_event, make_stream
+
+    client = StreamClient([{"result": "success", "events": [dm_event(0)]}])
+    out = Collect(want=1)
+    stream = make_stream(client, out)
+    stream.start()
+    assert out.done.wait(5)
+    stream.stop()
+    assert media.default_registry.get("w") is client

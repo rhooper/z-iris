@@ -78,6 +78,15 @@ one sample per kind.
 - Server list changes need a restart. A config that fails to parse keeps the
   old one and shows the problem in the menu.
 
+## Notification images
+
+`media.ImageResolver.image_for(message)` returns a local PNG for a notification
+attachment: the first image in the message (markdown image, bare image link, or a
+`/user_uploads/` link), else the sender's avatar, else nothing. Images are fetched with
+short timeouts and size caps, converted with `sips` to at most 512px (avatars 256px) and
+cached under `~/Library/Caches/z-iris/media/` (50 MB, oldest evicted). Zulip credentials
+are sent only to the Zulip server's own host, never to external image hosts.
+
 ## Roadmap
 
 Phase 3: repetition, intervals, intensity,

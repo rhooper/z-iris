@@ -73,6 +73,10 @@ class ClientRegistry:
             return self._clients.get(server_name)
 
 
+# Shared by stream.py (writer) and the notifier's ImageResolver (reader).
+default_registry = ClientRegistry()
+
+
 class HttpError(Exception):
     pass
 
