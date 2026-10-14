@@ -57,8 +57,38 @@ def open_url(url: str) -> None:
         print(f"z-iris: cannot open {url}: {error}", file=sys.stderr)
 
 
-def _warn(text: str) -> None:
+LOG_PATH = Path.home() / "Library" / "Logs" / "z-iris.log"
+LOG_CAP = 256 * 1024
+
+
+def _stderr_is_tty() -> bool:
+    try:
+        return sys.stderr.isatty()
+    except Exception:
+        return False
+
+
+def log_problem(
+    text: str, path: Path | None = None, tty: bool | None = None, cap: int = LOG_CAP
+) -> None:
+    """Report a problem on stderr; when stderr goes nowhere (Finder, login item)
+    also append it to ~/Library/Logs/z-iris.log, keeping one .1 backup."""
     print(f"z-iris: {text}", file=sys.stderr)
+    if (_stderr_is_tty() if tty is None else tty):
+        return
+    target = path or LOG_PATH
+    try:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if target.exists() and target.stat().st_size >= cap:
+            target.replace(target.with_name(target.name + ".1"))
+        with target.open("a", encoding="utf-8") as handle:
+            handle.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} {text}\n")
+    except OSError:
+        pass
+
+
+def _warn(text: str) -> None:
+    log_problem(text)
 
 
 def _default_factory() -> Any:

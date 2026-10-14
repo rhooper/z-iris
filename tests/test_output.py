@@ -259,12 +259,56 @@ def test_terminal_notifier_clear_uses_remove():
     assert calls == [["terminal-notifier", "-remove", "g"]]
 
 
-def test_a_custom_notifier_setting_is_ignored_with_a_warning(capsys):
+def test_the_notifier_setting_is_the_terminal_notifier_binary():
+    from z_iris.output import TerminalNotifier
+
     config = parse_config(
         '[[server]]\nname = "work"\nzuliprc = "/x"\n[output]\nnotifier = "/x/tn"\n'
     )
-    RealOutput(Settings(config), spawn=lambda c: None, notifier=FakeNotifier())
-    assert "notifier is ignored" in capsys.readouterr().err
+    calls = []
+    out = RealOutput(Settings(config), spawn=calls.append)
+    assert isinstance(out.notifier, TerminalNotifier)
+    out.banner(Notification(channel(), "u", "rule", Action("none", 0, "full", "r")))
+    out.drain()
+    assert calls[0][0] == "/x/tn"
+
+
+def test_spawn_failures_are_logged_to_the_file_when_stderr_is_not_a_tty(tmp_path):
+    from z_iris.notify import log_problem
+
+    log = tmp_path / "Logs" / "z-iris.log"
+    log_problem("cannot run play", path=log, tty=False)
+    assert "cannot run play" in log.read_text()
+
+
+def test_the_log_is_capped_with_one_backup(tmp_path):
+    from z_iris.notify import log_problem
+
+    log = tmp_path / "z-iris.log"
+    for n in range(40):
+        log_problem(f"line {n} " + "x" * 50, path=log, tty=False, cap=500)
+    assert log.stat().st_size <= 500 + 100
+    assert (tmp_path / "z-iris.log.1").exists()
+    assert not (tmp_path / "z-iris.log.2").exists()
+
+
+def test_on_a_tty_problems_go_to_stderr_only(tmp_path, capsys):
+    from z_iris.notify import log_problem
+
+    log = tmp_path / "z-iris.log"
+    log_problem("oops", path=log, tty=True)
+    assert "oops" in capsys.readouterr().err and not log.exists()
+
+
+def test_spawn_of_a_missing_binary_is_logged(tmp_path, monkeypatch):
+    import z_iris.notify as notify
+    from z_iris.output import _spawn
+
+    log = tmp_path / "z-iris.log"
+    monkeypatch.setattr(notify, "LOG_PATH", log)
+    monkeypatch.setattr(notify, "_stderr_is_tty", lambda: False)
+    assert _spawn(["/nonexistent/z-iris-test-binary"]) is None
+    assert "cannot run" in log.read_text()
 
 
 def test_menubar_icon_falls_back_to_text_when_missing(tmp_path):
