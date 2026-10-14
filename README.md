@@ -117,3 +117,13 @@ normalized 16-bit wav, and the file as you uploaded it is kept in
 folder by hand, run `uv run z-iris normalize` (`--no-backup` skips keeping
 originals). It is safe to run twice. The target is an RMS level, capped so the
 peak never clips, so a very peaky sound can end up quieter than the rest.
+
+## Notification text
+
+macOS notifications show plain text only (no bold, links or other formatting),
+so z-iris converts the Zulip markdown first: markers are removed, links keep
+their text, mentions read `@Name`, channel links read `#channel > topic`,
+images and uploads get a 🖼 or 📎 marker, spoiler text is never shown, and
+emoji shortcodes such as `:tada:` become real emoji, which the notification
+font (Apple Color Emoji) can draw. Custom realm emoji have no Unicode form and
+stay as `:name:`.

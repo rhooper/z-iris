@@ -184,3 +184,7 @@ def test_output_steps_can_be_called_separately():
     calls.clear(); flashes.clear()
     out.deliver(n)
     assert len(calls) == 2 and flashes == ["top"]
+
+
+def test_banner_body_shows_plain_text_with_emoji():
+    assert banner_body(channel("**Deploy** done :tada: see [log](https://x.y/z)")) == "Deploy done 🎉 see log"

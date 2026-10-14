@@ -10,6 +10,7 @@ from typing import Protocol
 
 from z_iris.message import Message
 from z_iris.pipeline import Notification
+from z_iris.plaintext import plain_text
 from z_iris.settings import Settings
 
 _ZERO_WIDTH_SPACE = "​"
@@ -42,7 +43,7 @@ def _safe_argument(text: str) -> str:
 
 
 def banner_body(message: Message, limit: int = 200) -> str:
-    text = " ".join(message.content.split())
+    text = plain_text(message.content)
     if not text:
         return "(no text)"
     if len(text) > limit:
