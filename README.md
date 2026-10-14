@@ -86,10 +86,10 @@ batching and focus modes. See `docs/design.md`.
 ## Rule editor
 
 Menubar, Edit rules…, or `uv run z-iris edit`. It opens a page served on
-127.0.0.1 only, behind a random token in the URL. Saving validates with the same
+127.0.0.1 only, behind a random token in the URL. Changes apply by themselves a moment after you stop typing (there is no Save button). Each save is validated with the same
 parser the app uses, writes `config.toml.bak` first, keeps your comments, and
 the running app picks the change up at once. zuliprc paths are never sent to
-the page. Sounds are chosen from a menu, and Add sound uploads a file into the sounds
+the page. Each rule has an On switch. Deleted rules wait in a collapsed list at the bottom for five minutes, where you can restore or discard them. Channel names autocomplete from your subscriptions. Sounds are chosen from a menu, and Add sound uploads a file into the sounds
 folder. Test plays a sound through sox at the
 volume shown.
 

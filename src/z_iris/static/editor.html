@@ -27,6 +27,10 @@
   .msg { border-top:1px solid var(--line); padding:6px 0; font-size:13px; } .msg b { font-weight:600; }
   .tag { font-size:11px; border:1px solid var(--line); border-radius:10px; padding:1px 7px; color:var(--muted); white-space:nowrap; }
   .tag.on { color:var(--ok); border-color:var(--ok); }
+  .combo { position:relative; } .combo ul { position:absolute; z-index:5; left:0; right:0; top:100%; margin:2px 0 0; padding:2px; list-style:none; background:var(--card); border:1px solid var(--line); border-radius:6px; max-height:220px; overflow:auto; box-shadow:0 4px 14px rgba(0,0,0,.18); }
+  .combo li { padding:4px 8px; border-radius:4px; cursor:pointer; } .combo li.active, .combo li:hover { background:var(--accent); color:#fff; }
+  .card.off { opacity:.55; } .toggle { display:flex; align-items:center; gap:4px; font-size:13px; color:var(--fg); }
+  .gone { display:flex; gap:8px; align-items:center; justify-content:space-between; border-top:1px solid var(--line); padding:6px 0; }
   .snippet { color:var(--muted); overflow-wrap:anywhere; }
 </style>
 </head>
@@ -53,19 +57,19 @@
   <div class="row" style="margin-bottom:8px">
     <button type="button" id="preview">Preview against recent messages</button>
     <button type="button" id="more" disabled>Fetch 1000 older</button>
-    <small id="previewnote">Runs your last 1000 Zulip messages (muted ones included) through these rules, saved or not.</small>
+    <small id="previewnote">Runs your last 1000 Zulip messages (muted ones included) through these rules.</small>
   </div>
   <div id="summary"></div>
   <div id="rules"></div>
   <button id="add">Add rule</button>
+  <details class="card" id="deleted" hidden><summary id="deletedsummary"></summary><div id="deletedlist"></div></details>
   <details class="card" id="unmatched" hidden><summary>Messages no rule matched</summary><div id="unmatchedlist"></div></details>
 
   <div class="bar row">
-    <button class="primary" id="save">Save</button>
-    <span id="status" role="status"></span>
+    <span id="saved" role="status"><small>Changes apply as you make them.</small></span>
+    <span id="status"></span>
   </div>
 </main>
-<div id="datalists"></div>
 <script>
 "use strict";
 const base = location.pathname;
@@ -73,6 +77,8 @@ const KINDS = [["topic","Topic"],["keyword","Keyword"],["mention","Mention (@you
 let state = {servers:[], defaults:{}, rules:[], sounds:[]};
 let previewData = null;
 let channelLists = {all: [], servers: {}};
+const DELETED_KEY = "z-iris-deleted", KEEP_MS = 5 * 60 * 1000;
+let deleted = [];
 function clearPreview() { previewData = null; renderSummary(); }
 
 function el(tag, props, ...kids) {
@@ -81,11 +87,44 @@ function el(tag, props, ...kids) {
   return node;
 }
 function field(text, input) { return el("div", {}, el("label", {textContent:text}), input); }
-function text(value, onchange, placeholder, listId) {
+function text(value, onchange, placeholder) {
   const input = el("input", {type:"text", value:value ?? "", placeholder:placeholder || ""});
-  if (listId) input.setAttribute("list", listId);
   input.addEventListener("input", () => onchange(input.value));
   return input;
+}
+// A text box with a suggestion list. Plain DOM, so it behaves the same in every browser.
+function combo(value, onchange, getOptions, placeholder) {
+  const input = el("input", {type:"text", value:value ?? "", placeholder:placeholder || "", autocomplete:"off"});
+  const list = el("ul", {hidden:true});
+  let items = [], active = -1;
+  const close = () => { list.hidden = true; active = -1; };
+  const choose = (name) => {
+    input.value = name; onchange(name); close();
+    input.dispatchEvent(new Event("input", {bubbles:true}));
+  };
+  const paint = () => items.forEach((li, i) => li.classList.toggle("active", i === active));
+  const open = () => {
+    const needle = input.value.trim().toLowerCase();
+    const names = getOptions().filter(n => n.toLowerCase().includes(needle)).slice(0, 12);
+    items = names.map(n => {
+      const li = el("li", {textContent:n});
+      li.addEventListener("mousedown", e => { e.preventDefault(); choose(n); });
+      return li;
+    });
+    list.replaceChildren(...items); active = -1;
+    list.hidden = items.length === 0 || (items.length === 1 && names[0] === input.value);
+  };
+  input.addEventListener("input", () => { onchange(input.value); open(); });
+  input.addEventListener("focus", open);
+  input.addEventListener("blur", close);
+  input.addEventListener("keydown", e => {
+    if (list.hidden && e.key === "ArrowDown") { open(); return; }
+    if (e.key === "ArrowDown") { active = (active + 1) % items.length; paint(); e.preventDefault(); }
+    else if (e.key === "ArrowUp") { active = (active - 1 + items.length) % items.length; paint(); e.preventDefault(); }
+    else if (e.key === "Enter" && active >= 0) { choose(items[active].textContent); e.preventDefault(); }
+    else if (e.key === "Escape") close();
+  });
+  return el("div", {className:"combo"}, input, list);
 }
 function select(options, value, onchange) {
   const node = el("select");
@@ -110,7 +149,7 @@ function slider(value, onchange, allowUnset) {
   const row = el("div", {className:"row"}, input, out);
   if (allowUnset) {
     const reset = el("button", {type:"button", textContent:"default"});
-    reset.addEventListener("click", () => { onchange(null); out.textContent = "default"; });
+    reset.addEventListener("click", () => { onchange(null); out.textContent = "default"; changed(); });
     row.append(reset);
   }
   return row;
@@ -179,7 +218,7 @@ function renderRules() {
   box.replaceChildren(...state.rules.map((rule, i) => {
     const needs = rule.match;
     const fields = [field("Matches", select(KINDS, rule.match, v => { rule.match = v; previewData = null; renderRules(); }))];
-    if (needs === "channel" || needs === "topic") fields.push(field(needs === "channel" ? "Channel name" : "Channel (optional)", text(rule.channel, v => rule.channel = v, "start typing…", "channels-" + (rule.server || ""))));
+    if (needs === "channel" || needs === "topic") fields.push(field(needs === "channel" ? "Channel name" : "Channel (optional)", combo(rule.channel, v => rule.channel = v, () => rule.server ? (channelLists.servers[rule.server] || []) : channelLists.all, "start typing…")));
     if (needs === "topic") fields.push(field("Topic (regular expression)", text(rule.topic, v => rule.topic = v)));
     if (needs === "keyword") fields.push(field("Keyword (regular expression)", text(rule.keyword, v => rule.keyword = v)));
     fields.push(field("Server", select([["", "any"], ...state.servers.map(s => [s.name, s.name])], rule.server, v => { rule.server = v; renderRules(); })));
@@ -198,11 +237,15 @@ function renderRules() {
 
     const move = (by) => { const j = i + by; if (j < 0 || j >= state.rules.length) return; [state.rules[i], state.rules[j]] = [state.rules[j], state.rules[i]]; previewData = null; renderRules(); };
     const mk = (label, fn) => { const b = el("button", {type:"button", textContent:label}); b.addEventListener("click", fn); return b; };
-    const del = mk("Delete", () => { state.rules.splice(i, 1); clearPreview(); });
-    return el("div", {className:"card"},
-      el("div", {className:"head"}, text(rule.name, v => rule.name = v, "Rule name"), el("div", {className:"row"}, mk("Up", () => move(-1)), mk("Down", () => move(1)), del)),
+    const del = mk("Delete", () => { discardRule(i); });
+    const on = el("input", {type:"checkbox", checked: rule.enabled !== false});
+    on.addEventListener("change", () => { rule.enabled = on.checked; if (on.checked) delete rule.enabled; card.classList.toggle("off", !on.checked); });
+    const toggle = el("label", {className:"toggle"}, on, "On");
+    const card = el("div", {className:"card" + (rule.enabled === false ? " off" : "")},
+      el("div", {className:"head"}, text(rule.name, v => rule.name = v, "Rule name"), el("div", {className:"row"}, toggle, mk("Up", () => { move(-1); changed(); }), mk("Down", () => { move(1); changed(); }), del)),
       el("div", {className:"grid"}, ...fields),
       ...[previewBlock(i)].filter(Boolean));
+    return card;
   }));
 }
 
@@ -219,31 +262,69 @@ document.getElementById("more").addEventListener("click", async () => {
   try { previewData = await api("POST", "api/preview", {...state, more: true}); setStatus(""); renderSummary(); }
   catch (e) { setStatus(e.message, "bad"); button.disabled = false; }
 });
-document.getElementById("add").addEventListener("click", () => { state.rules.push({name:"New rule", match:"mention"}); clearPreview(); });
-document.getElementById("save").addEventListener("click", async () => {
-  try { await api("PUT", "api/config", state); setStatus("Saved. z-iris is using it now.", "ok"); }
-  catch (e) { setStatus(e.message, "bad"); }
-});
+document.getElementById("add").addEventListener("click", () => { state.rules.push({name:"New rule", match:"mention"}); clearPreview(); changed(true); });
+
+// ---- autosave: every edit applies by itself, a moment after you stop typing
+let saveTimer = null, saving = false, dirty = false;
+function setSaved(message, cls) { const n = document.getElementById("saved"); n.textContent = message; n.className = cls || ""; }
+function changed(immediate) {
+  dirty = true; setSaved("Editing…");
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(save, immediate ? 50 : 700);
+}
+async function save() {
+  if (saving) { saveTimer = setTimeout(save, 200); return; }
+  saving = true; dirty = false;
+  try {
+    await api("PUT", "api/config", {servers: state.servers, defaults: state.defaults, rules: state.rules});
+    if (!dirty) setSaved("Saved " + new Date().toLocaleTimeString(), "ok");
+  } catch (e) { setSaved("Not applied yet: " + e.message, "bad"); }
+  finally { saving = false; }
+}
+document.addEventListener("input", e => { if (e.target.closest("#rules, #defaults, #servers")) changed(); });
+document.addEventListener("change", e => { if (e.target.closest("#rules, #defaults, #servers")) changed(); });
+
+// ---- deleted rules wait at the bottom for five minutes
+function persistDeleted() { try { sessionStorage.setItem(DELETED_KEY, JSON.stringify(deleted)); } catch (e) {} }
+function loadDeleted() { try { deleted = JSON.parse(sessionStorage.getItem(DELETED_KEY) || "[]"); } catch (e) { deleted = []; } }
+function discardRule(i) {
+  const [rule] = state.rules.splice(i, 1);
+  deleted.unshift({rule, index: i, at: Date.now()});
+  persistDeleted(); previewData = null; renderSummary(); renderDeleted(); changed(true);
+}
+function renderDeleted() {
+  const now = Date.now();
+  deleted = deleted.filter(d => now - d.at < KEEP_MS);
+  persistDeleted();
+  const box = document.getElementById("deleted");
+  box.hidden = deleted.length === 0;
+  document.getElementById("deletedsummary").textContent = `Deleted rules (${deleted.length}), kept for 5 minutes`;
+  const list = document.getElementById("deletedlist");
+  list.replaceChildren(...deleted.map(d => {
+    const left = Math.max(1, Math.ceil((KEEP_MS - (now - d.at)) / 60000));
+    const mk = (label, fn) => { const b = el("button", {type:"button", textContent:label}); b.addEventListener("click", fn); return b; };
+    return el("div", {className:"gone"},
+      el("span", {textContent: `${d.rule.name || "(unnamed)"} · ${d.rule.match} · ${left} min left`}),
+      el("span", {className:"row"},
+        mk("Restore", () => { deleted = deleted.filter(x => x !== d); state.rules.splice(Math.min(d.index, state.rules.length), 0, d.rule); persistDeleted(); previewData = null; renderSummary(); renderDeleted(); changed(true); }),
+        mk("Discard", () => { deleted = deleted.filter(x => x !== d); persistDeleted(); renderDeleted(); })));
+  }));
+}
+setInterval(renderDeleted, 15000);
 
 function renderSounds() {
   document.querySelector("#soundlist small").textContent = state.sounds.length + " sounds available";
-}
-function renderChannelLists() {
-  const make = (id, names) => el("datalist", {id}, ...names.map(n => el("option", {value:n})));
-  document.getElementById("datalists").replaceChildren(
-    make("channels-", channelLists.all),
-    ...Object.entries(channelLists.servers).map(([name, names]) => make("channels-" + name, names)));
 }
 async function loadChannels() {
   try {
     const data = await api("GET", "api/channels");
     channelLists = {all: data.all, servers: Object.fromEntries(data.servers.map(sv => [sv.name, sv.channels]))};
-    renderChannelLists();
   } catch (e) { /* suggestions are optional */ }
 }
 async function load() {
   state = await api("GET", "api/config");
   renderDefaults(); renderRules(); renderSounds();
+  loadDeleted(); renderDeleted();
   loadChannels();
 }
 document.getElementById("addsound").addEventListener("click", async () => {
