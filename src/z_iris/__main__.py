@@ -9,6 +9,7 @@ import threading
 from pathlib import Path
 
 from z_iris.config import DEFAULT_PATH, Config, ConfigError, load_config
+from z_iris.engine import Engine
 from z_iris.output import DryRunOutput, RealOutput
 from z_iris.settings import Settings
 from z_iris.stream import Controls, ServerStream, StatusBoard
@@ -103,7 +104,16 @@ def main(argv: list[str] | None = None) -> int:
     board = StatusBoard()
     settings = Settings(config, args.config)
     output = DryRunOutput(settings) if args.dry_run else RealOutput(settings)
-    streams = [ServerStream(s, settings, output, controls, board) for s in config.servers]
+    engine = Engine(
+        output, settings, controls,
+        log=(lambda text: print(f"[dry-run] engine {text}", flush=True))
+        if args.dry_run
+        else None,
+    )
+    streams = [
+        ServerStream(s, settings, output, controls, board, engine=engine)
+        for s in config.servers
+    ]
     for stream in streams:
         stream.start()
 
@@ -118,11 +128,13 @@ def main(argv: list[str] | None = None) -> int:
                 threading.Event().wait(1)
         except KeyboardInterrupt:
             pass
+        engine.stop()
         return 0
 
     from z_iris.menubar import run_menubar
 
     run_menubar(settings, args.config, controls, board)
+    engine.stop()
     return 0
 
 

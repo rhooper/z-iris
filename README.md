@@ -86,6 +86,21 @@ attachment: the first image in the message (markdown image, bare image link, or 
 short timeouts and size caps, converted with `sips` to at most 512px (avatars 256px) and
 cached under `~/Library/Caches/z-iris/media/` (50 MB, oldest evicted). Zulip credentials
 are sent only to the Zulip server's own host, never to external image hosts.
+## Scheduling (engine)
+
+`engine.py` sits between the pipeline and the output and applies, per notification:
+
+- Focus: `[focus] mode` (or an active quiet-hours window, using `quiet_mode`). An explicit
+  mode beats quiet hours. `mentions_and_dms` drops everything but DMs, group DMs and
+  personal or wildcard mentions. `silent` keeps banners but no sound or flash.
+- `min_gap`: inside the gap since the last sound for the same rule (else same
+  channel/topic or DM), the banner shows but sound and flash are skipped.
+- `batch_window`: the first message plays; later ones for the same key are held and
+  become one silent summary banner such as "3 new in #ops" when the window ends.
+- `repeat`, `repeat_every`, `repeat_boost`: extra sounds, each louder, until the message
+  is read in any client, deleted, the count runs out, or you pause.
+
+`--dry-run` prints each engine decision.
 
 ## Roadmap
 

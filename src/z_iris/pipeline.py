@@ -19,6 +19,7 @@ class Notification:
     url: str
     reason: str
     action: Action
+    summary: str | None = None  # a batch summary's heading, e.g. "3 new in #ops"
 
 
 @dataclass(frozen=True)

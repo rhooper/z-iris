@@ -61,7 +61,7 @@ def banner_command(notifier: str, notification: Notification) -> list[str]:
     return [
         notifier,
         "-title",
-        _safe_argument(banner_title(message)),
+        _safe_argument(notification.summary or banner_title(message)),
         "-message",
         body,
         "-open",
@@ -177,7 +177,7 @@ class DryRunOutput:
         flash = "" if action.flash == "none" else f", flash {action.flash}"
         print(
             f"[dry-run] {notification.message.server} ({notification.reason}): "
-            f"{banner_title(notification.message)}\n"
+            f"{notification.summary or banner_title(notification.message)}\n"
             f"          {banner_body(notification.message, 80)}\n"
             f"          open {notification.url}\n"
             f"          rule {action.rule or 'default'}, {banner}, sound {sound}{flash}",

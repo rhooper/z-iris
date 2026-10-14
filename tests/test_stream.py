@@ -191,3 +191,27 @@ def test_pause_suppresses_delivery_until_resumed():
     assert out.done.wait(5)
     stream.stop()
     assert [n.message.id for n in out.items] == [41]
+
+
+def test_read_events_reach_the_engine_and_register_asks_for_them():
+    from z_iris.stream import EVENT_TYPES
+
+    assert {"update_message_flags", "delete_message"} <= set(EVENT_TYPES)
+    seen = []
+
+    class Spy:
+        def submit(self, notification):
+            seen.append(("submit", notification.message.id))
+
+        def handle_event(self, server, event):
+            seen.append((server, event["type"]))
+
+    read = {"id": 2, "type": "update_message_flags", "op": "add", "flag": "read",
+            "messages": [40]}
+    client = FakeClient([{"result": "success", "events": [dm_event(0), read]}])
+    stream = make_stream(client, Collect(want=99))
+    stream.engine = Spy()
+    stream.start()
+    wait_until(lambda: len(seen) >= 2)
+    stream.stop()
+    assert seen == [("submit", 40), ("w", "update_message_flags")]
