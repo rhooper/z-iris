@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import threading
 from pathlib import Path
 
@@ -6,17 +7,24 @@ from z_iris.notify import DesktopNotifierBackend
 
 
 class FakeCenter:
-    def __init__(self, allowed=True, boom=False):
-        self.allowed, self.boom = allowed, boom
+    def __init__(self, allowed=True, boom=False, refuse=False, hang=None):
+        self.allowed, self.boom, self.refuse, self.hang = allowed, boom, refuse, hang
         self.sent, self.cleared, self.auth_calls = [], [], 0
 
     async def request_authorisation(self):
         self.auth_calls += 1
+        if self.hang is not None:
+            await self.hang.wait()
         return self.allowed
 
     async def send_notification(self, notification):
         if self.boom:
             raise RuntimeError("no centre")
+        if self.refuse:
+            logging.getLogger("desktop_notifier.backends.macos").warning(
+                "Error when scheduling notification: domain=UNErrorDomain, code=1"
+            )
+            return None
         self.sent.append(notification)
         return notification.identifier
 
@@ -35,10 +43,11 @@ class Recorder:
         self.cleared.append(group)
 
 
-def make(center):
+def make(center, **extra):
     fallback, warnings, opened = Recorder(), [], []
     backend = DesktopNotifierBackend(
-        fallback, opener=opened.append, factory=lambda: center, warn=warnings.append
+        fallback, opener=opened.append, factory=lambda: center, warn=warnings.append,
+        **extra,
     )
     return backend, fallback, warnings, opened
 
@@ -119,3 +128,72 @@ def test_clear_uses_the_group_as_identifier():
     backend.clear("g")
     settle(backend)
     assert center.cleared == ["g"] and not fallback.cleared
+
+
+def test_one_desktop_notifier_is_created_for_concurrent_shows():
+    created = []
+    center = FakeCenter()
+
+    def factory():
+        created.append(1)
+        return center
+
+    fallback = Recorder()
+    backend = DesktopNotifierBackend(fallback, factory=factory, warn=lambda t: None)
+    for n in range(5):
+        backend.show("a", str(n), "u")
+    settle(backend)
+    assert len(created) == 1 and len(center.sent) == 5
+
+
+def test_refused_send_falls_back_with_one_warning_per_transition():
+    center = FakeCenter(refuse=True)
+    backend, fallback, warnings, _ = make(center)
+    backend.show("a", "b", "u1")
+    backend.show("c", "d", "u2")
+    settle(backend)
+    assert [s[2] for s in fallback.shown] == ["u1", "u2"]
+    assert len(warnings) == 1
+
+
+def test_pending_authorisation_times_out_to_the_fallback():
+    gate = asyncio.Event()
+    center = FakeCenter(hang=gate)
+    backend, fallback, warnings, _ = make(center, auth_timeout=0.01)
+    backend.show("a", "b", "u1")
+    backend.show("c", "d", "u2")
+    settle(backend)
+    assert [s[2] for s in fallback.shown] == ["u1", "u2"]
+    assert not center.sent
+    assert len(warnings) == 1 and "waiting" in warnings[0]
+
+
+def test_a_later_allow_is_picked_up_without_restart():
+    now = [0.0]
+    center = FakeCenter(allowed=False)
+    backend, fallback, warnings, _ = make(center, clock=lambda: now[0], recheck_seconds=300)
+    backend.show("a", "b", "u1")
+    settle(backend)
+    center.allowed = True
+    backend.show("c", "d", "u2")  # inside the window: still the fallback
+    settle(backend)
+    assert not center.sent
+    now[0] = 301
+    backend.show("e", "f", "u3")
+    settle(backend)
+    assert [s[2] for s in fallback.shown] == ["u1", "u2"]
+    assert [n.message for n in center.sent] == ["f"]
+
+
+def test_permission_switched_off_later_is_noticed_after_a_refused_send():
+    now = [0.0]
+    center = FakeCenter()
+    backend, fallback, warnings, _ = make(center, clock=lambda: now[0])
+    backend.show("a", "b", "u1")
+    settle(backend)
+    center.allowed, center.refuse = False, True
+    backend.show("c", "d", "u2")  # refused: falls back, authorisation re-checked
+    backend.show("e", "f", "u3")
+    settle(backend)
+    assert [s[2] for s in fallback.shown] == ["u2", "u3"]
+    assert center.auth_calls == 2
