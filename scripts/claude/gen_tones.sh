@@ -23,9 +23,12 @@ note "$out/soft.wav" triangle 523 0.25
 sox -n -r 44100 -c 1 "$out/bell.wav" synth 0.7 sine 880 synth 0.7 sine mix 1760 \
     fade q 0.003 0.7 0.6 gain -6
 
-# knock: filtered noise burst
-sox -n -r 44100 -c 1 "$out/knock.wav" synth 0.09 brownnoise lowpass 600 \
-    fade q 0.002 0.09 0.06 gain -1
+# knock: a short tap, white noise band-passed around 1.6 kHz, with a faint
+# 1.1 kHz body so it reads as a wooden tock rather than a hiss
+sox -n -r 44100 -c 1 "$work/tap.wav" synth 0.09 whitenoise bandpass 1600 500 \
+    fade q 0.001 0.09 0.05
+sox -n -r 44100 -c 1 "$work/body.wav" synth 0.09 sine 1100 vol 0.5 fade q 0.001 0.09 0.06
+sox -m "$work/tap.wav" "$work/body.wav" "$out/knock.wav" gain -3
 
 # sweeps
 sox -n -r 44100 -c 1 "$out/rise.wav" synth 0.25 sine 600-1200 fade q 0.01 0.25 0.05 gain -3
