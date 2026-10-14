@@ -7,13 +7,17 @@ dependencies = [
     "zulip>=0.9.0",
     "rumps>=0.4.0",
     "tomlkit>=0.15.1",
+    "desktop-notifier>=6.2.0",
 ]
 
 [project.scripts]
 z-iris = "z_iris.__main__:main"
 
 [dependency-groups]
-dev = ["pytest>=8"]
+dev = [
+    "pillow>=12.3.0",
+    "pytest>=8",
+]
 
 [build-system]
 requires = ["hatchling"]
