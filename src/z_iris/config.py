@@ -17,6 +17,85 @@ class ConfigError(Exception):
     """The configuration is missing or invalid."""
 
 
+def _number(low: float, high: float, integer: bool):
+    def check(value: object, label: str) -> int | float:
+        if isinstance(value, bool) or not isinstance(value, int if integer else (int, float)):
+            kind = "an integer" if integer else "a number"
+            raise ConfigError(f"{label} must be {kind} from {low} to {high}")
+        if not low <= value <= high:
+            raise ConfigError(f"{label} must be from {low} to {high}")
+        return value
+
+    return check
+
+
+def _choice(*choices: str):
+    def check(value: object, label: str) -> str:
+        if value not in choices:
+            raise ConfigError(f"{label} must be one of {', '.join(choices)}")
+        return value  # type: ignore[return-value]
+
+    return check
+
+
+def _color(value: object, label: str) -> str:
+    if not isinstance(value, str) or not re.fullmatch(r"#[0-9a-fA-F]{6}", value):
+        raise ConfigError(f"{label} must be a colour like #ff3b30")
+    return value.lower()
+
+
+# Settings a rule may override and [defaults] may set: name -> (check, built-in).
+BEHAVIOUR: dict[str, tuple] = {
+    "flash": (_choice("none", "screen", "top", "bottom", "left", "right"), "none"),
+    "flash_color": (_color, "#ff3b30"),
+    "flash_seconds": (_number(0.1, 10, False), 0.6),
+    "repeat": (_number(0, 20, True), 0),
+    "repeat_every": (_number(1, 3600, True), 30),
+    "repeat_boost": (_number(0, 100, True), 0),
+    "min_gap": (_number(0, 3600, True), 0),
+    "batch_window": (_number(0, 300, True), 0),
+}
+
+
+def _behaviour(raw: dict, label: str) -> dict:
+    found = {}
+    for key, (check, _default) in BEHAVIOUR.items():
+        if key in raw:
+            found[key] = check(raw[key], f"{label}: {key}" if label else key)
+    return found
+
+
+@dataclass(frozen=True)
+class FocusConfig:
+    mode: str = "off"  # off, mentions_and_dms, or silent
+    quiet_hours: tuple[tuple[int, int], ...] = ()  # (start, end) minutes after midnight
+    quiet_mode: str = "silent"  # what quiet hours do: mentions_and_dms or silent
+
+
+def _focus(data: dict) -> FocusConfig:
+    table = _table(data, "focus")
+    modes = ("off", "mentions_and_dms", "silent")
+    mode = table.get("mode", "off")
+    if mode not in modes:
+        raise ConfigError(f"focus: mode must be one of {', '.join(modes)}")
+    quiet_mode = table.get("quiet_mode", "silent")
+    if quiet_mode not in modes[1:]:
+        raise ConfigError(f"focus: quiet_mode must be one of {', '.join(modes[1:])}")
+    raw_hours = table.get("quiet_hours", [])
+    if not isinstance(raw_hours, list):
+        raise ConfigError("focus: quiet_hours must be a list like [\"22:00-07:00\"]")
+    hours = []
+    for entry in raw_hours:
+        match = re.fullmatch(r"(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})", str(entry))
+        if not match:
+            raise ConfigError(f"focus: bad quiet hours {entry!r}, use HH:MM-HH:MM")
+        a, b, c, d = (int(g) for g in match.groups())
+        if not (a < 24 and c < 24 and b < 60 and d < 60):
+            raise ConfigError(f"focus: bad time in quiet hours {entry!r}")
+        hours.append((a * 60 + b, c * 60 + d))
+    return FocusConfig(mode, tuple(hours), quiet_mode)
+
+
 @dataclass(frozen=True)
 class ServerConfig:
     name: str
@@ -34,6 +113,8 @@ class Config:
     notifier: str = "terminal-notifier"
     master_volume: int = 100
     rules: tuple[Rule, ...] = ()
+    behaviour: dict = field(default_factory=dict)  # [defaults] overrides of BEHAVIOUR
+    focus: FocusConfig = FocusConfig()
     sounds: dict[str, Path] = field(default_factory=dict)
 
 
@@ -43,6 +124,14 @@ class Action:
     volume: int
     banner: str
     rule: str | None
+    flash: str = "none"
+    flash_color: str = "#ff3b30"
+    flash_seconds: float = 0.6
+    repeat: int = 0
+    repeat_every: int = 30
+    repeat_boost: int = 0
+    min_gap: int = 0
+    batch_window: int = 0
 
 
 def resolve_action(config: Config, server: str, rule: Rule | None) -> Action:
@@ -54,7 +143,11 @@ def resolve_action(config: Config, server: str, rule: Rule | None) -> Action:
     final = round(base * server_volume * config.master_volume / 10000)
     if sound in config.sounds:
         sound = str(config.sounds[sound])
-    return Action(sound, final, banner, rule.name if rule else None)
+    merged = {key: default for key, (_check, default) in BEHAVIOUR.items()}
+    merged.update(config.behaviour)
+    if rule:
+        merged.update(rule.behaviour)
+    return Action(sound, final, banner, rule.name if rule else None, **merged)
 
 
 def _sound(value: object, label: str, sounds: dict[str, Path]) -> str:
@@ -147,7 +240,7 @@ def _rules(
 
         rules.append(
             Rule(name, kind, channel, pattern, server, sound, volume, banner,
-                 priority, index, enabled)
+                 priority, index, enabled, _behaviour(raw, label))
         )
     return tuple(rules)
 
@@ -214,6 +307,8 @@ def parse_config(text: str, sounds_dir: Path | None = None) -> Config:
         notifier=notifier,
         master_volume=master_volume,
         rules=_rules(data, {server.name for server in servers}, sounds),
+        behaviour=_behaviour(defaults, ""),
+        focus=_focus(data),
         sounds=sounds,
     )
 

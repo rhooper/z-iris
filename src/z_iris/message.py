@@ -24,6 +24,7 @@ class Message:
     channel_name: str | None
     topic: str | None
     dm_user_ids: tuple[int, ...]  # everyone but me, sorted; just me for a self-DM
+    avatar_url: str | None = None  # the sender's avatar as the server gave it
 
     @property
     def is_mention(self) -> bool:
@@ -51,6 +52,7 @@ def message_from_event(server: str, host: str, self_id: int, event: dict) -> Mes
         "sender_name": raw["sender_full_name"],
         "content": raw["content"],
         "flags": flags,
+        "avatar_url": raw.get("avatar_url"),
     }
     if raw["type"] == "stream":
         return Message(

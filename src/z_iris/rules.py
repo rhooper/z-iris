@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from z_iris.message import Message
 
@@ -25,6 +25,8 @@ class Rule:
     priority: int
     index: int
     enabled: bool = True
+    # Optional per-rule overrides of visual and phase 3 settings; see config.BEHAVIOUR.
+    behaviour: dict = field(default_factory=dict, compare=False)
 
 
 def _same(a: str | None, b: str | None) -> bool:

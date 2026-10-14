@@ -10,9 +10,15 @@ from z_iris.config import parse_config
 
 RULE_FIELDS = (
     "name", "match", "channel", "topic", "keyword", "server", "sound",
-    "volume", "banner", "priority", "enabled",
+    "volume", "banner", "priority", "enabled", "flash", "flash_color",
+    "flash_seconds", "repeat", "repeat_every", "repeat_boost", "min_gap",
+    "batch_window",
 )
-DEFAULT_FIELDS = ("sound", "volume", "master_volume", "notify_channel_messages")
+DEFAULT_FIELDS = (
+    "sound", "volume", "master_volume", "notify_channel_messages", "flash",
+    "flash_color", "flash_seconds", "repeat", "repeat_every", "repeat_boost",
+    "min_gap", "batch_window",
+)
 
 
 def read_editable(text: str) -> dict:
@@ -30,6 +36,12 @@ def read_editable(text: str) -> dict:
             "notify_channel_messages": data.get("defaults", {}).get(
                 "notify_channel_messages", False
             ),
+            **{
+                key: data["defaults"][key]
+                for key in DEFAULT_FIELDS
+                if key in data.get("defaults", {})
+                and key not in ("sound", "volume", "master_volume", "notify_channel_messages")
+            },
         },
         "rules": [
             {key: raw[key] for key in RULE_FIELDS if key in raw}

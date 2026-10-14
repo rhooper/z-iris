@@ -77,3 +77,16 @@ def test_enabled_false_round_trips_and_true_is_not_written():
     data = read_editable(new)
     assert data["rules"][0]["enabled"] is False
     assert data["rules"][1].get("enabled", True) is True
+
+
+def test_behaviour_fields_round_trip():
+    rule = {"name": "r", "match": "mention", "flash": "top", "flash_color": "#112233",
+            "flash_seconds": 1.2, "repeat": 2, "repeat_every": 15, "repeat_boost": 10,
+            "min_gap": 4, "batch_window": 6}
+    new = apply_edit(TEXT, {"rules": [rule], "defaults": {"min_gap": 3, "flash": "screen"}})
+    config = parse_config(new)
+    assert config.rules[0].behaviour["flash"] == "top"
+    assert config.behaviour["min_gap"] == 3 and config.behaviour["flash"] == "screen"
+    data = read_editable(new)
+    assert data["rules"][0]["repeat_every"] == 15
+    assert data["defaults"]["flash"] == "screen" and data["defaults"]["min_gap"] == 3
