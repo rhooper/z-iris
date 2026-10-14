@@ -117,3 +117,11 @@ normalized 16-bit wav, and the file as you uploaded it is kept in
 folder by hand, run `uv run z-iris normalize` (`--no-backup` skips keeping
 originals). It is safe to run twice. The target is an RMS level, capped so the
 peak never clips, so a very peaky sound can end up quieter than the rest.
+
+## Screen flash
+
+A rule or `[defaults]` can set `flash` to `screen`, `top`, `bottom`, `left` or `right`, with
+`flash_color` (`#rrggbb`) and `flash_seconds`. The overlay covers every screen, ignores the
+mouse and fades out. Try one without waiting for a message:
+
+    uv run z-iris flash top --color '#0066ff' --seconds 1
