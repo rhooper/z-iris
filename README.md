@@ -106,3 +106,12 @@ runs z-iris as a child process and restarts it when any `.py` or `.html` file
 in `src/z_iris` changes. If the app crashes it waits for the next edit, so
 fixing the code brings it back. Choosing Quit in the menu ends the run. Config
 changes never need this: the config file reloads by itself.
+
+## Sound loudness
+
+Sounds are evened out when they play: z-iris measures each file's RMS level
+with sox (cached per file version) and scales it to a common target, never past
+the point where the peak would clip. So 60% means the same loudness for a bell,
+a knock or a file you added, and rule volumes compare fairly. Your files are
+never modified. Turn it off with `normalize = false` under `[defaults]`, or the
+"Even out sound loudness" box in the editor.

@@ -33,6 +33,7 @@ class Config:
     player: tuple[str, ...] = ("play", "-q")
     notifier: str = "terminal-notifier"
     master_volume: int = 100
+    normalize: bool = True
     rules: tuple[Rule, ...] = ()
     sounds: dict[str, Path] = field(default_factory=dict)
 
@@ -189,6 +190,10 @@ def parse_config(text: str, sounds_dir: Path | None = None) -> Config:
 
     sound = _sound(defaults.get("sound", "chime"), "default sound", sounds)
 
+    normalize = defaults.get("normalize", True)
+    if not isinstance(normalize, bool):
+        raise ConfigError("normalize must be true or false")
+
     notify_channel_messages = defaults.get("notify_channel_messages", False)
     if not isinstance(notify_channel_messages, bool):
         raise ConfigError("notify_channel_messages must be true or false")
@@ -213,6 +218,7 @@ def parse_config(text: str, sounds_dir: Path | None = None) -> Config:
         player=tuple(player),
         notifier=notifier,
         master_volume=master_volume,
+        normalize=normalize,
         rules=_rules(data, {server.name for server in servers}, sounds),
         sounds=sounds,
     )

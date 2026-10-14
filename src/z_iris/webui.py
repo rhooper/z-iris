@@ -17,7 +17,8 @@ from z_iris.channels import ChannelSource
 from z_iris.config import ConfigError, parse_config
 from z_iris.editing import apply_edit, read_editable
 from z_iris.preview import PreviewSource
-from z_iris.output import _spawn, sound_command
+from z_iris.loudness import Loudness
+from z_iris.output import _spawn, playback_gain, sound_command
 from z_iris.settings import Settings
 from z_iris.sounds import SoundError, add_sound, builtin_names, library, user_names
 
@@ -30,12 +31,14 @@ class EditorServer:
         spawn: Callable[[list[str]], object] = _spawn,
         preview_source: PreviewSource | None = None,
         channel_source: ChannelSource | None = None,
+        loudness: Loudness | None = None,
     ) -> None:
         self.settings = settings
         self.config_path = config_path
         self.spawn = spawn
         self.preview_source = preview_source or PreviewSource()
         self.channel_source = channel_source or ChannelSource()
+        self.loudness = loudness or Loudness()
         self.token = secrets.token_urlsafe(16)
         self._write_lock = threading.Lock()
         self._httpd: ThreadingHTTPServer | None = None
@@ -117,7 +120,9 @@ class EditorServer:
             raise ConfigError(f"unknown sound {sound!r}")
         config = self.settings.config
         final = round(volume * config.master_volume / 100)
-        self.spawn(sound_command(config.player, str(sounds[sound]), final))
+        path = str(sounds[sound])
+        gain = playback_gain(config, path, self.loudness)
+        self.spawn(sound_command(config.player, path, final, gain))
 
 
 def _make_handler(editor: EditorServer):

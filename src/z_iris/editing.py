@@ -12,7 +12,9 @@ RULE_FIELDS = (
     "name", "match", "channel", "topic", "keyword", "server", "sound",
     "volume", "banner", "priority", "enabled",
 )
-DEFAULT_FIELDS = ("sound", "volume", "master_volume", "notify_channel_messages")
+DEFAULT_FIELDS = (
+    "sound", "volume", "master_volume", "notify_channel_messages", "normalize",
+)
 
 
 def read_editable(text: str) -> dict:
@@ -30,6 +32,7 @@ def read_editable(text: str) -> dict:
             "notify_channel_messages": data.get("defaults", {}).get(
                 "notify_channel_messages", False
             ),
+            "normalize": data.get("defaults", {}).get("normalize", True),
         },
         "rules": [
             {key: raw[key] for key in RULE_FIELDS if key in raw}
