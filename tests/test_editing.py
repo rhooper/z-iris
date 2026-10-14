@@ -90,3 +90,25 @@ def test_behaviour_fields_round_trip():
     data = read_editable(new)
     assert data["rules"][0]["repeat_every"] == 15
     assert data["defaults"]["flash"] == "screen" and data["defaults"]["min_gap"] == 3
+
+
+def test_focus_round_trips_and_keeps_comments():
+    text = TEXT + '\n[focus]\nmode = "off"  # focus note\n'
+    focus = {"mode": "mentions_and_dms", "quiet_hours": ["22:00-07:00", "12:00-13:00"],
+             "quiet_mode": "silent"}
+    new = apply_edit(text, {"focus": focus})
+    assert "# focus note" in new and "# base level" in new
+    config = parse_config(new)
+    assert config.focus.mode == "mentions_and_dms"
+    assert config.focus.quiet_hours == ((1320, 420), (720, 780))
+    assert read_editable(new)["focus"] == focus
+
+
+def test_focus_defaults_and_bad_values():
+    assert read_editable(TEXT)["focus"] == {"mode": "off", "quiet_hours": [], "quiet_mode": "silent"}
+    new = apply_edit(TEXT, {"focus": {"mode": "silent", "quiet_hours": [], "quiet_mode": "silent"}})
+    assert parse_config(new).focus.mode == "silent"
+    with pytest.raises(ConfigError, match="focus"):
+        apply_edit(TEXT, {"focus": {"mode": "bogus"}})
+    with pytest.raises(ConfigError, match="quiet"):
+        apply_edit(TEXT, {"focus": {"quiet_hours": ["late"]}})

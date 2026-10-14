@@ -56,3 +56,38 @@ def test_add_sound_rejects_bad_names_types_and_garbage(tmp_path):
     with pytest.raises(SoundError, match="large"):
         add_sound(sounds, "big.wav", b"0" * (10_000_001))
     assert not list(sounds.glob("*")) if sounds.exists() else True
+
+
+@needs_sox
+def test_add_sound_rejects_an_existing_name_case_insensitively(tmp_path):
+    good = make_wav(tmp_path / "src.wav")
+    sounds = tmp_path / "sounds"
+    add_sound(sounds, "Horn.wav", good)
+    before = (sounds / "Horn.wav").read_bytes()
+    for filename in ["Horn.wav", "horn.mp3", "HORN.wav", "Chime.wav", "BELL.wav"]:
+        with pytest.raises(SoundError, match="already"):
+            add_sound(sounds, filename, good)
+    assert (sounds / "Horn.wav").read_bytes() == before
+    assert sorted(p.name for p in sounds.iterdir()) == ["Horn.wav", "originals"]
+
+
+@needs_sox
+def test_delete_sound_removes_stored_file_and_original(tmp_path):
+    from z_iris.sounds import delete_sound
+
+    sounds = tmp_path / "sounds"
+    add_sound(sounds, "Horn.wav", make_wav(tmp_path / "src.wav"))
+    delete_sound(sounds, "Horn")
+    assert not (sounds / "Horn.wav").exists()
+    assert not list((sounds / "originals").glob("Horn.*"))
+    assert "Horn" not in library(sounds)
+
+
+def test_delete_sound_refuses_bundled_unknown_and_path_tricks(tmp_path):
+    from z_iris.sounds import delete_sound
+
+    (tmp_path / "keep.wav").write_bytes(b"x")
+    for name in ["chime", "synth", "nope", "../keep", "keep/../keep", ""]:
+        with pytest.raises(SoundError):
+            delete_sound(tmp_path, name)
+    assert (tmp_path / "keep.wav").exists()

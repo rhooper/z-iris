@@ -5,6 +5,7 @@ from __future__ import annotations
 import base64
 import json
 import os
+import re
 import secrets
 import shutil
 import threading
@@ -19,7 +20,10 @@ from z_iris.editing import apply_edit, read_editable
 from z_iris.preview import PreviewSource
 from z_iris.output import _spawn, sound_command
 from z_iris.settings import Settings
-from z_iris.sounds import SoundError, add_sound, builtin_names, library, user_names
+from z_iris.sounds import SoundError, add_sound, builtin_names, delete_sound, library, user_names
+
+
+FLASH_MODES = ("none", "screen", "top", "bottom", "left", "right")
 
 
 class EditorServer:
@@ -36,6 +40,7 @@ class EditorServer:
         self.spawn = spawn
         self.preview_source = preview_source or PreviewSource()
         self.channel_source = channel_source or ChannelSource()
+        self.flasher: Callable[[dict], object] = lambda _action: None
         self.token = secrets.token_urlsafe(16)
         self._write_lock = threading.Lock()
         self._httpd: ThreadingHTTPServer | None = None
@@ -106,6 +111,38 @@ class EditorServer:
             raise ConfigError(str(error)) from error
         self.settings.reload(force=True)
         return name
+
+    def delete_sound(self, name: object) -> None:
+        if not isinstance(name, str):
+            raise ConfigError("name is required")
+        config = parse_config(self.config_path.read_text(), self.sounds_dir)
+        if name in user_names(self.sounds_dir):
+            if config.sound == name:
+                raise ConfigError(f'"{name}" is the default sound; pick another default first')
+            users = [rule.name for rule in config.rules if rule.sound == name]
+            if users:
+                raise ConfigError(
+                    f'"{name}" is used by: {", ".join(users)}. Change those rules first'
+                )
+        try:
+            delete_sound(self.sounds_dir, name)
+        except SoundError as error:
+            raise ConfigError(str(error)) from error
+        self.settings.reload(force=True)
+
+    def flash(self, payload: dict) -> None:
+        mode, color, seconds = (
+            payload.get("flash"), payload.get("flash_color", "#ff3b30"),
+            payload.get("flash_seconds", 1.0),
+        )
+        if mode not in FLASH_MODES or mode == "none":
+            raise ConfigError("flash must be screen, top, bottom, left or right")
+        if not isinstance(color, str) or not re.fullmatch(r"#[0-9a-fA-F]{6}", color):
+            raise ConfigError("flash colour must look like #ff3b30")
+        if (not isinstance(seconds, (int, float)) or isinstance(seconds, bool)
+                or not 0 < seconds <= 30):
+            raise ConfigError("flash seconds must be a number above 0 and at most 30")
+        self.flasher({"flash": mode, "flash_color": color, "flash_seconds": seconds})
 
     def test_sound(self, sound: object, volume: object) -> None:
         if not isinstance(volume, int) or isinstance(volume, bool) or not 0 <= volume <= 100:
@@ -210,6 +247,16 @@ def _make_handler(editor: EditorServer):
                         lambda: {"name": editor.upload_sound(
                             payload.get("filename"), payload.get("data"))}
                     )
+                return
+            if route == "api/sounds/delete":
+                payload = self._body()
+                if payload is not None:
+                    self._guarded(lambda: editor.delete_sound(payload.get("name")))
+                return
+            if route == "api/flash":
+                payload = self._body()
+                if payload is not None:
+                    self._guarded(lambda: editor.flash(payload))
                 return
             if route == "api/preview":
                 payload = self._body()

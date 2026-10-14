@@ -14,6 +14,7 @@ RULE_FIELDS = (
     "flash_seconds", "repeat", "repeat_every", "repeat_boost", "min_gap",
     "batch_window",
 )
+FOCUS_FIELDS = ("mode", "quiet_hours", "quiet_mode")
 DEFAULT_FIELDS = (
     "sound", "volume", "master_volume", "notify_channel_messages", "flash",
     "flash_color", "flash_seconds", "repeat", "repeat_every", "repeat_boost",
@@ -43,6 +44,11 @@ def read_editable(text: str) -> dict:
                 and key not in ("sound", "volume", "master_volume", "notify_channel_messages")
             },
         },
+        "focus": {
+            "mode": data.get("focus", {}).get("mode", "off"),
+            "quiet_hours": list(data.get("focus", {}).get("quiet_hours", [])),
+            "quiet_mode": data.get("focus", {}).get("quiet_mode", "silent"),
+        },
         "rules": [
             {key: raw[key] for key in RULE_FIELDS if key in raw}
             for raw in data.get("rule", [])
@@ -66,6 +72,12 @@ def apply_edit(text: str, payload: dict, sounds_dir: Path | None = None) -> str:
         for key in DEFAULT_FIELDS:
             if key in payload["defaults"]:
                 defaults[key] = payload["defaults"][key]
+
+    if "focus" in payload:
+        focus = doc.setdefault("focus", tomlkit.table())
+        for key in FOCUS_FIELDS:
+            if key in payload["focus"]:
+                focus[key] = payload["focus"][key]
 
     for edited in payload.get("servers", []):
         for server in doc.get("server", []):
