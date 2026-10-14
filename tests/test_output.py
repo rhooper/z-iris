@@ -131,7 +131,7 @@ def deliver(action, capture):
 def test_rule_sound_and_volume_reach_the_player():
     calls = []
     deliver(Action("/a/b.wav", 25, "full", "r"), calls)
-    banner, sound = calls
+    sound, banner = calls  # sound first, so a slow banner never delays it
     assert banner[0] == "terminal-notifier"
     assert sound == ["play", "-q", "/a/b.wav", "vol", "0.25"]
 

@@ -219,9 +219,10 @@ class RealOutput:
             self.visual.flash(notification.action)
 
     def deliver(self, notification: Notification) -> None:
-        self.banner(notification)
+        # banner last: a slow avatar fetch must not delay the sound or flash
         self.sound(notification)
         self.flash(notification)
+        self.banner(notification)
 
 
 class DryRunOutput:
