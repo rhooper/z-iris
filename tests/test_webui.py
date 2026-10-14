@@ -7,14 +7,6 @@ from z_iris.config import load_config
 from z_iris.settings import Settings
 from z_iris.webui import EditorServer
 
-class FixedLoudness:
-    def __init__(self, gain):
-        self._gain = gain
-
-    def gain(self, path):
-        return self._gain
-
-
 TEXT = '''[[server]]
 name = "work"
 zuliprc = "/x/zuliprc-secret"
@@ -31,7 +23,7 @@ def editor(tmp_path):
     path.write_text(TEXT)
     settings = Settings(load_config(path), path)
     played = []
-    server = EditorServer(settings, path, spawn=played.append, loudness=FixedLoudness(1.0))
+    server = EditorServer(settings, path, spawn=played.append)
     url = server.start()
     host, port = server.address
     token = url.rstrip("/").rsplit("/", 1)[1]
@@ -99,7 +91,7 @@ def test_test_sound_plays_through_the_player_with_scaled_volume(editor):
     call, token, _, _, played = editor
     status, _ = call("POST", f"/{token}/api/test", {"sound": "chime", "volume": 50})
     assert status == 200
-    assert played[0][-2:] == ["vol", "0.500"]
+    assert played[0][-2:] == ["vol", "0.50"]
     assert call("POST", f"/{token}/api/test", {"sound": "nosuchsound", "volume": 5})[0] == 400
     assert call("POST", f"/{token}/api/test", {"sound": "none", "volume": 5})[0] == 200
     assert len(played) == 1

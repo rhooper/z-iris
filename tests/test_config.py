@@ -239,10 +239,3 @@ def test_rules_can_be_disabled():
     assert [r.enabled for r in config.rules] == [False, True]
     with pytest.raises(ConfigError, match="rule 'r'"):
         rule_config('name = "r"\nmatch = "mention"\nenabled = "no"\n')
-
-
-def test_normalize_defaults_on_and_can_be_turned_off():
-    assert parse_config(MINIMAL).normalize is True
-    assert parse_config(MINIMAL + "[defaults]\nnormalize = false\n").normalize is False
-    with pytest.raises(ConfigError, match="normalize"):
-        parse_config(MINIMAL + '[defaults]\nnormalize = "yes"\n')

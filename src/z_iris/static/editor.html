@@ -169,9 +169,6 @@ function renderDefaults() {
     field("Master volume", slider(d.master_volume, v => d.master_volume = v)),
     field("Default rule volume", slider(d.volume, v => d.volume = v)),
     field("Default sound", select(soundOptions(false, d.sound), d.sound, v => d.sound = v)),
-    field("Even out sound loudness", (() => {
-      const c = el("input", {type:"checkbox", checked: d.normalize !== false});
-      c.addEventListener("change", () => d.normalize = c.checked); return c; })()),
     field("Notify for every channel message", (() => {
       const c = el("input", {type:"checkbox", checked: !!d.notify_channel_messages});
       c.addEventListener("change", () => d.notify_channel_messages = c.checked); return c; })()),

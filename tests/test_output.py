@@ -27,7 +27,7 @@ def dm(ids=(9,)):
 
 
 def test_sound_command_uses_the_vol_effect():
-    assert sound_command(("play",), "/a/b.wav", 5) == ["play", "/a/b.wav", "vol", "0.050"]
+    assert sound_command(("play",), "/a/b.wav", 5) == ["play", "/a/b.wav", "vol", "0.05"]
 
 
 @pytest.mark.skipif(shutil.which("sox") is None, reason="needs sox")
@@ -125,7 +125,7 @@ CONFIG = parse_config('[[server]]\nname = "work"\nzuliprc = "/x"\n')
 
 def deliver(action, capture):
     n = Notification(channel(), "zulip://h/#narrow/x", "rule", action)
-    RealOutput(Settings(CONFIG), spawn=capture.append, loudness=FixedLoudness(1.0)).deliver(n)
+    RealOutput(Settings(CONFIG), spawn=capture.append).deliver(n)
 
 
 def test_rule_sound_and_volume_reach_the_player():
@@ -133,7 +133,7 @@ def test_rule_sound_and_volume_reach_the_player():
     deliver(Action("/a/b.wav", 25, "full", "r"), calls)
     banner, sound = calls
     assert banner[0] == "terminal-notifier"
-    assert sound == ["play", "-q", "/a/b.wav", "vol", "0.250"]
+    assert sound == ["play", "-q", "/a/b.wav", "vol", "0.25"]
 
 
 @pytest.mark.parametrize("action", [Action("none", 60, "full", "r"), Action("synth", 0, "full", "r")])
@@ -159,32 +159,9 @@ def test_title_banner_hides_the_message_text():
 
 def test_dry_run_names_the_rule_and_volume(capsys):
     n = Notification(channel(), "zulip://h/#narrow/x", "rule", Action("synth", 33, "full", "ops"))
-    DryRunOutput(Settings(CONFIG), loudness=FixedLoudness(1.0)).deliver(n)
+    DryRunOutput(Settings(CONFIG)).deliver(n)
     out = capsys.readouterr().out
-    assert "rule ops" in out and "vol 0.330" in out
+    assert "rule ops" in out and "vol 0.33" in out
     n = Notification(channel(), "zulip://h/#narrow/x", "dm", ACTION)
-    DryRunOutput(Settings(CONFIG), loudness=FixedLoudness(1.0)).deliver(n)
+    DryRunOutput(Settings(CONFIG)).deliver(n)
     assert "rule default" in capsys.readouterr().out
-
-
-class FixedLoudness:
-    def __init__(self, gain):
-        self._gain = gain
-
-    def gain(self, path):
-        return self._gain
-
-
-def test_normalization_scales_the_volume_by_the_files_gain():
-    calls = []
-    n = Notification(channel(), "zulip://h/#narrow/x", "rule", Action("/a/b.wav", 50, "off", "r"))
-    RealOutput(Settings(CONFIG), spawn=calls.append, loudness=FixedLoudness(0.5)).deliver(n)
-    assert calls == [["play", "-q", "/a/b.wav", "vol", "0.250"]]
-
-
-def test_normalize_false_turns_it_off():
-    config = parse_config('[[server]]\nname = "work"\nzuliprc = "/x"\n[defaults]\nnormalize = false\n')
-    calls = []
-    n = Notification(channel(), "zulip://h/#narrow/x", "rule", Action("/a/b.wav", 50, "off", "r"))
-    RealOutput(Settings(config), spawn=calls.append, loudness=FixedLoudness(0.5)).deliver(n)
-    assert calls == [["play", "-q", "/a/b.wav", "vol", "0.500"]]

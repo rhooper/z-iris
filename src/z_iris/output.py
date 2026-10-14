@@ -5,31 +5,20 @@ from __future__ import annotations
 import subprocess
 import sys
 import threading
-from pathlib import Path
 from collections.abc import Callable
 from typing import Protocol
 
 from z_iris.message import Message
-from z_iris.config import Config
-from z_iris.loudness import Loudness
 from z_iris.pipeline import Notification
 from z_iris.settings import Settings
 
 _ZERO_WIDTH_SPACE = "​"
 
 
-def sound_command(
-    player: tuple[str, ...], sound: str, volume: int, gain: float = 1.0
-) -> list[str]:
+def sound_command(player: tuple[str, ...], sound: str, volume: int) -> list[str]:
     # The vol effect, not the -v input option, which sox ignores for some input.
-    # gain is the file's loudness correction, see loudness.py.
-    return [*player, sound, "vol", f"{volume / 100 * gain:.3f}"]
-
-
-def playback_gain(config: Config, sound: str, loudness: Loudness) -> float:
-    if not config.normalize or sound == "none":
-        return 1.0
-    return loudness.gain(Path(sound))
+    gain = f"{volume / 100:.2f}"
+    return [*player, sound, "vol", gain]
 
 
 def banner_title(message: Message) -> str:
@@ -123,11 +112,9 @@ class RealOutput:
         self,
         settings: Settings,
         spawn: Callable[[list[str]], object] = _spawn,
-        loudness: Loudness | None = None,
     ) -> None:
         self.settings = settings
         self.spawn = spawn
-        self.loudness = loudness or Loudness()
 
     def deliver(self, notification: Notification) -> None:
         config = self.settings.config
@@ -135,24 +122,22 @@ class RealOutput:
         if action.banner != "off":
             self.spawn(banner_command(config.notifier, notification))
         if _audible(notification):
-            gain = playback_gain(config, action.sound, self.loudness)
-            self.spawn(sound_command(config.player, action.sound, action.volume, gain))
+            self.spawn(sound_command(config.player, action.sound, action.volume))
 
 
 class DryRunOutput:
-    def __init__(self, settings: Settings, loudness: Loudness | None = None) -> None:
+    def __init__(self, settings: Settings) -> None:
         self.settings = settings
-        self.loudness = loudness or Loudness()
 
     def deliver(self, notification: Notification) -> None:
         action = notification.action
-        config = self.settings.config
-        sound = "silent"
-        if _audible(notification):
-            gain = playback_gain(config, action.sound, self.loudness)
-            sound = " ".join(
-                sound_command(config.player, action.sound, action.volume, gain)
+        sound = (
+            " ".join(
+                sound_command(self.settings.config.player, action.sound, action.volume)
             )
+            if _audible(notification)
+            else "silent"
+        )
         banner = "no banner" if action.banner == "off" else f"banner {action.banner}"
         print(
             f"[dry-run] {notification.message.server} ({notification.reason}): "
