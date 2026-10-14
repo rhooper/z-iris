@@ -68,6 +68,9 @@ def add_sound(user_dir: Path, filename: str, data: bytes) -> str:
     name = _BAD_CHARACTERS.sub("", Path(filename).stem).strip(" .")
     if not name or name.lower() in RESERVED:
         raise SoundError("bad sound name")
+    taken = {n.lower() for n in library(user_dir)}
+    if name.lower() in taken:
+        raise SoundError(f'a sound named "{name}" already exists; rename the file')
 
     user_dir.mkdir(parents=True, exist_ok=True)
     handle, temporary = tempfile.mkstemp(dir=user_dir, suffix=suffix, prefix=".upload-")
@@ -91,9 +94,6 @@ def add_sound(user_dir: Path, filename: str, data: bytes) -> str:
             write_normalized(Path(temporary), converted)
         except (RuntimeError, OSError, subprocess.TimeoutExpired) as error:
             raise SoundError(str(error)) from error
-        for old in user_dir.iterdir():
-            if old.is_file() and old.stem == name and old.suffix.lower() in SUFFIXES:
-                old.unlink()
         originals = user_dir / "originals"
         originals.mkdir(exist_ok=True)
         shutil.copyfile(temporary, originals / f"{name}{suffix}")
@@ -103,3 +103,19 @@ def add_sound(user_dir: Path, filename: str, data: bytes) -> str:
             if os.path.exists(leftover):
                 os.unlink(leftover)
     return name
+
+
+def delete_sound(user_dir: Path, name: str) -> None:
+    """Delete one of the user's own sounds and its saved original."""
+    if name not in user_names(user_dir):
+        if name in library(None):
+            raise SoundError(f'"{name}" is a bundled tone and cannot be deleted')
+        raise SoundError(f'no sound of yours is named "{name}"')
+    for path in list(user_dir.iterdir()):
+        if path.is_file() and path.stem == name and path.suffix.lower() in SUFFIXES:
+            path.unlink()
+    originals = user_dir / "originals"
+    if originals.is_dir():
+        for path in list(originals.iterdir()):
+            if path.is_file() and path.stem == name:
+                path.unlink()

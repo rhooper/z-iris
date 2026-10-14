@@ -188,3 +188,90 @@ def test_channels_endpoint_lists_subscribed_channels(tmp_path):
         assert data["servers"][0]["name"] == "work"
     finally:
         server.stop()
+
+
+def _wav(tmp_path, name="up.wav"):
+    import shutil
+    import subprocess
+
+    if shutil.which("sox") is None:
+        pytest.skip("needs sox")
+    wav = tmp_path / name
+    subprocess.run(["sox", "-n", str(wav), "synth", "0.1", "sine", "300"], check=True)
+    import base64
+    return base64.b64encode(wav.read_bytes()).decode()
+
+
+def test_duplicate_upload_is_rejected_and_nothing_changes(editor, tmp_path):
+    call, token, path, *_ = editor
+    data = _wav(tmp_path)
+    assert call("POST", f"/{token}/api/sounds", {"filename": "Horn.wav", "data": data})[0] == 200
+    stored = (path.parent / "sounds" / "Horn.wav").read_bytes()
+    for filename in ["horn.wav", "CHIME.wav"]:
+        status, body = call("POST", f"/{token}/api/sounds", {"filename": filename, "data": data})
+        assert status == 400 and "already" in json.loads(body)["error"]
+    assert (path.parent / "sounds" / "Horn.wav").read_bytes() == stored
+
+
+def test_delete_sound_endpoint(editor, tmp_path):
+    call, token, path, settings, _ = editor
+    data = _wav(tmp_path)
+    call("POST", f"/{token}/api/sounds", {"filename": "Horn.wav", "data": data})
+    call("POST", f"/{token}/api/sounds", {"filename": "Gong.wav", "data": data})
+    sounds = path.parent / "sounds"
+    # bundled and unknown
+    for name in ["chime", "nope"]:
+        assert call("POST", f"/{token}/api/sounds/delete", {"name": name})[0] == 400
+    # used by a rule: refused, names the rule
+    rules = [{"name": "alarm rule", "match": "mention", "sound": "Horn"}]
+    assert call("PUT", f"/{token}/api/config", {"rules": rules})[0] == 200
+    status, body = call("POST", f"/{token}/api/sounds/delete", {"name": "Horn"})
+    assert status == 400 and "alarm rule" in json.loads(body)["error"]
+    assert (sounds / "Horn.wav").exists()
+    # used as the default sound
+    call("PUT", f"/{token}/api/config", {"defaults": {"sound": "Gong"}})
+    status, body = call("POST", f"/{token}/api/sounds/delete", {"name": "Gong"})
+    assert status == 400 and "default" in json.loads(body)["error"]
+    # unused: deleted, including the original
+    call("PUT", f"/{token}/api/config", {"defaults": {"sound": "chime"}, "rules": []})
+    assert call("POST", f"/{token}/api/sounds/delete", {"name": "Horn"})[0] == 200
+    assert not (sounds / "Horn.wav").exists()
+    assert not list((sounds / "originals").glob("Horn.*"))
+    _, listing = call("GET", f"/{token}/api/config")
+    assert "Horn" not in [s["name"] for s in json.loads(listing)["sounds"]]
+
+
+def test_flash_endpoint_calls_the_flasher(editor):
+    call, token, *_ = editor
+    # default flasher is a no-op
+    body = {"flash": "top", "flash_color": "#ff0000", "flash_seconds": 1.5}
+    assert call("POST", f"/{token}/api/flash", body)[0] == 200
+    for bad in [{"flash": "sideways"}, {"flash": "top", "flash_color": "red"},
+                {"flash": "top", "flash_seconds": -1}, {"flash": "top", "flash_seconds": "x"}]:
+        assert call("POST", f"/{token}/api/flash", bad)[0] == 400
+
+
+def test_flash_endpoint_passes_the_action_dict(tmp_path):
+    path = tmp_path / "config.toml"
+    path.write_text(TEXT)
+    seen = []
+    server = EditorServer(Settings(load_config(path), path), path)
+    server.flasher = seen.append
+    url = server.start()
+    host, port = server.address
+    token = url.rstrip("/").rsplit("/", 1)[1]
+    try:
+        conn = http.client.HTTPConnection(host, port, timeout=5)
+        conn.request("POST", f"/{token}/api/flash",
+                     json.dumps({"flash": "left", "flash_color": "#00ff00", "flash_seconds": 2}),
+                     {"Host": f"127.0.0.1:{port}", "Content-Type": "application/json"})
+        assert conn.getresponse().status == 200
+        assert seen == [{"flash": "left", "flash_color": "#00ff00", "flash_seconds": 2}]
+    finally:
+        server.stop()
+
+
+def test_config_includes_focus(editor):
+    call, token, *_ = editor
+    _, data = call("GET", f"/{token}/api/config")
+    assert json.loads(data)["focus"]["mode"] == "off"
