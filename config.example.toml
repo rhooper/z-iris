@@ -7,8 +7,9 @@ zuliprc = "~/.zuliprc"
 # volume = 100
 
 [defaults]
-# "synth" is a built-in chime. Or give a path to any sound file sox can play.
-sound = "synth"
+# A sound name: a bundled tone (chime, ping, bell, blip, knock, double, triple,
+# rise, fall, alert, urgent, low, soft), a file you added in the editor, or "none".
+sound = "chime"
 # Percent of the system output level, 0 to 100.
 volume = 60
 # Percent, scales everything. Optional.
@@ -25,7 +26,7 @@ notifier = "terminal-notifier"
 # group_dm, dm. A higher "priority" (default 0) overrides that order, and ties
 # go to file order. Only name and match are always required (channel, topic and keyword rules
 # also need their own field). A silent rule still lets a personal @-mention through.
-#   sound:  "synth", "none", or a path to a file sox can play
+#   sound:  a sound name (see [defaults]) or "none"
 #   volume: 0 to 100, before the server and master scaling
 #   banner: "full", "title" (no message text) or "off"
 #   server: limit the rule to one [[server]] name

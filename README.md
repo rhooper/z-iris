@@ -61,7 +61,11 @@ one sample per kind.
 
 - `match`: `channel`, `topic`, `keyword`, `mention`, `dm` or `group_dm`.
   Topic and keyword values are case-insensitive regular expressions.
-- `sound`: `synth`, `none` or a file sox can play. `volume`: 0 to 100.
+- `sound`: a sound name or `none`. Names are the bundled tones (chime, ping,
+  bell, blip, knock, double, triple, rise, fall, alert, urgent, low, soft) and
+  any file in `~/.config/z-iris/sounds/` (the file name without its extension).
+  Add your own in the editor, or drop a file in that folder. Older configs
+  that give a file path still work. `volume`: 0 to 100.
   `banner`: `full`, `title` (no message text) or `off`. `server`: one server.
 - Precedence: higher `priority` first, then topic, keyword, mention, channel,
   group DM, DM, then file order.
@@ -84,5 +88,6 @@ Menubar, Edit rules…, or `uv run z-iris edit`. It opens a page served on
 127.0.0.1 only, behind a random token in the URL. Saving validates with the same
 parser the app uses, writes `config.toml.bak` first, keeps your comments, and
 the running app picks the change up at once. zuliprc paths are never sent to
-the page. Sound files are typed as paths. Test plays a sound through sox at the
+the page. Sounds are chosen from a menu, and Add sound uploads a file into the sounds
+folder. Test plays a sound through sox at the
 volume shown.

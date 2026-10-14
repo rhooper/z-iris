@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import json
 import os
 import secrets
@@ -16,6 +17,7 @@ from z_iris.config import ConfigError
 from z_iris.editing import apply_edit, read_editable
 from z_iris.output import _spawn, sound_command
 from z_iris.settings import Settings
+from z_iris.sounds import SoundError, add_sound, builtin_names, library, user_names
 
 
 class EditorServer:
@@ -57,7 +59,7 @@ class EditorServer:
     def save(self, payload: dict) -> None:
         with self._write_lock:
             text = self.config_path.read_text()
-            new = apply_edit(text, payload)  # validates; raises ConfigError
+            new = apply_edit(text, payload, self.sounds_dir)  # validates; raises ConfigError
             shutil.copyfile(self.config_path, self.config_path.with_name(
                 self.config_path.name + ".bak"
             ))
@@ -66,20 +68,40 @@ class EditorServer:
             os.replace(temporary, self.config_path)
         self.settings.reload(force=True)
 
+    @property
+    def sounds_dir(self) -> Path:
+        return self.config_path.parent / "sounds"
+
+    def sound_choices(self) -> list[dict]:
+        mine = set(user_names(self.sounds_dir))
+        names = sorted(set(builtin_names()) | mine)
+        return [{"name": name, "yours": name in mine} for name in names]
+
+    def upload_sound(self, filename: object, data_base64: object) -> str:
+        if not isinstance(filename, str) or not isinstance(data_base64, str):
+            raise ConfigError("filename and data are required")
+        try:
+            data = base64.b64decode(data_base64, validate=True)
+        except ValueError as error:
+            raise ConfigError("data is not valid base64") from error
+        try:
+            name = add_sound(self.sounds_dir, filename, data)
+        except SoundError as error:
+            raise ConfigError(str(error)) from error
+        self.settings.reload(force=True)
+        return name
+
     def test_sound(self, sound: object, volume: object) -> None:
         if not isinstance(volume, int) or isinstance(volume, bool) or not 0 <= volume <= 100:
             raise ConfigError("volume must be an integer from 0 to 100")
         if sound == "none" or volume == 0:
             return
-        if not isinstance(sound, str) or not sound:
-            raise ConfigError("sound must be a path, 'synth' or 'none'")
-        if sound != "synth":
-            sound = str(Path(sound).expanduser())
-            if not Path(sound).is_file():
-                raise ConfigError(f"sound file not found: {sound}")
+        sounds = library(self.sounds_dir)
+        if not isinstance(sound, str) or sound not in sounds:
+            raise ConfigError(f"unknown sound {sound!r}")
         config = self.settings.config
         final = round(volume * config.master_volume / 100)
-        self.spawn(sound_command(config.player, sound, final))
+        self.spawn(sound_command(config.player, str(sounds[sound]), final))
 
 
 def _make_handler(editor: EditorServer):
@@ -143,7 +165,9 @@ def _make_handler(editor: EditorServer):
                 self._reply(200, page.read_bytes(), "text/html; charset=utf-8")
             elif route == "api/config":
                 text = editor.config_path.read_text()
-                self._json(200, read_editable(text))
+                data = read_editable(text)
+                data["sounds"] = editor.sound_choices()
+                self._json(200, data)
             else:
                 self._json(404, {"error": "not found"})
 
@@ -159,6 +183,14 @@ def _make_handler(editor: EditorServer):
 
         def do_POST(self) -> None:
             route = self._route()
+            if route == "api/sounds":
+                payload = self._body()
+                if payload is not None:
+                    self._guarded_value(
+                        lambda: {"name": editor.upload_sound(
+                            payload.get("filename"), payload.get("data"))}
+                    )
+                return
             if route != "api/test":
                 if route is not None:
                     self._json(404, {"error": "not found"})
@@ -170,13 +202,16 @@ def _make_handler(editor: EditorServer):
                 )
 
         def _guarded(self, action: Callable[[], None]) -> None:
+            self._guarded_value(lambda: (action(), {"ok": True})[1])
+
+        def _guarded_value(self, action: Callable[[], dict]) -> None:
             try:
-                action()
+                value = action()
             except ConfigError as error:
                 self._json(400, {"error": str(error)})
             except Exception as error:  # bad shapes in the payload
                 self._json(400, {"error": f"invalid request: {error}"})
             else:
-                self._json(200, {"ok": True})
+                self._json(200, value)
 
     return Handler

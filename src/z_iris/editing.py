@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import tomlkit
 
 from z_iris.config import parse_config
@@ -22,7 +24,7 @@ def read_editable(text: str) -> dict:
             for s in data.get("server", [])
         ],
         "defaults": {
-            "sound": data.get("defaults", {}).get("sound", "synth"),
+            "sound": data.get("defaults", {}).get("sound", "chime"),
             "volume": data.get("defaults", {}).get("volume", 60),
             "master_volume": data.get("defaults", {}).get("master_volume", 100),
             "notify_channel_messages": data.get("defaults", {}).get(
@@ -40,7 +42,7 @@ def _blank(value: object) -> bool:
     return value is None or value == ""
 
 
-def apply_edit(text: str, payload: dict) -> str:
+def apply_edit(text: str, payload: dict, sounds_dir: Path | None = None) -> str:
     """Return new config text with the payload applied. Raises ConfigError.
 
     The result is validated by the real parser before it is returned.
@@ -74,5 +76,5 @@ def apply_edit(text: str, payload: dict) -> str:
             doc["rule"] = rules
 
     new = tomlkit.dumps(doc)
-    parse_config(new)
+    parse_config(new, sounds_dir)
     return new

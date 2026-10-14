@@ -89,9 +89,44 @@ def test_cross_origin_and_wrong_content_type_writes_are_refused(editor):
 
 def test_test_sound_plays_through_the_player_with_scaled_volume(editor):
     call, token, _, _, played = editor
-    status, _ = call("POST", f"/{token}/api/test", {"sound": "synth", "volume": 50})
+    status, _ = call("POST", f"/{token}/api/test", {"sound": "chime", "volume": 50})
     assert status == 200
     assert played[0][-2:] == ["vol", "0.50"]
-    assert call("POST", f"/{token}/api/test", {"sound": "/no/such.wav", "volume": 5})[0] == 400
+    assert call("POST", f"/{token}/api/test", {"sound": "nosuchsound", "volume": 5})[0] == 400
     assert call("POST", f"/{token}/api/test", {"sound": "none", "volume": 5})[0] == 200
     assert len(played) == 1
+
+
+def test_config_lists_sound_choices(editor):
+    call, token, *_ = editor
+    _, data = call("GET", f"/{token}/api/config")
+    names = {s["name"]: s["yours"] for s in json.loads(data)["sounds"]}
+    assert names["bell"] is False and "synth" not in names
+
+
+def test_upload_adds_a_sound_that_can_then_be_used_and_tested(editor, tmp_path):
+    import base64
+    import shutil
+    import subprocess
+
+    if shutil.which("sox") is None:
+        pytest.skip("needs sox")
+    call, token, path, settings, played = editor
+    wav = tmp_path / "up.wav"
+    subprocess.run(["sox", "-n", str(wav), "synth", "0.1", "sine", "300"], check=True)
+    body = {"filename": "My Horn.wav", "data": base64.b64encode(wav.read_bytes()).decode()}
+    status, data = call("POST", f"/{token}/api/sounds", body)
+    assert status == 200 and json.loads(data)["name"] == "My Horn"
+    assert (path.parent / "sounds" / "My Horn.wav").is_file()
+    _, listing = call("GET", f"/{token}/api/config")
+    assert {"name": "My Horn", "yours": True} in json.loads(listing)["sounds"]
+    assert call("POST", f"/{token}/api/test", {"sound": "My Horn", "volume": 40})[0] == 200
+    rules = [{"name": "r", "match": "mention", "sound": "My Horn"}]
+    assert call("PUT", f"/{token}/api/config", {"rules": rules})[0] == 200
+
+
+def test_bad_uploads_are_rejected(editor):
+    call, token, *_ = editor
+    for body in [{"filename": "../x.wav", "data": "AAAA"}, {"filename": "a.wav", "data": "!!"},
+                 {"filename": "a.wav"}, {"filename": "a.exe", "data": "AAAA"}]:
+        assert call("POST", f"/{token}/api/sounds", body)[0] == 400

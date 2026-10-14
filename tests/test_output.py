@@ -27,20 +27,16 @@ def dm(ids=(9,)):
 
 
 def test_sound_command_uses_the_vol_effect():
-    assert sound_command(("play", "-q"), "synth", 60) == [
-        "play", "-q", "-n", "synth", "0.15", "sine", "880", "vol", "0.60",
-    ]
     assert sound_command(("play",), "/a/b.wav", 5) == ["play", "/a/b.wav", "vol", "0.05"]
 
 
 @pytest.mark.skipif(shutil.which("sox") is None, reason="needs sox")
-@pytest.mark.parametrize("sound", ["synth", "file"])
-def test_volume_really_scales_the_signal(sound, tmp_path):
+def test_volume_really_scales_the_signal(tmp_path):
     # The -v input option is ignored for generated input, which once made
     # every rule volume a no-op. Measure the real output instead.
     wav = tmp_path / "t.wav"
     subprocess.run(["sox", "-n", str(wav), "synth", "0.15", "sine", "880"], check=True)
-    target = "synth" if sound == "synth" else str(wav)
+    target = str(wav)
 
     def peak(volume):
         command = sound_command(("sox",), target, volume)

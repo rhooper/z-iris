@@ -39,7 +39,7 @@ def test_apply_edit_replaces_rules_and_keeps_comments_and_zuliprc():
 
 def test_apply_edit_updates_defaults_and_server_volume():
     new = apply_edit(TEXT, {
-        "defaults": {"volume": 30, "master_volume": 80, "sound": "synth",
+        "defaults": {"volume": 30, "master_volume": 80, "sound": "chime",
                      "notify_channel_messages": True},
         "servers": [{"name": "work", "volume": 50}],
     })

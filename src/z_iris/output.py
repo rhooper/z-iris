@@ -16,11 +16,8 @@ _ZERO_WIDTH_SPACE = "​"
 
 
 def sound_command(player: tuple[str, ...], sound: str, volume: int) -> list[str]:
-    # The vol effect, not the -v input option: -v is ignored for generated
-    # input such as the synth chime.
+    # The vol effect, not the -v input option, which sox ignores for some input.
     gain = f"{volume / 100:.2f}"
-    if sound == "synth":
-        return [*player, "-n", "synth", "0.15", "sine", "880", "vol", gain]
     return [*player, sound, "vol", gain]
 
 

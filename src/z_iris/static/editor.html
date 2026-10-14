@@ -35,6 +35,16 @@
   <div class="card grid" id="defaults"></div>
   <div class="card grid" id="servers"></div>
 
+  <h2>Sounds</h2>
+  <div class="card">
+    <div class="row">
+      <input type="file" id="upload" accept=".wav,.aiff,.aif,.flac,.mp3,.ogg,.caf">
+      <button type="button" id="addsound">Add sound</button>
+      <span id="soundlist"><small></small></span>
+    </div>
+    <small>Bundled tones plus your own. Your files are copied into the sounds folder next to your config, up to 10 MB.</small>
+  </div>
+
   <h2>Rules</h2>
   <div id="rules"></div>
   <button id="add">Add rule</button>
@@ -48,7 +58,7 @@
 "use strict";
 const base = location.pathname;
 const KINDS = [["topic","Topic"],["keyword","Keyword"],["mention","Mention"],["channel","Channel"],["group_dm","Group DM"],["dm","Direct message"]];
-let state = {servers:[], defaults:{}, rules:[]};
+let state = {servers:[], defaults:{}, rules:[], sounds:[]};
 
 function el(tag, props, ...kids) {
   const node = Object.assign(document.createElement(tag), props || {});
@@ -67,6 +77,15 @@ function select(options, value, onchange) {
   node.value = value ?? "";
   node.addEventListener("change", () => onchange(node.value));
   return node;
+}
+function soundOptions(withDefault, current) {
+  const options = withDefault ? [["", "(default)"]] : [];
+  options.push(["none", "none (silent)"]);
+  const bundled = state.sounds.filter(x => !x.yours), yours = state.sounds.filter(x => x.yours);
+  for (const x of yours) options.push([x.name, x.name + " (yours)"]);
+  for (const x of bundled) options.push([x.name, x.name]);
+  if (current && !options.some(o => o[0] === current)) options.push([current, current + " (file path)"]);
+  return options;
 }
 function slider(value, onchange, allowUnset) {
   const out = el("span", {textContent: value == null ? "default" : value + "%"});
@@ -94,7 +113,7 @@ function renderDefaults() {
   box.replaceChildren(
     field("Master volume", slider(d.master_volume, v => d.master_volume = v)),
     field("Default rule volume", slider(d.volume, v => d.volume = v)),
-    field("Default sound (synth, none or file path)", text(d.sound, v => d.sound = v)),
+    field("Default sound", select(soundOptions(false, d.sound), d.sound, v => d.sound = v)),
     field("Notify for every channel message", (() => {
       const c = el("input", {type:"checkbox", checked: !!d.notify_channel_messages});
       c.addEventListener("change", () => d.notify_channel_messages = c.checked); return c; })()),
@@ -113,13 +132,13 @@ function renderRules() {
     if (needs === "topic") fields.push(field("Topic (regular expression)", text(rule.topic, v => rule.topic = v)));
     if (needs === "keyword") fields.push(field("Keyword (regular expression)", text(rule.keyword, v => rule.keyword = v)));
     fields.push(field("Server", select([["", "any"], ...state.servers.map(s => [s.name, s.name])], rule.server, v => rule.server = v)));
-    const sound = text(rule.sound, v => rule.sound = v, "default");
+    const sound = select(soundOptions(true, rule.sound), rule.sound || "", v => rule.sound = v);
     const test = el("button", {type:"button", textContent:"Test"});
     test.addEventListener("click", async () => {
       try { await api("POST", "api/test", {sound: rule.sound || state.defaults.sound, volume: rule.volume ?? state.defaults.volume}); setStatus(""); }
       catch (e) { setStatus(e.message, "bad"); }
     });
-    fields.push(field("Sound (synth, none or file path)", el("div", {className:"row"}, sound, test)));
+    fields.push(field("Sound", el("div", {className:"row"}, sound, test)));
     fields.push(field("Volume", slider(rule.volume, v => rule.volume = v, true)));
     fields.push(field("Banner", select([["", "full"], ["title", "title only"], ["off", "off"]], rule.banner, v => rule.banner = v)));
     const priority = el("input", {type:"number", value: rule.priority || 0});
@@ -141,7 +160,28 @@ document.getElementById("save").addEventListener("click", async () => {
   catch (e) { setStatus(e.message, "bad"); }
 });
 
-api("GET", "api/config").then(data => { state = data; renderDefaults(); renderRules(); }).catch(e => setStatus(e.message, "bad"));
+function renderSounds() {
+  document.querySelector("#soundlist small").textContent = state.sounds.length + " sounds available";
+}
+async function load() {
+  state = await api("GET", "api/config");
+  renderDefaults(); renderRules(); renderSounds();
+}
+document.getElementById("addsound").addEventListener("click", async () => {
+  const file = document.getElementById("upload").files[0];
+  if (!file) { setStatus("Choose a sound file first.", "bad"); return; }
+  try {
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    let binary = ""; for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+    const { name } = await api("POST", "api/sounds", {filename: file.name, data: btoa(binary)});
+    const fresh = await api("GET", "api/config");
+    state.sounds = fresh.sounds;
+    document.getElementById("upload").value = "";
+    renderDefaults(); renderRules(); renderSounds();
+    setStatus(`Added "${name}". Pick it from a rule's Sound menu.`, "ok");
+  } catch (e) { setStatus(e.message, "bad"); }
+});
+load().catch(e => setStatus(e.message, "bad"));
 </script>
 </body>
 </html>
