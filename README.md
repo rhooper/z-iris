@@ -90,8 +90,8 @@ Menubar, Edit rules…, or `uv run z-iris edit`. It opens a page served on
 parser the app uses, writes `config.toml.bak` first, keeps your comments, and
 the running app picks the change up at once. zuliprc paths are never sent to
 the page. Each rule has an On switch. Deleted rules wait in a collapsed list at the bottom for five minutes, where you can restore or discard them. Channel names autocomplete from your subscriptions. Sounds are chosen from a menu, and Add sound uploads a file into the sounds
-folder. Test plays a sound through sox at the
-volume shown.
+folder; a name that already exists (yours or a bundled tone, any case) is refused. Your sounds are listed with Test and Delete (refused while a rule or the default uses it). Test plays a sound through sox at the
+volume shown. Rule cards collapse to one line (Collapse all / Expand all) and show "Plays at N%": rule or default volume x server volume x master volume. Each rule and the defaults card also set the desktop notification, flash (with Test flash), repeat, minimum gap and batch window. A Focus card sets focus mode and quiet hours.
 
 Preview against recent messages fetches your last 1000 messages (Fetch 1000 older pages further back, up to 10,000) (read-only,
 through the zulip client and your zuliprc) and runs them through the rules on

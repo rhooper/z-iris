@@ -31,6 +31,16 @@
   .combo li { padding:4px 8px; border-radius:4px; cursor:pointer; } .combo li.active, .combo li:hover { background:var(--accent); color:#fff; }
   .card.off { opacity:.55; } .toggle { display:flex; align-items:center; gap:4px; font-size:13px; color:var(--fg); }
   .gone { display:flex; gap:8px; align-items:center; justify-content:space-between; border-top:1px solid var(--line); padding:6px 0; }
+  .sect { grid-column:1/-1; border-top:1px solid var(--line); margin-top:4px; padding-top:8px; }
+  .sect h3 { font-size:13px; margin:0 0 2px; } .sect p { margin:0 0 6px; }
+  .sect .grid { margin-top:6px; }
+  .help { display:block; font-size:12px; color:var(--muted); margin-top:2px; }
+  .explain { margin:0 0 10px; font-size:13px; color:var(--muted); }
+  .plays { font-size:12px; border:1px solid var(--line); border-radius:10px; padding:1px 8px; color:var(--muted); white-space:nowrap; cursor:help; }
+  .chev { padding:2px 8px; } .oneline { display:flex; gap:8px; align-items:center; flex-wrap:wrap; flex:1; min-width:0; }
+  .oneline b { font-weight:600; } .sep { color:var(--muted); }
+  input[type=color] { padding:1px 2px; height:32px; min-width:48px; }
+  .mine { display:flex; gap:8px; align-items:center; justify-content:space-between; border-top:1px solid var(--line); padding:6px 0; }
   .snippet { color:var(--muted); overflow-wrap:anywhere; }
 </style>
 </head>
@@ -39,9 +49,18 @@
   <h1>z-iris rules</h1>
   <small>The most specific rule wins: topic, keyword, mention, channel, group DM, DM. Priority overrides that. Comments in your config file are kept.</small>
 
-  <h2>Volume and defaults</h2>
-  <div class="card grid" id="defaults"></div>
-  <div class="card grid" id="servers"></div>
+  <h2>Volume</h2>
+  <div class="card">
+    <p class="explain" id="volexplain">How loud a message plays: the rule's volume (or the default rule volume when the rule sets none), times its server's volume, times the master volume. Example: rule 80%, server 50%, master 100% plays at 40%.</p>
+    <div class="grid" id="defaults"></div>
+    <div class="grid" id="servers" style="margin-top:10px"></div>
+  </div>
+
+  <h2>Defaults for every rule</h2>
+  <div class="card grid" id="behaviour"></div>
+
+  <h2>Focus and quiet hours</h2>
+  <div class="card grid" id="focus"></div>
 
   <h2>Sounds</h2>
   <div class="card">
@@ -50,18 +69,23 @@
       <button type="button" id="addsound">Add sound</button>
       <span id="soundlist"><small></small></span>
     </div>
+    <div id="mysounds"></div>
     <small>Bundled tones plus your own. Your files are copied into the sounds folder next to your config, up to 10 MB.</small>
   </div>
 
   <h2>Rules</h2>
   <div class="row" style="margin-bottom:8px">
     <button type="button" id="preview">Preview against recent messages</button>
-    <button type="button" id="more" disabled>Fetch 1000 older</button>
+    <span id="morewrap"></span>
     <small id="previewnote">Runs your last 1000 Zulip messages (muted ones included) through these rules.</small>
   </div>
   <div id="summary"></div>
   <div id="rules"></div>
-  <button id="add">Add rule</button>
+  <div class="row">
+    <button id="add">Add rule</button>
+    <button type="button" id="collapseall">Collapse all</button>
+    <button type="button" id="expandall">Expand all</button>
+  </div>
   <details class="card" id="deleted" hidden><summary id="deletedsummary"></summary><div id="deletedlist"></div></details>
   <details class="card" id="unmatched" hidden><summary>Messages no rule matched</summary><div id="unmatchedlist"></div></details>
 
@@ -86,7 +110,10 @@ function el(tag, props, ...kids) {
   for (const kid of kids) node.append(kid);
   return node;
 }
-function field(text, input) { return el("div", {}, el("label", {textContent:text}), input); }
+function field(text, input, help) { return el("div", {}, el("label", {textContent:text}), input, ...(help ? [el("span", {className:"help", textContent:help})] : [])); }
+function sect(title, help, ...fields) { return el("div", {className:"sect"}, el("h3", {textContent:title}), el("p", {className:"help", textContent:help}), el("div", {className:"grid"}, ...fields)); }
+const BUILTIN = {flash:"none", flash_color:"#ff3b30", flash_seconds:0.6, repeat:0, repeat_every:30, repeat_boost:0, min_gap:0, batch_window:0};
+const FLASHES = [["none","none"],["screen","whole screen"],["top","top bar"],["bottom","bottom bar"],["left","left bar"],["right","right bar"]];
 function text(value, onchange, placeholder) {
   const input = el("input", {type:"text", value:value ?? "", placeholder:placeholder || ""});
   input.addEventListener("input", () => onchange(input.value));
@@ -163,19 +190,124 @@ async function api(method, route, body) {
   return data;
 }
 
+// Behaviour fields shared by the defaults card and every rule card. For a rule, blank means
+// "use the default"; for the defaults, blank falls back to the built-in value.
+function behaviourSections(obj, isRule) {
+  const d = state.defaults;
+  const inherit = key => isRule ? (d[key] ?? BUILTIN[key]) : BUILTIN[key];
+  const num = (key, label, min, max, step, help) => {
+    const input = el("input", {type:"number", min, max, step, value: obj[key] ?? "", placeholder: isRule ? "default " + inherit(key) : String(BUILTIN[key])});
+    input.addEventListener("input", () => {
+      if (input.value === "") { if (isRule) obj[key] = null; else obj[key] = BUILTIN[key]; }
+      else obj[key] = +input.value;
+    });
+    return field(label, input, help);
+  };
+  const flashSel = select(isRule ? [["", "(default: " + (FLASHES.find(f => f[0] === inherit("flash"))[1]) + ")"], ...FLASHES] : FLASHES, isRule ? obj.flash : (obj.flash ?? BUILTIN.flash), v => obj.flash = v || null);
+  const color = el("input", {type:"color", value: obj.flash_color ?? inherit("flash_color")});
+  color.addEventListener("input", () => obj.flash_color = color.value);
+  const colorRow = el("div", {className:"row"}, color);
+  if (isRule) {
+    const reset = el("button", {type:"button", textContent:"default"});
+    reset.addEventListener("click", () => { obj.flash_color = null; color.value = inherit("flash_color"); changed(); });
+    colorRow.append(reset);
+  }
+  const testFlash = el("button", {type:"button", textContent:"Test flash"});
+  testFlash.addEventListener("click", async () => {
+    const mode = obj.flash || inherit("flash");
+    if (!mode || mode === "none") { setStatus("Pick a flash style first.", "bad"); return; }
+    try { await api("POST", "api/flash", {flash: mode, flash_color: obj.flash_color ?? inherit("flash_color"), flash_seconds: obj.flash_seconds ?? inherit("flash_seconds")}); setStatus(""); }
+    catch (e) { setStatus(e.message, "bad"); }
+  });
+  const notification = select([["", isRule ? "show (default)" : "show"], ["title", "title only"], ["off", "off"]], obj.banner, v => obj.banner = v);
+  return [
+    sect("Desktop notification", "The banner on your screen. Sound and flash are separate settings.",
+      field("Desktop notification", notification, "Show the whole message, only the sender and place, or no banner at all.")),
+    sect("Flash", "A coloured flash across the screen, for when you cannot hear the sound.",
+      field("Flash", flashSel, "Where the flash appears."),
+      field("Flash colour", colorRow),
+      num("flash_seconds", "Flash duration (seconds)", 0.1, 10, 0.1, "How long it takes to fade out."),
+      field("", testFlash)),
+    sect("Repeat and limits", "Repeat sounds until you read the message, and keep busy channels from piling up.",
+      num("repeat", "Repeat count", 0, 20, 1, "Extra sounds after the first. 0 plays once."),
+      num("repeat_every", "Repeat interval (seconds)", 1, 3600, 1, "Time between repeats."),
+      num("repeat_boost", "Repeat boost (% points)", 0, 100, 1, "Each repeat is this much louder, up to 100%."),
+      num("min_gap", "Minimum gap (seconds)", 0, 3600, 1, "Skip sound and flash if the same rule played this recently. The banner still shows."),
+      num("batch_window", "Batch window (seconds)", 0, 300, 1, "Messages arriving within this time become one summary banner. 0 turns it off.")),
+  ];
+}
+
 function renderDefaults() {
   const d = state.defaults, box = document.getElementById("defaults");
   box.replaceChildren(
-    field("Master volume", slider(d.master_volume, v => d.master_volume = v)),
-    field("Default rule volume", slider(d.volume, v => d.volume = v)),
-    field("Default sound", select(soundOptions(false, d.sound), d.sound, v => d.sound = v)),
-    field("Notify for every channel message", (() => {
-      const c = el("input", {type:"checkbox", checked: !!d.notify_channel_messages});
-      c.addEventListener("change", () => d.notify_channel_messages = c.checked); return c; })()),
+    field("Master volume (scales everything)", slider(d.master_volume, v => d.master_volume = v)),
+    field("Default rule volume (used when a rule sets none)", slider(d.volume, v => d.volume = v)),
   );
   const sbox = document.getElementById("servers");
-  sbox.replaceChildren(...state.servers.map(s => field(`Server ${s.name} volume`, slider(s.volume, v => s.volume = v))));
+  sbox.replaceChildren(...state.servers.map(s => field(`Server ${s.name} volume (scales only messages from ${s.name})`, slider(s.volume, v => s.volume = v))));
   sbox.hidden = state.servers.length === 0;
+  const bbox = document.getElementById("behaviour");
+  bbox.replaceChildren(
+    field("Default sound", select(soundOptions(false, d.sound), d.sound, v => d.sound = v), "Used by rules that do not pick a sound."),
+    field("Notify for every channel message", (() => {
+      const c = el("input", {type:"checkbox", checked: !!d.notify_channel_messages});
+      c.addEventListener("change", () => d.notify_channel_messages = c.checked); return c; })(), "Normally only mentions, DMs and rules notify."),
+    ...behaviourSections(d, false));
+  renderFocus();
+  updateReadouts();
+}
+
+function renderFocus() {
+  const f = state.focus, box = document.getElementById("focus");
+  const modes = [["off","Off"],["mentions_and_dms","Only DMs and mentions make sound"],["silent","Silent (banners only)"]];
+  const rows = f.quiet_hours.map((entry, i) => {
+    const [a, b] = entry.split("-");
+    const norm = t => /^\d:/.test(t || "") ? "0" + t : (t || "");
+    const start = el("input", {type:"time", value: norm(a)}), end = el("input", {type:"time", value: norm(b)});
+    const upd = () => f.quiet_hours[i] = start.value + "-" + end.value;
+    start.addEventListener("input", upd); end.addEventListener("input", upd);
+    const rm = el("button", {type:"button", textContent:"Remove"});
+    rm.addEventListener("click", () => { f.quiet_hours.splice(i, 1); renderFocus(); changed(true); });
+    return el("div", {className:"row"}, start, "to", end, rm);
+  });
+  const add = el("button", {type:"button", textContent:"Add quiet hours"});
+  add.addEventListener("click", () => { f.quiet_hours.push("22:00-07:00"); renderFocus(); changed(true); });
+  box.replaceChildren(
+    field("Focus now", select(modes, f.mode, v => f.mode = v), "Applies right away until you turn it off."),
+    field("Quiet hours (local time)", el("div", {}, ...rows, add), "Windows may cross midnight, like 22:00 to 07:00."),
+    field("During quiet hours", select(modes.slice(1), f.quiet_mode, v => f.quiet_mode = v), "What quiet hours do: only DMs and mentions make sound, or everything is silent."));
+}
+
+// ---- "Plays at N%": rule (or default) x server x master
+let readouts = [];
+function volumeParts(rule) {
+  const base = rule.volume ?? state.defaults.volume ?? 60, master = state.defaults.master_volume ?? 100;
+  const servers = rule.server ? state.servers.filter(s => s.name === rule.server) : state.servers;
+  const vols = servers.length ? servers.map(s => s.volume) : [100];
+  return {base, master, lo: Math.min(...vols), hi: Math.max(...vols)};
+}
+function playsText(rule) {
+  const {base, master, lo, hi} = volumeParts(rule);
+  const calc = sv => Math.round(base * sv * master / 10000);
+  const silent = (rule.sound || state.defaults.sound) === "none";
+  const value = lo === hi ? calc(lo) + "%" : calc(lo) + "% to " + calc(hi) + "%";
+  const serverText = lo === hi ? `server ${lo}%` : `server ${lo}% to ${hi}%`;
+  return {
+    text: silent ? "Silent (sound is none)" : "Plays at " + value,
+    tip: `${rule.volume == null ? "default rule volume" : "rule volume"} ${base}% x ${serverText} x master ${master}% = ${value}`,
+  };
+}
+function updateReadouts() {
+  for (const {node, rule} of readouts) { const {text, tip} = playsText(rule); node.textContent = text; node.title = tip; }
+}
+
+// ---- rule cards collapse to one line; the set is remembered per browser tab
+const COLLAPSED_KEY = "z-iris-collapsed";
+let collapsed = new Set();
+function saveCollapsed() { try { sessionStorage.setItem(COLLAPSED_KEY, JSON.stringify(state.rules.map((r, i) => collapsed.has(r) ? i : -1).filter(i => i >= 0))); } catch (e) {} }
+function loadCollapsed() {
+  try { const list = JSON.parse(sessionStorage.getItem(COLLAPSED_KEY) || "[]"); collapsed = new Set(list.map(i => state.rules[i]).filter(Boolean)); }
+  catch (e) { collapsed = new Set(); }
 }
 
 function allPreviewMessages() {
@@ -198,13 +330,13 @@ function previewBlock(index) {
 function renderSummary() {
   const box = document.getElementById("summary"), un = document.getElementById("unmatched");
   box.replaceChildren(); un.hidden = true;
-  if (!previewData) { renderRulesOnly(); return; }
+  if (!previewData) { document.getElementById("morewrap").replaceChildren(); renderRulesOnly(); return; }
   const all = allPreviewMessages(), counts = {};
   for (const m of all) counts[m.why] = (counts[m.why] || 0) + 1;
   const parts = Object.entries(counts).map(([why, n]) => `${n} ${why}`);
   const errors = previewData.servers.filter(sv => sv.error).map(sv => `${sv.name}: ${sv.error}`);
   const done = previewData.servers.length > 0 && previewData.servers.every(sv => sv.complete);
-  const more = document.getElementById("more");
+  const more = document.getElementById("more") || makeMore();
   more.disabled = done; more.textContent = done ? "No older messages" : "Fetch 1000 older";
   box.append(el("div", {className:"card"}, el("div", {textContent:`${all.length} messages checked${done ? " (all of them)" : ""}: ${parts.join(", ") || "none"}`}), ...errors.map(e => el("div", {className:"bad", textContent:e}))));
   const loose = all.filter(m => m.rule_index === null).slice(0, 30);
@@ -213,8 +345,18 @@ function renderSummary() {
 }
 function renderRulesOnly() { renderRules(); }
 
+function ruleSummary(rule) {
+  const kind = (KINDS.find(k => k[0] === rule.match) || [0, rule.match])[1].replace(/ \(.*\)/, "");
+  const sound = rule.sound || state.defaults.sound || "chime";
+  const sep = () => el("span", {className:"sep", textContent:"·"});
+  return el("div", {className:"oneline"}, el("b", {textContent: rule.name || "(unnamed)"}), sep(), el("span", {textContent: kind}), sep(),
+    el("span", {textContent: sound === "none" ? "silent" : sound + (rule.sound ? "" : " (default)")}), sep(),
+    el("span", {className: "tag" + (rule.enabled === false ? "" : " on"), textContent: rule.enabled === false ? "off" : "on"}));
+}
+
 function renderRules() {
   const box = document.getElementById("rules");
+  readouts = [];
   box.replaceChildren(...state.rules.map((rule, i) => {
     const needs = rule.match;
     const fields = [field("Matches", select(KINDS, rule.match, v => { rule.match = v; previewData = null; renderRules(); }))];
@@ -222,32 +364,45 @@ function renderRules() {
     if (needs === "topic") fields.push(field("Topic (regular expression)", text(rule.topic, v => rule.topic = v)));
     if (needs === "keyword") fields.push(field("Keyword (regular expression)", text(rule.keyword, v => rule.keyword = v)));
     fields.push(field("Server", select([["", "any"], ...state.servers.map(s => [s.name, s.name])], rule.server, v => { rule.server = v; renderRules(); })));
+    const priority = el("input", {type:"number", value: rule.priority || 0});
+    priority.addEventListener("input", () => rule.priority = parseInt(priority.value, 10) || 0);
+    fields.push(field("Priority", priority, "Higher beats the usual most-specific order."));
+
     const sound = select(soundOptions(true, rule.sound), rule.sound || "", v => rule.sound = v);
     const test = el("button", {type:"button", textContent:"Test"});
     test.addEventListener("click", async () => {
       try { await api("POST", "api/test", {sound: rule.sound || state.defaults.sound, volume: rule.volume ?? state.defaults.volume}); setStatus(""); }
       catch (e) { setStatus(e.message, "bad"); }
     });
-    fields.push(field("Sound", el("div", {className:"row"}, sound, test)));
-    fields.push(field("Volume", slider(rule.volume, v => rule.volume = v, true)));
-    fields.push(field("Banner", select([["", "full"], ["title", "title only"], ["off", "off"]], rule.banner, v => rule.banner = v)));
-    const priority = el("input", {type:"number", value: rule.priority || 0});
-    priority.addEventListener("input", () => rule.priority = parseInt(priority.value, 10) || 0);
-    fields.push(field("Priority", priority));
+    const volumeSect = sect("Sound and volume", "Rule volume replaces the default rule volume for this rule only.",
+      field("Sound", el("div", {className:"row"}, sound, test)),
+      field("Rule volume", slider(rule.volume, v => rule.volume = v, true)));
 
-    const move = (by) => { const j = i + by; if (j < 0 || j >= state.rules.length) return; [state.rules[i], state.rules[j]] = [state.rules[j], state.rules[i]]; previewData = null; renderRules(); };
+    const move = (by) => { const j = i + by; if (j < 0 || j >= state.rules.length) return; [state.rules[i], state.rules[j]] = [state.rules[j], state.rules[i]]; previewData = null; renderRules(); saveCollapsed(); };
     const mk = (label, fn) => { const b = el("button", {type:"button", textContent:label}); b.addEventListener("click", fn); return b; };
     const del = mk("Delete", () => { discardRule(i); });
     const on = el("input", {type:"checkbox", checked: rule.enabled !== false});
     on.addEventListener("change", () => { rule.enabled = on.checked; if (on.checked) delete rule.enabled; card.classList.toggle("off", !on.checked); });
     const toggle = el("label", {className:"toggle"}, on, "On");
+    const isCollapsed = collapsed.has(rule);
+    const chev = mk(isCollapsed ? "Expand" : "Collapse", () => { if (collapsed.has(rule)) collapsed.delete(rule); else collapsed.add(rule); saveCollapsed(); renderRules(); });
+    chev.className = "chev"; chev.setAttribute("aria-expanded", String(!isCollapsed));
+    const plays = el("span", {className:"plays"});
+    readouts.push({node: plays, rule});
     const card = el("div", {className:"card" + (rule.enabled === false ? " off" : "")},
-      el("div", {className:"head"}, text(rule.name, v => rule.name = v, "Rule name"), el("div", {className:"row"}, toggle, mk("Up", () => { move(-1); changed(); }), mk("Down", () => { move(1); changed(); }), del)),
-      el("div", {className:"grid"}, ...fields),
-      ...[previewBlock(i)].filter(Boolean));
+      el("div", {className:"head"},
+        el("div", {className:"row", style:"flex:1; min-width:0"}, chev, isCollapsed ? ruleSummary(rule) : text(rule.name, v => rule.name = v, "Rule name"), ...(isCollapsed ? [] : [plays])),
+        el("div", {className:"row"}, toggle, ...(isCollapsed ? [] : [mk("Up", () => { move(-1); changed(); }), mk("Down", () => { move(1); changed(); }), del]))),
+      ...(isCollapsed ? [] : [el("div", {className:"grid"}, ...fields, volumeSect, ...behaviourSections(rule, true))]),
+      ...(isCollapsed ? [] : [previewBlock(i)].filter(Boolean)));
     return card;
   }));
+  updateReadouts();
 }
+
+function setAllCollapsed(flag) { collapsed = flag ? new Set(state.rules) : new Set(); saveCollapsed(); renderRules(); }
+document.getElementById("collapseall").addEventListener("click", () => setAllCollapsed(true));
+document.getElementById("expandall").addEventListener("click", () => setAllCollapsed(false));
 
 document.getElementById("preview").addEventListener("click", async () => {
   const button = document.getElementById("preview");
@@ -256,19 +411,23 @@ document.getElementById("preview").addEventListener("click", async () => {
   catch (e) { setStatus(e.message, "bad"); }
   finally { button.disabled = false; }
 });
-document.getElementById("more").addEventListener("click", async () => {
-  const button = document.getElementById("more");
-  button.disabled = true; setStatus("Fetching older messages…");
-  try { previewData = await api("POST", "api/preview", {...state, more: true}); setStatus(""); renderSummary(); }
-  catch (e) { setStatus(e.message, "bad"); button.disabled = false; }
-});
+function makeMore() {
+  const button = el("button", {type:"button", id:"more", textContent:"Fetch 1000 older"});
+  button.addEventListener("click", async () => {
+    button.disabled = true; setStatus("Fetching older messages…");
+    try { previewData = await api("POST", "api/preview", {...state, more: true}); setStatus(""); renderSummary(); }
+    catch (e) { setStatus(e.message, "bad"); button.disabled = false; }
+  });
+  document.getElementById("morewrap").replaceChildren(button);
+  return button;
+}
 document.getElementById("add").addEventListener("click", () => { state.rules.push({name:"New rule", match:"mention"}); clearPreview(); changed(true); });
 
 // ---- autosave: every edit applies by itself, a moment after you stop typing
 let saveTimer = null, saving = false, dirty = false;
 function setSaved(message, cls) { const n = document.getElementById("saved"); n.textContent = message; n.className = cls || ""; }
 function changed(immediate) {
-  dirty = true; setSaved("Editing…");
+  dirty = true; setSaved("Editing…"); updateReadouts();
   clearTimeout(saveTimer);
   saveTimer = setTimeout(save, immediate ? 50 : 700);
 }
@@ -276,13 +435,13 @@ async function save() {
   if (saving) { saveTimer = setTimeout(save, 200); return; }
   saving = true; dirty = false;
   try {
-    await api("PUT", "api/config", {servers: state.servers, defaults: state.defaults, rules: state.rules});
+    await api("PUT", "api/config", {servers: state.servers, defaults: state.defaults, focus: state.focus, rules: state.rules});
     if (!dirty) setSaved("Saved " + new Date().toLocaleTimeString(), "ok");
   } catch (e) { setSaved("Not applied yet: " + e.message, "bad"); }
   finally { saving = false; }
 }
-document.addEventListener("input", e => { if (e.target.closest("#rules, #defaults, #servers")) changed(); });
-document.addEventListener("change", e => { if (e.target.closest("#rules, #defaults, #servers")) changed(); });
+document.addEventListener("input", e => { if (e.target.closest("#rules, #defaults, #servers, #behaviour, #focus")) changed(); });
+document.addEventListener("change", e => { if (e.target.closest("#rules, #defaults, #servers, #behaviour, #focus")) changed(); });
 
 // ---- deleted rules wait at the bottom for five minutes
 function persistDeleted() { try { sessionStorage.setItem(DELETED_KEY, JSON.stringify(deleted)); } catch (e) {} }
@@ -290,7 +449,7 @@ function loadDeleted() { try { deleted = JSON.parse(sessionStorage.getItem(DELET
 function discardRule(i) {
   const [rule] = state.rules.splice(i, 1);
   deleted.unshift({rule, index: i, at: Date.now()});
-  persistDeleted(); previewData = null; renderSummary(); renderDeleted(); changed(true);
+  persistDeleted(); previewData = null; saveCollapsed(); renderSummary(); renderDeleted(); changed(true);
 }
 function renderDeleted() {
   const now = Date.now();
@@ -306,7 +465,7 @@ function renderDeleted() {
     return el("div", {className:"gone"},
       el("span", {textContent: `${d.rule.name || "(unnamed)"} · ${d.rule.match} · ${left} min left`}),
       el("span", {className:"row"},
-        mk("Restore", () => { deleted = deleted.filter(x => x !== d); state.rules.splice(Math.min(d.index, state.rules.length), 0, d.rule); persistDeleted(); previewData = null; renderSummary(); renderDeleted(); changed(true); }),
+        mk("Restore", () => { deleted = deleted.filter(x => x !== d); state.rules.splice(Math.min(d.index, state.rules.length), 0, d.rule); persistDeleted(); previewData = null; saveCollapsed(); renderSummary(); renderDeleted(); changed(true); }),
         mk("Discard", () => { deleted = deleted.filter(x => x !== d); persistDeleted(); renderDeleted(); })));
   }));
 }
@@ -314,6 +473,28 @@ setInterval(renderDeleted, 15000);
 
 function renderSounds() {
   document.querySelector("#soundlist small").textContent = state.sounds.length + " sounds available";
+  const mine = state.sounds.filter(x => x.yours), box = document.getElementById("mysounds");
+  box.replaceChildren(...(mine.length ? [el("h3", {textContent:"Your sounds", style:"font-size:13px; margin:10px 0 0"})] : []), ...mine.map(x => {
+    const row = el("div", {className:"mine"}), actions = el("span", {className:"row"});
+    const mk = (label, fn) => { const b = el("button", {type:"button", textContent:label}); b.addEventListener("click", fn); return b; };
+    const idle = () => {
+      actions.replaceChildren(
+        mk("Test", async () => { try { await api("POST", "api/test", {sound: x.name, volume: state.defaults.volume ?? 60}); setStatus(""); } catch (e) { setStatus(e.message, "bad"); } }),
+        mk("Delete", () => actions.replaceChildren(el("span", {textContent:`Delete "${x.name}"?`}), mk("Yes, delete", () => removeSound(x.name)), mk("Cancel", idle))));
+    };
+    row.dataset.sound = x.name;
+    idle();
+    row.append(el("span", {textContent:x.name}), actions);
+    return row;
+  }));
+}
+async function removeSound(name) {
+  try {
+    await api("POST", "api/sounds/delete", {name});
+    state.sounds = (await api("GET", "api/config")).sounds;
+    renderDefaults(); renderRules(); renderSounds();
+    setStatus(`Deleted "${name}".`, "ok");
+  } catch (e) { renderSounds(); setStatus(e.message, "bad"); }
 }
 async function loadChannels() {
   try {
@@ -323,6 +504,7 @@ async function loadChannels() {
 }
 async function load() {
   state = await api("GET", "api/config");
+  loadCollapsed();
   renderDefaults(); renderRules(); renderSounds();
   loadDeleted(); renderDeleted();
   loadChannels();
