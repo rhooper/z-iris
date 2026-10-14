@@ -137,3 +137,30 @@ def test_silent_channel_rule_still_lets_a_personal_mention_through():
     )
     n = pipeline(rules=rules).handle(event(["mentioned"]))
     assert n is not None and n.reason == "mention"
+
+
+from z_iris.message import message_from_event
+
+
+def verdict(p, ev):
+    return p.evaluate(message_from_event("work", "chat.example.com", SELF, ev))
+
+
+def test_evaluate_explains_every_outcome():
+    quiet = (
+        '[[rule]]\nname = "quiet"\nmatch = "channel"\nchannel = "ops"\n'
+        'sound = "none"\nbanner = "off"\n'
+    )
+    assert verdict(pipeline(), event(sender=SELF)).why == "own message"
+    assert verdict(pipeline(), event()).why == "channel messages not enabled"
+    assert verdict(pipeline(), event(["mentioned"])).why == "mention"
+    v = verdict(pipeline(rules=OPS_RULE), event())
+    assert (v.why, v.rule_index, v.notification is not None) == ("rule", 0, True)
+    v = verdict(pipeline(rules=quiet), event())
+    assert (v.why, v.rule_index, v.notification) == ("silenced by rule", 0, None)
+    v = verdict(pipeline(rules=quiet), event(["mentioned"]))
+    assert v.why == "mention" and v.notification is not None
+    p = pipeline(channels=True)
+    p.handle({"type": "user_topic", "stream_id": 7, "topic_name": "deploys",
+              "visibility_policy": 1})
+    assert verdict(p, event()).why == "muted"

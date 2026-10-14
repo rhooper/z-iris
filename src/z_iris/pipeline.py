@@ -21,6 +21,15 @@ class Notification:
     action: Action
 
 
+@dataclass(frozen=True)
+class Verdict:
+    """What would happen to a message, and why. Used by dry runs and previews."""
+
+    notification: Notification | None
+    why: str
+    rule_index: int | None = None
+
+
 class Pipeline:
     def __init__(
         self,
@@ -49,8 +58,12 @@ class Pipeline:
         except (KeyError, TypeError):
             return None
 
-        if blocked(message, self.mutes, self.self_id) is not None:
-            return None
+        return self.evaluate(message).notification
+
+    def evaluate(self, message: Message) -> Verdict:
+        reason = blocked(message, self.mutes, self.self_id)
+        if reason is not None:
+            return Verdict(None, reason)
 
         config = self.settings.config
         rule = pick_rule(config.rules, message)
@@ -61,18 +74,20 @@ class Pipeline:
             )
             # A rule that silences a channel must not swallow a personal ping.
             if not silent:
-                return Notification(message, narrow_url(message), "rule", action)
+                notification = Notification(message, narrow_url(message), "rule", action)
+                return Verdict(notification, "rule", rule.index)
             if not message.is_mention:
-                return None
+                return Verdict(None, "silenced by rule", rule.index)
 
         decision = decide(
             message, self.mutes, self.self_id, config.notify_channel_messages
         )
         if not decision.notify:
-            return None
-        return Notification(
+            return Verdict(None, decision.reason)
+        notification = Notification(
             message,
             narrow_url(message),
             decision.reason,
             resolve_action(config, self.server, None),
         )
+        return Verdict(notification, decision.reason)
