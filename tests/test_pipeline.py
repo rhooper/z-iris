@@ -118,7 +118,8 @@ def test_dm_rule_carries_its_sound_and_volume():
 
 def test_no_rule_uses_the_default_action():
     n = pipeline().handle(event(["mentioned"]))
-    assert (n.action.sound, n.action.volume, n.action.rule) == ("synth", 60, None)
+    assert n.action.sound.endswith("chime.wav")
+    assert (n.action.volume, n.action.rule) == (60, None)
 
 
 def test_a_fully_silent_rule_drops_the_message():

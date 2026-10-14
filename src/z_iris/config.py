@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import re
 import tomllib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from z_iris.rules import KINDS, Rule
+from z_iris.sounds import library
 
 DEFAULT_PATH = Path("~/.config/z-iris/config.toml").expanduser()
 
@@ -26,13 +27,14 @@ class ServerConfig:
 @dataclass(frozen=True)
 class Config:
     servers: tuple[ServerConfig, ...]
-    sound: str = "synth"
+    sound: str = "chime"
     volume: int = 60
     notify_channel_messages: bool = False
     player: tuple[str, ...] = ("play", "-q")
     notifier: str = "terminal-notifier"
     master_volume: int = 100
     rules: tuple[Rule, ...] = ()
+    sounds: dict[str, Path] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -50,7 +52,22 @@ def resolve_action(config: Config, server: str, rule: Rule | None) -> Action:
     sound = rule.sound if rule and rule.sound is not None else config.sound
     banner = rule.banner if rule and rule.banner is not None else "full"
     final = round(base * server_volume * config.master_volume / 10000)
+    if sound in config.sounds:
+        sound = str(config.sounds[sound])
     return Action(sound, final, banner, rule.name if rule else None)
+
+
+def _sound(value: object, label: str, sounds: dict[str, Path]) -> str:
+    """A sound is "none", a library name, or (older configs) a file path."""
+    if not isinstance(value, str) or not value:
+        raise ConfigError(f"{label} must be a sound name, a file path or 'none'")
+    if value == "none" or value in sounds:
+        return value
+    path = Path(value).expanduser()
+    if path.is_file():
+        return str(path)
+    choices = ", ".join(sorted(sounds))
+    raise ConfigError(f"{label}: unknown sound {value!r}; choose none or one of {choices}")
 
 
 def _percent(value: object, label: str) -> int:
@@ -73,7 +90,9 @@ def _table(data: dict, key: str) -> dict:
     return value
 
 
-def _rules(data: dict, server_names: set[str]) -> tuple[Rule, ...]:
+def _rules(
+    data: dict, server_names: set[str], sounds: dict[str, Path]
+) -> tuple[Rule, ...]:
     rules: list[Rule] = []
     for index, raw in enumerate(_tables(data, "rule")):
         name = raw.get("name")
@@ -116,12 +135,7 @@ def _rules(data: dict, server_names: set[str]) -> tuple[Rule, ...]:
 
         sound = raw.get("sound")
         if sound is not None:
-            if not isinstance(sound, str) or not sound:
-                raise ConfigError(f"{label}: sound must be a path, 'synth' or 'none'")
-            if sound not in ("synth", "none"):
-                sound = str(Path(sound).expanduser())
-                if not Path(sound).exists():
-                    raise ConfigError(f"{label}: sound file not found: {sound}")
+            sound = _sound(sound, label, sounds)
 
         priority = raw.get("priority", 0)
         if not isinstance(priority, int) or isinstance(priority, bool):
@@ -155,24 +169,21 @@ def _servers(data: dict) -> tuple[ServerConfig, ...]:
     return tuple(servers)
 
 
-def parse_config(text: str) -> Config:
+def parse_config(text: str, sounds_dir: Path | None = None) -> Config:
     try:
         data = tomllib.loads(text)
     except tomllib.TOMLDecodeError as error:
         raise ConfigError(f"invalid TOML: {error}") from error
 
     servers = _servers(data)
+    sounds = library(sounds_dir)
     defaults = _table(data, "defaults")
     output = _table(data, "output")
 
     volume = _percent(defaults.get("volume", 60), "volume")
     master_volume = _percent(defaults.get("master_volume", 100), "master_volume")
 
-    sound = defaults.get("sound", "synth")
-    if not isinstance(sound, str) or not sound:
-        raise ConfigError("sound must be 'synth' or a file path")
-    if sound != "synth":
-        sound = str(Path(sound).expanduser())
+    sound = _sound(defaults.get("sound", "chime"), "default sound", sounds)
 
     notify_channel_messages = defaults.get("notify_channel_messages", False)
     if not isinstance(notify_channel_messages, bool):
@@ -198,7 +209,8 @@ def parse_config(text: str) -> Config:
         player=tuple(player),
         notifier=notifier,
         master_volume=master_volume,
-        rules=_rules(data, {server.name for server in servers}),
+        rules=_rules(data, {server.name for server in servers}, sounds),
+        sounds=sounds,
     )
 
 
@@ -210,4 +222,4 @@ def load_config(path: Path | None = None) -> Config:
         raise ConfigError(
             f"no config at {path}; copy config.example.toml there and edit it"
         ) from None
-    return parse_config(text)
+    return parse_config(text, path.parent / "sounds")

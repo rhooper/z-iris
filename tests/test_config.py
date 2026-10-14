@@ -21,14 +21,17 @@ def test_minimal_config_gets_defaults():
     config = parse_config(MINIMAL)
     assert [s.name for s in config.servers] == ["work"]
     assert config.servers[0].zuliprc == Path("~/.zuliprc").expanduser()
-    assert config.sound == "synth"
+    assert config.sound == "chime"
     assert config.volume == 60
     assert config.notify_channel_messages is False
     assert config.player == ("play", "-q")
     assert config.notifier == "terminal-notifier"
 
 
-def test_overrides_and_sound_path_expansion():
+def test_overrides_and_sound_path_expansion(tmp_path, monkeypatch):
+    monkeypatch.setenv("HOME", str(tmp_path))
+    (tmp_path / "Sounds").mkdir()
+    (tmp_path / "Sounds" / "a.wav").write_bytes(b"x")
     config = parse_config(
         MINIMAL
         + """
@@ -154,7 +157,7 @@ def test_master_and_server_volume():
 
 def test_resolve_action():
     base = parse_config(MINIMAL)
-    assert resolve_action(base, "work", None) == Action("synth", 60, "full", None)
+    assert resolve_action(base, "work", None) == Action(str(base.sounds["chime"]), 60, "full", None)
     config = parse_config(
         MINIMAL.replace('"~/.zuliprc"', '"~/.zuliprc"\nvolume = 50')
         + "[defaults]\nmaster_volume = 50\n"
@@ -182,3 +185,37 @@ def test_wrong_shapes_and_huge_regexes_are_config_errors(text):
 def test_channel_is_rejected_on_kinds_that_ignore_it():
     with pytest.raises(ConfigError, match="rule 'r'"):
         rule_config('name = "r"\nmatch = "keyword"\nkeyword = "x"\nchannel = "ops"\n')
+
+
+def test_rule_sound_can_be_a_bundled_tone_name():
+    config = rule_config('name = "r"\nmatch = "mention"\nsound = "bell"\n')
+    assert config.rules[0].sound == "bell"
+    action = resolve_action(config, "work", config.rules[0])
+    assert action.sound == str(config.sounds["bell"])
+    assert action.sound.endswith("bell.wav")
+
+
+def test_default_sound_is_the_chime_file_and_none_stays_none():
+    config = parse_config(MINIMAL)
+    assert resolve_action(config, "work", None).sound.endswith("chime.wav")
+    quiet = parse_config(MINIMAL + '[defaults]\nsound = "none"\n')
+    assert resolve_action(quiet, "work", None).sound == "none"
+
+
+def test_user_sounds_directory_adds_names(tmp_path):
+    (tmp_path / "klaxon.wav").write_bytes(b"x")
+    config = parse_config(
+        MINIMAL + '[[rule]]\nname = "r"\nmatch = "mention"\nsound = "klaxon"\n',
+        sounds_dir=tmp_path,
+    )
+    assert resolve_action(config, "work", config.rules[0]).sound == str(tmp_path / "klaxon.wav")
+
+
+def test_unknown_sound_name_lists_the_choices():
+    with pytest.raises(ConfigError, match="rule 'r'.*chime"):
+        rule_config('name = "r"\nmatch = "mention"\nsound = "klaxon"\n')
+
+
+def test_a_typo_in_the_default_sound_is_a_config_error():
+    with pytest.raises(ConfigError, match="default sound"):
+        parse_config(MINIMAL + '[defaults]\nsound = "nope"\n')

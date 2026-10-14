@@ -1,0 +1,85 @@
+"""The sound library: bundled tones plus the user's own files."""
+
+from __future__ import annotations
+
+import os
+import re
+import subprocess
+import tempfile
+from importlib import resources
+from pathlib import Path
+
+SUFFIXES = (".wav", ".aiff", ".aif", ".flac", ".mp3", ".ogg", ".caf")
+MAX_BYTES = 10_000_000
+RESERVED = {"none", "synth"}
+_BAD_CHARACTERS = re.compile(r"[^A-Za-z0-9 _.\-]")
+
+
+class SoundError(Exception):
+    """A sound could not be added."""
+
+
+def _builtin_dir() -> Path:
+    return Path(str(resources.files("z_iris").joinpath("sounds")))
+
+
+def builtin_names() -> list[str]:
+    return sorted(p.stem for p in _builtin_dir().glob("*.wav"))
+
+
+def library(user_dir: Path | None) -> dict[str, Path]:
+    """Map sound names to files. User files win over bundled tones.
+
+    "synth" stays as an alias for "chime", the name old configs used.
+    """
+    sounds = {p.stem: p for p in _builtin_dir().glob("*.wav")}
+    sounds["synth"] = sounds["chime"]
+    if user_dir is not None and user_dir.is_dir():
+        for path in sorted(user_dir.iterdir()):
+            if path.suffix.lower() in SUFFIXES and path.is_file():
+                sounds[path.stem] = path
+    return sounds
+
+
+def user_names(user_dir: Path | None) -> list[str]:
+    if user_dir is None or not user_dir.is_dir():
+        return []
+    return sorted(
+        p.stem for p in user_dir.iterdir() if p.suffix.lower() in SUFFIXES
+    )
+
+
+def add_sound(user_dir: Path, filename: str, data: bytes) -> str:
+    """Store an uploaded sound and return its name. Raises SoundError."""
+    if len(data) > MAX_BYTES:
+        raise SoundError("file is too large (10 MB limit)")
+    if "/" in filename or "\\" in filename or filename.startswith("."):
+        raise SoundError("bad file name")
+    suffix = Path(filename).suffix.lower()
+    if suffix not in SUFFIXES:
+        raise SoundError(f"file type must be one of {', '.join(SUFFIXES)}")
+    name = _BAD_CHARACTERS.sub("", Path(filename).stem).strip(" .")
+    if not name or name.lower() in RESERVED:
+        raise SoundError("bad sound name")
+
+    user_dir.mkdir(parents=True, exist_ok=True)
+    handle, temporary = tempfile.mkstemp(dir=user_dir, suffix=suffix, prefix=".upload-")
+    try:
+        with os.fdopen(handle, "wb") as file:
+            file.write(data)
+        try:
+            probe = subprocess.run(
+                ["soxi", "-D", temporary], capture_output=True, text=True, timeout=10
+            )
+        except (OSError, subprocess.TimeoutExpired) as error:
+            raise SoundError(f"cannot check the file: {error}") from error
+        if probe.returncode != 0:
+            raise SoundError("sox cannot play this file")
+        for old in user_dir.iterdir():
+            if old.stem == name and old.suffix.lower() in SUFFIXES:
+                old.unlink()
+        os.replace(temporary, user_dir / f"{name}{suffix}")
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+    return name
