@@ -8,7 +8,7 @@ from pathlib import Path
 import rumps
 from AppKit import NSApplication, NSApplicationActivationPolicyAccessory
 
-from z_iris.config import Config
+from z_iris.settings import Settings
 from z_iris.stream import Controls, StatusBoard
 
 _ACTIVE_TITLE = "◉"
@@ -17,21 +17,25 @@ _PAUSED_TITLE = "◌"
 
 class IrisApp(rumps.App):
     def __init__(
-        self, config: Config, config_path: Path, controls: Controls, board: StatusBoard
+        self, settings: Settings, config_path: Path, controls: Controls, board: StatusBoard
     ) -> None:
         super().__init__("z-iris", title=_ACTIVE_TITLE, quit_button=None)
+        self.settings = settings
         self.controls = controls
         self.board = board
         self.config_path = config_path
         self.server_items = {
             server.name: rumps.MenuItem(f"{server.name}: connecting")
-            for server in config.servers
+            for server in settings.config.servers
         }
         self.pause_item = rumps.MenuItem("Pause", callback=self.toggle_pause)
+        self.error_item = rumps.MenuItem("")
         self.menu = [
+            self.error_item,
             *self.server_items.values(),
             None,
             self.pause_item,
+            rumps.MenuItem("Reload config", callback=self.reload_config),
             rumps.MenuItem("Open config file", callback=self.open_config),
             None,
             rumps.MenuItem("Quit z-iris", callback=rumps.quit_application),
@@ -40,6 +44,7 @@ class IrisApp(rumps.App):
         self.refresh_timer.start()
 
     def refresh(self, _timer) -> None:
+        self._show_config_error(self.settings.reload())
         for name, text in self.board.snapshot().items():
             item = self.server_items.get(name)
             if item is not None:
@@ -58,14 +63,21 @@ class IrisApp(rumps.App):
     def _show_pause_state(self) -> None:
         self.title = _PAUSED_TITLE if self.controls.paused.is_set() else _ACTIVE_TITLE
 
+    def _show_config_error(self, error: str | None) -> None:
+        # rumps cannot hide an item, so the first line is blank when all is well.
+        self.error_item.title = f"Config problem: {error[:80]}" if error else "Config OK"
+
+    def reload_config(self, _sender) -> None:
+        self._show_config_error(self.settings.reload(force=True))
+
     def open_config(self, _sender) -> None:
         subprocess.run(["open", str(self.config_path)], check=False)
 
 
 def run_menubar(
-    config: Config, config_path: Path, controls: Controls, board: StatusBoard
+    settings: Settings, config_path: Path, controls: Controls, board: StatusBoard
 ) -> None:
     NSApplication.sharedApplication().setActivationPolicy_(
         NSApplicationActivationPolicyAccessory
     )
-    IrisApp(config, config_path, controls, board).run()
+    IrisApp(settings, config_path, controls, board).run()

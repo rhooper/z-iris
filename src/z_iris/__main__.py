@@ -57,22 +57,28 @@ def main(argv: list[str] | None = None) -> int:
 
     controls = Controls()
     board = StatusBoard()
-    settings = Settings(config)
+    settings = Settings(config, args.config)
     output = DryRunOutput(settings) if args.dry_run else RealOutput(settings)
     streams = [ServerStream(s, settings, output, controls, board) for s in config.servers]
     for stream in streams:
         stream.start()
 
+    last_error = None
     if args.dry_run or args.headless:
         try:
-            threading.Event().wait()
+            while True:
+                error = settings.reload()
+                if error and error != last_error:
+                    print(f"z-iris: config: {error}", file=sys.stderr)
+                last_error = error
+                threading.Event().wait(1)
         except KeyboardInterrupt:
             pass
         return 0
 
     from z_iris.menubar import run_menubar
 
-    run_menubar(config, args.config, controls, board)
+    run_menubar(settings, args.config, controls, board)
     return 0
 
 
