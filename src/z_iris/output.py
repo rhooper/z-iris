@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import queue
 import subprocess
 import sys
 import threading
@@ -172,6 +173,51 @@ def make_notifier(spawn: Callable[[list[str]], object] = _spawn) -> Notifier:
     return fallback
 
 
+class _BannerWorker:
+    """One daemon thread that runs banner jobs in order, so a slow image fetch
+    never blocks the caller. A bounded queue; a daemon thread, so a stuck fetch
+    cannot hold the process open at exit."""
+
+    def __init__(self, limit: int = 100) -> None:
+        self._jobs: queue.Queue = queue.Queue(maxsize=limit)
+        self._thread = threading.Thread(target=self._run, daemon=True, name="z-iris-banner")
+        self._thread.start()
+
+    def _run(self) -> None:
+        while True:
+            job = self._jobs.get()
+            try:
+                if job is None:
+                    return
+                job()
+            except Exception as error:
+                print(f"z-iris: banner failed: {error}", file=sys.stderr)
+            finally:
+                self._jobs.task_done()
+
+    def submit(self, job: Callable[[], None]) -> bool:
+        try:
+            self._jobs.put_nowait(job)
+            return True
+        except queue.Full:
+            return False
+
+    def drain(self, timeout: float | None = None) -> None:
+        done = threading.Event()
+        try:
+            self._jobs.put(done.set, timeout=timeout)
+        except queue.Full:
+            return
+        done.wait(timeout)
+
+    def close(self, timeout: float = 2.0) -> None:
+        try:
+            self._jobs.put(None, timeout=timeout)
+        except queue.Full:
+            return
+        self._thread.join(timeout)
+
+
 class RealOutput:
     def __init__(
         self,
@@ -185,6 +231,7 @@ class RealOutput:
         self.visual = NullVisual()
         self.notifier = notifier or make_notifier(spawn)
         self.image_for = image_for
+        self._worker: _BannerWorker | None = None
         if settings.config.notifier != "terminal-notifier":
             print(
                 "z-iris: [output] notifier is ignored; banners are native now",
@@ -192,9 +239,16 @@ class RealOutput:
             )
 
     def banner(self, notification: Notification) -> None:
-        action = notification.action
-        if action.banner == "off":
+        """Returns at once; the image lookup and the notifier call run on a worker."""
+        if notification.action.banner == "off":
             return
+        if self._worker is None:
+            self._worker = _BannerWorker()
+        if not self._worker.submit(lambda: self._show_banner(notification)):
+            print("z-iris: banner queue full; banner dropped", file=sys.stderr)
+
+    def _show_banner(self, notification: Notification) -> None:
+        action = notification.action
         message = notification.message
         body = "New message" if action.banner == "title" else plain_body(message)
         image = None
@@ -207,6 +261,16 @@ class RealOutput:
             notification_title(notification), body, notification.url, image,
             banner_group(message), True
         )
+
+    def drain(self, timeout: float | None = 5.0) -> None:
+        """Wait until every banner submitted so far has been shown."""
+        if self._worker is not None:
+            self._worker.drain(timeout)
+
+    def close(self, timeout: float = 2.0) -> None:
+        """Stop the banner worker, waiting at most timeout for it."""
+        if self._worker is not None:
+            self._worker.close(timeout)
 
     def sound(self, notification: Notification, volume: int | None = None) -> None:
         action = notification.action

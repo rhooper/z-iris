@@ -42,6 +42,11 @@ def _real_output(settings: Settings) -> RealOutput:
     return RealOutput(settings, image_for=ImageResolver(default_registry).image_for)
 
 
+def _close_output(output) -> None:
+    if isinstance(output, RealOutput):
+        output.close()
+
+
 def main(argv: list[str] | None = None) -> int:
     raw = sys.argv[1:] if argv is None else argv
     if raw[:1] == ["flash"]:
@@ -140,6 +145,7 @@ def main(argv: list[str] | None = None) -> int:
         except KeyboardInterrupt:
             pass
         engine.stop()
+        _close_output(output)
         return 0
 
     from z_iris.menubar import run_menubar
@@ -151,6 +157,7 @@ def main(argv: list[str] | None = None) -> int:
         visual = output.visual = MacVisual()
     run_menubar(settings, args.config, controls, board, visual)
     engine.stop()
+    _close_output(output)
     return 0
 
 

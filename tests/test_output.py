@@ -125,14 +125,16 @@ CONFIG = parse_config('[[server]]\nname = "work"\nzuliprc = "/x"\n')
 
 def deliver(action, capture):
     n = Notification(channel(), "zulip://h/#narrow/x", "rule", action)
-    RealOutput(Settings(CONFIG), spawn=capture.append).deliver(n)
+    out = RealOutput(Settings(CONFIG), spawn=capture.append)
+    out.deliver(n)
+    out.drain()
 
 
 def test_rule_sound_and_volume_reach_the_player():
     calls = []
     deliver(Action("/a/b.wav", 25, "full", "r"), calls)
-    banner, sound = calls
-    assert banner[0] == "terminal-notifier"
+    banner = next(c for c in calls if c[0] == "terminal-notifier")
+    sound = next(c for c in calls if c[0] == "play")
     assert sound == ["play", "-q", "/a/b.wav", "vol", "0.25"]
 
 
@@ -174,6 +176,7 @@ def test_output_steps_can_be_called_separately():
     flashes = []
     out.visual = type("V", (), {"flash": lambda self, action: flashes.append(action.flash)})()
     out.banner(n)
+    out.drain()
     assert [c[0] for c in calls] == ["terminal-notifier"]
     out.sound(n)
     assert calls[-1][-2:] == ["vol", "0.50"]
@@ -183,6 +186,7 @@ def test_output_steps_can_be_called_separately():
     assert flashes == ["top"]
     calls.clear(); flashes.clear()
     out.deliver(n)
+    out.drain()
     assert len(calls) == 2 and flashes == ["top"]
 
 
@@ -203,6 +207,7 @@ def native(action, image_for=None, content="hello"):
     fake = FakeNotifier()
     out = RealOutput(Settings(CONFIG), spawn=lambda c: None, notifier=fake, image_for=image_for)
     out.banner(Notification(channel(content), "zulip://h/#narrow/x", "rule", action))
+    out.drain()
     return fake.shown
 
 
@@ -273,3 +278,48 @@ def test_a_batch_summary_title_replaces_the_sender_title():
     n = Notification(channel(), "zulip://h/#narrow/x", "rule", ACTION, summary="3 new in #ops")
     command = banner_command("terminal-notifier", n)
     assert command[command.index("-title") + 1] == "3 new in #ops"
+
+
+def test_banner_returns_at_once_while_the_image_is_fetched():
+    import threading
+
+    gate, started = threading.Event(), threading.Event()
+
+    def slow(message):
+        started.set()
+        assert gate.wait(5)
+        return None
+
+    fake = FakeNotifier()
+    out = RealOutput(Settings(CONFIG), spawn=lambda c: None, notifier=fake, image_for=slow)
+    n = Notification(channel(), "zulip://h/#narrow/x", "rule", Action("none", 0, "full", "r"))
+    out.banner(n)  # must not wait for the fetch
+    assert started.wait(5) and fake.shown == []
+    gate.set()
+    out.drain()
+    assert len(fake.shown) == 1
+    out.close()
+
+
+def test_banners_keep_their_order_and_close_does_not_hang():
+    import threading
+
+    gate = threading.Event()
+    fake = FakeNotifier()
+    out = RealOutput(
+        Settings(CONFIG), spawn=lambda c: None, notifier=fake,
+        image_for=lambda m: gate.wait(5) and None,
+    )
+    for text in ("one", "two", "three"):
+        out.banner(Notification(channel(text), "u", "rule", Action("none", 0, "full", "r")))
+    gate.set()
+    out.drain()
+    assert [s[1] for s in fake.shown] == ["one", "two", "three"]
+    blocker = threading.Event()
+    stuck = RealOutput(
+        Settings(CONFIG), spawn=lambda c: None, notifier=FakeNotifier(),
+        image_for=lambda m: blocker.wait(30),
+    )
+    stuck.banner(Notification(channel(), "u", "rule", Action("none", 0, "full", "r")))
+    stuck.close(timeout=0.2)  # returns although the worker is stuck
+    blocker.set()
