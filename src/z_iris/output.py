@@ -5,11 +5,12 @@ from __future__ import annotations
 import subprocess
 import sys
 import threading
+from collections.abc import Callable
 from typing import Protocol
 
-from z_iris.config import Config
 from z_iris.message import Message
 from z_iris.pipeline import Notification
+from z_iris.settings import Settings
 
 _ZERO_WIDTH_SPACE = "​"
 
@@ -52,12 +53,17 @@ def banner_body(message: Message, limit: int = 200) -> str:
 
 def banner_command(notifier: str, notification: Notification) -> list[str]:
     message = notification.message
+    body = (
+        "New message"
+        if notification.action.banner == "title"
+        else banner_body(message)
+    )
     return [
         notifier,
         "-title",
         _safe_argument(banner_title(message)),
         "-message",
-        banner_body(message),
+        body,
         "-open",
         notification.url,
         "-group",
@@ -97,26 +103,48 @@ def _spawn(command: list[str]) -> threading.Thread | None:
     return thread
 
 
+def _audible(notification: Notification) -> bool:
+    action = notification.action
+    return action.sound != "none" and action.volume > 0
+
+
 class RealOutput:
-    def __init__(self, config: Config) -> None:
-        self.config = config
+    def __init__(
+        self,
+        settings: Settings,
+        spawn: Callable[[list[str]], object] = _spawn,
+    ) -> None:
+        self.settings = settings
+        self.spawn = spawn
 
     def deliver(self, notification: Notification) -> None:
-        _spawn(banner_command(self.config.notifier, notification))
-        _spawn(sound_command(self.config.player, self.config.sound, self.config.volume))
+        config = self.settings.config
+        action = notification.action
+        if action.banner != "off":
+            self.spawn(banner_command(config.notifier, notification))
+        if _audible(notification):
+            self.spawn(sound_command(config.player, action.sound, action.volume))
 
 
 class DryRunOutput:
-    def __init__(self, config: Config) -> None:
-        self.config = config
+    def __init__(self, settings: Settings) -> None:
+        self.settings = settings
 
     def deliver(self, notification: Notification) -> None:
-        sound = sound_command(self.config.player, self.config.sound, self.config.volume)
+        action = notification.action
+        sound = (
+            " ".join(
+                sound_command(self.settings.config.player, action.sound, action.volume)
+            )
+            if _audible(notification)
+            else "silent"
+        )
+        banner = "no banner" if action.banner == "off" else f"banner {action.banner}"
         print(
             f"[dry-run] {notification.message.server} ({notification.reason}): "
             f"{banner_title(notification.message)}\n"
             f"          {banner_body(notification.message, 80)}\n"
             f"          open {notification.url}\n"
-            f"          sound {' '.join(sound)}",
+            f"          rule {action.rule or 'default'}, {banner}, sound {sound}",
             flush=True,
         )

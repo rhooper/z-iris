@@ -9,6 +9,7 @@ from pathlib import Path
 
 from z_iris.config import DEFAULT_PATH, Config, ConfigError, load_config
 from z_iris.output import DryRunOutput, RealOutput
+from z_iris.settings import Settings
 from z_iris.stream import Controls, ServerStream, StatusBoard
 
 
@@ -56,8 +57,9 @@ def main(argv: list[str] | None = None) -> int:
 
     controls = Controls()
     board = StatusBoard()
-    output = DryRunOutput(config) if args.dry_run else RealOutput(config)
-    streams = [ServerStream(s, config, output, controls, board) for s in config.servers]
+    settings = Settings(config)
+    output = DryRunOutput(settings) if args.dry_run else RealOutput(settings)
+    streams = [ServerStream(s, settings, output, controls, board) for s in config.servers]
     for stream in streams:
         stream.start()
 

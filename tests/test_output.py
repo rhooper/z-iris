@@ -93,3 +93,54 @@ def test_text_that_looks_like_a_property_list_is_neutralised(text):
     for flag in ("-title", "-message"):
         value = command[command.index(flag) + 1]
         assert value[0] == "\u200b" and text in value
+
+
+from z_iris.config import parse_config
+from z_iris.output import DryRunOutput, RealOutput
+from z_iris.settings import Settings
+
+CONFIG = parse_config('[[server]]\nname = "work"\nzuliprc = "/x"\n')
+
+
+def deliver(action, capture):
+    n = Notification(channel(), "zulip://h/#narrow/x", "rule", action)
+    RealOutput(Settings(CONFIG), spawn=capture.append).deliver(n)
+
+
+def test_rule_sound_and_volume_reach_the_player():
+    calls = []
+    deliver(Action("/a/b.wav", 25, "full", "r"), calls)
+    banner, sound = calls
+    assert banner[0] == "terminal-notifier"
+    assert sound == ["play", "-q", "-v", "0.25", "/a/b.wav"]
+
+
+@pytest.mark.parametrize("action", [Action("none", 60, "full", "r"), Action("synth", 0, "full", "r")])
+def test_no_sound_means_no_player(action):
+    calls = []
+    deliver(action, calls)
+    assert len(calls) == 1 and calls[0][0] == "terminal-notifier"
+
+
+def test_banner_off_skips_the_banner():
+    calls = []
+    deliver(Action("synth", 60, "off", "r"), calls)
+    assert len(calls) == 1 and calls[0][0] == "play"
+
+
+def test_title_banner_hides_the_message_text():
+    calls = []
+    deliver(Action("none", 0, "title", "r"), calls)
+    command = calls[0]
+    assert command[command.index("-message") + 1] == "New message"
+    assert command[command.index("-title") + 1] == "Ada (#ops > deploys)"
+
+
+def test_dry_run_names_the_rule_and_volume(capsys):
+    n = Notification(channel(), "zulip://h/#narrow/x", "rule", Action("synth", 33, "full", "ops"))
+    DryRunOutput(Settings(CONFIG)).deliver(n)
+    out = capsys.readouterr().out
+    assert "rule ops" in out and "-v 0.33" in out
+    n = Notification(channel(), "zulip://h/#narrow/x", "dm", ACTION)
+    DryRunOutput(Settings(CONFIG)).deliver(n)
+    assert "rule default" in capsys.readouterr().out
