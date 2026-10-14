@@ -44,8 +44,22 @@ def main(argv: list[str] | None = None) -> int:
         help="print what would notify, play nothing; implies --headless",
     )
     parser.add_argument("--headless", action="store_true", help="no menubar app")
+    parser.add_argument(
+        "--autoreload",
+        action="store_true",
+        help="restart when z-iris's own source changes (for development)",
+    )
     parser.add_argument("command", nargs="?", choices=["probe", "edit"])
     args = parser.parse_args(argv)
+
+    if args.autoreload:
+        import z_iris
+        from z_iris.reloader import run
+
+        arguments = [a for a in (sys.argv[1:] if argv is None else argv) if a != "--autoreload"]
+        return run(
+            [sys.executable, "-m", "z_iris", *arguments], Path(z_iris.__file__).parent
+        )
 
     try:
         config = load_config(args.config)

@@ -98,3 +98,11 @@ through the zulip client and your zuliprc) and runs them through the rules on
 the page, saved or not. Each rule shows the messages that use it and the sound
 and volume they would get. Other messages are summarised by reason (muted, own
 message, no rule). Nothing is saved and nothing plays.
+
+## Development: autoreload
+
+`uv run z-iris --autoreload` (combine with `--dry-run`, `--headless` or `edit`)
+runs z-iris as a child process and restarts it when any `.py` or `.html` file
+in `src/z_iris` changes. If the app crashes it waits for the next edit, so
+fixing the code brings it back. Choosing Quit in the menu ends the run. Config
+changes never need this: the config file reloads by itself.
