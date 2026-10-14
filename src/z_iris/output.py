@@ -71,7 +71,20 @@ def banner_command(notifier: str, notification: Notification) -> list[str]:
 
 
 class Output(Protocol):
+    """Where notifications go. deliver does everything; the engine (phase 3)
+    calls the steps separately to silence, repeat or batch."""
+
     def deliver(self, notification: Notification) -> None: ...
+    def banner(self, notification: Notification) -> None: ...
+    def sound(self, notification: Notification, volume: int | None = None) -> None: ...
+    def flash(self, notification: Notification) -> None: ...
+
+
+class NullVisual:
+    """Stands in for the screen flasher until visual.py provides one."""
+
+    def flash(self, action) -> None:
+        return None
 
 
 def _spawn(command: list[str]) -> threading.Thread | None:
@@ -115,19 +128,40 @@ class RealOutput:
     ) -> None:
         self.settings = settings
         self.spawn = spawn
+        self.visual = NullVisual()
+
+    def banner(self, notification: Notification) -> None:
+        if notification.action.banner != "off":
+            self.spawn(banner_command(self.settings.config.notifier, notification))
+
+    def sound(self, notification: Notification, volume: int | None = None) -> None:
+        action = notification.action
+        level = action.volume if volume is None else volume
+        if action.sound != "none" and level > 0:
+            self.spawn(sound_command(self.settings.config.player, action.sound, level))
+
+    def flash(self, notification: Notification) -> None:
+        if notification.action.flash != "none":
+            self.visual.flash(notification.action)
 
     def deliver(self, notification: Notification) -> None:
-        config = self.settings.config
-        action = notification.action
-        if action.banner != "off":
-            self.spawn(banner_command(config.notifier, notification))
-        if _audible(notification):
-            self.spawn(sound_command(config.player, action.sound, action.volume))
+        self.banner(notification)
+        self.sound(notification)
+        self.flash(notification)
 
 
 class DryRunOutput:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
+
+    def banner(self, notification: Notification) -> None:
+        self.deliver(notification)
+
+    def sound(self, notification: Notification, volume: int | None = None) -> None:
+        return None
+
+    def flash(self, notification: Notification) -> None:
+        return None
 
     def deliver(self, notification: Notification) -> None:
         action = notification.action
@@ -139,11 +173,12 @@ class DryRunOutput:
             else "silent"
         )
         banner = "no banner" if action.banner == "off" else f"banner {action.banner}"
+        flash = "" if action.flash == "none" else f", flash {action.flash}"
         print(
             f"[dry-run] {notification.message.server} ({notification.reason}): "
             f"{banner_title(notification.message)}\n"
             f"          {banner_body(notification.message, 80)}\n"
             f"          open {notification.url}\n"
-            f"          rule {action.rule or 'default'}, {banner}, sound {sound}",
+            f"          rule {action.rule or 'default'}, {banner}, sound {sound}{flash}",
             flush=True,
         )

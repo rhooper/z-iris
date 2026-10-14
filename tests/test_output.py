@@ -165,3 +165,22 @@ def test_dry_run_names_the_rule_and_volume(capsys):
     n = Notification(channel(), "zulip://h/#narrow/x", "dm", ACTION)
     DryRunOutput(Settings(CONFIG)).deliver(n)
     assert "rule default" in capsys.readouterr().out
+
+
+def test_output_steps_can_be_called_separately():
+    calls = []
+    n = Notification(channel(), "zulip://h/#narrow/x", "rule", Action("/a/b.wav", 50, "full", "r", flash="top"))
+    out = RealOutput(Settings(CONFIG), spawn=calls.append)
+    flashes = []
+    out.visual = type("V", (), {"flash": lambda self, action: flashes.append(action.flash)})()
+    out.banner(n)
+    assert [c[0] for c in calls] == ["terminal-notifier"]
+    out.sound(n)
+    assert calls[-1][-2:] == ["vol", "0.50"]
+    out.sound(n, volume=80)
+    assert calls[-1][-2:] == ["vol", "0.80"]
+    out.flash(n)
+    assert flashes == ["top"]
+    calls.clear(); flashes.clear()
+    out.deliver(n)
+    assert len(calls) == 2 and flashes == ["top"]
