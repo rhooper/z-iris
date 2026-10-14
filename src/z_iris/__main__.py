@@ -39,7 +39,10 @@ def _probe(config: Config) -> int:
 def _real_output(settings: Settings) -> RealOutput:
     from z_iris.media import ImageResolver, default_registry
 
-    return RealOutput(settings, image_for=ImageResolver(default_registry).image_for)
+    resolver = ImageResolver(
+        default_registry, external_images=lambda: settings.config.external_images
+    )
+    return RealOutput(settings, image_for=resolver.image_for)
 
 
 def main(argv: list[str] | None = None) -> int:

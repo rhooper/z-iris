@@ -32,8 +32,9 @@ class Net:
         self.routes = routes or {}
         self.calls = []
 
-    def __call__(self, url, *, auth=None, timeout, max_bytes):
+    def __call__(self, url, *, auth=None, timeout, max_bytes, **kw):
         self.calls.append((url, auth, timeout, max_bytes))
+        self.kw = kw
         result = self.routes.get(url)
         if result is None:
             raise HttpError("404")
@@ -52,6 +53,7 @@ def resolver(tmp_path, net, client=FakeClient(), **kw):
     if client is not None:
         reg.set("main", client)
     kw.setdefault("convert", fake_convert)
+    kw.setdefault("external_images", True)
     return ImageResolver(reg, tmp_path / "cache", http_get=net, **kw)
 
 
@@ -334,7 +336,8 @@ def test_http_get_redirect_drops_auth_on_foreign_host():
         return Resp()
 
     ctype, body = media.http_get(
-        "https://chat.example.com/a", auth=("e", "k"), timeout=1, max_bytes=100, _get=get
+        "https://chat.example.com/user_uploads/1/a/x.png", auth=("e", "k"),
+        auth_base="https://chat.example.com/", timeout=1, max_bytes=100, _get=get,
     )
     assert body == b"abc"
     assert calls[0][1] == ("e", "k")
@@ -386,3 +389,170 @@ def test_stream_registers_its_client():
     assert out.done.wait(5)
     stream.stop()
     assert media.default_registry.get("w") is client
+
+
+# security: credentials, external images, deadline, cache
+
+KEY = ("bot@example.com", "SECRETKEY")
+
+
+def test_http_upload_url_never_gets_credentials(tmp_path):
+    url = "http://chat.example.com/user_uploads/1/a/x.png"
+    net = Net({url: ("image/png", PNG)})
+    resolver(tmp_path, net).image_for(msg(f"![x]({url})"))
+    assert all(c[1] is None for c in net.calls)
+
+
+def test_other_port_never_gets_credentials(tmp_path):
+    url = "https://chat.example.com:8443/user_uploads/1/a/x.png"
+    net = Net({url: ("image/png", PNG)})
+    resolver(tmp_path, net).image_for(msg(f"![x]({url})"))
+    assert all(c[1] is None for c in net.calls)
+
+
+def test_non_upload_path_on_server_gets_no_credentials(tmp_path):
+    net = Net({"https://chat.example.com/json/users/me": ("image/png", PNG)})
+    resolver(tmp_path, net).image_for(msg("![](/json/users/me)"))
+    assert all(c[1] is None for c in net.calls)
+
+
+@pytest.mark.parametrize("path", ["/user_uploads/1/a/x.png", "/user_avatars/1.png",
+                                  "/thumbnail?url=a&size=full"])
+def test_allowed_server_paths_get_credentials(path):
+    base = "https://chat.example.com/"
+    assert media.credentials_allowed("https://chat.example.com" + path, base)
+
+
+@pytest.mark.parametrize("url", [
+    "http://chat.example.com/user_uploads/1/a",
+    "https://chat.example.com:444/user_uploads/1/a",
+    "https://chat.example.com/api/v1/users",
+    "https://chat.example.com/user_uploadsX/1",
+    "https://evil.org/user_uploads/1/a",
+])
+def test_credentials_disallowed(url):
+    assert not media.credentials_allowed(url, "https://chat.example.com/")
+
+
+def test_http_base_allows_http_same_origin():
+    assert media.credentials_allowed("http://localhost:9991/user_uploads/1/a", "http://localhost:9991")
+
+
+def test_http_get_drops_auth_on_https_to_http_downgrade_same_host():
+    calls = []
+
+    def get(url, **kw):
+        calls.append((url, kw.get("auth")))
+        if url.startswith("https:"):
+            return Resp(302, {"location": "http://chat.example.com/user_uploads/1/a/x.png"})
+        return Resp()
+
+    media.http_get(
+        "https://chat.example.com/user_uploads/1/a/x.png", auth=KEY,
+        auth_base="https://chat.example.com/", timeout=1, max_bytes=100, _get=get,
+    )
+    assert calls[0][1] == KEY
+    assert calls[1][1] is None
+
+
+def test_http_get_drops_auth_on_redirect_to_other_path():
+    calls = []
+
+    def get(url, **kw):
+        calls.append((url, kw.get("auth")))
+        if "user_uploads" in url:
+            return Resp(302, {"location": "/json/users/me"})
+        return Resp()
+
+    media.http_get(
+        "https://chat.example.com/user_uploads/1/a/x.png", auth=KEY,
+        auth_base="https://chat.example.com/", timeout=1, max_bytes=100, _get=get,
+    )
+    assert calls[1][1] is None
+
+
+def test_external_images_off_skips_foreign_hosts(tmp_path):
+    net = Net({"https://x.com/a.png": ("image/png", PNG)})
+    r = resolver(tmp_path, net, external_images=False)
+    assert r.image_for(msg("![p](https://x.com/a.png)")) is None
+    assert net.calls == []
+
+
+def test_external_images_off_still_fetches_server_uploads_and_avatars(tmp_path):
+    up = "https://chat.example.com/user_uploads/1/a/x.png"
+    av = "https://secure.gravatar.com/avatar/abc"
+    net = Net({up: ("image/png", PNG), av: ("image/png", PNG)})
+    r = resolver(tmp_path, net, external_images=False)
+    assert r.image_for(msg(f"![p]({up})")) is not None
+    assert r.image_for(msg("hi", avatar_url=av)) is not None
+
+
+def test_external_images_off_skips_foreign_non_gravatar_avatar(tmp_path):
+    net = Net({"https://evil.org/me.png": ("image/png", PNG)})
+    r = resolver(tmp_path, net, external_images=False)
+    assert r.image_for(msg("hi", avatar_url="https://evil.org/me.png")) is None
+    assert net.calls == []
+
+
+def test_external_images_callable_is_read_each_time(tmp_path):
+    flag = [False]
+    net = Net({"https://x.com/a.png": ("image/png", PNG)})
+    r = resolver(tmp_path, net, external_images=lambda: flag[0])
+    assert r.image_for(msg("![p](https://x.com/a.png)")) is None
+    flag[0] = True
+    assert r.image_for(msg("![p](https://x.com/a.png)")) is not None
+
+
+def test_http_get_checks_deadline_before_redirect_hop():
+    calls = []
+
+    def get(url, **kw):
+        calls.append(url)
+        return Resp(302, {"location": "https://x.com/b"})
+
+    with pytest.raises(HttpError):
+        media.http_get("https://x.com/a", timeout=1, max_bytes=10, _get=get,
+                       deadline=time_past())
+    assert calls == []
+
+
+def time_past():
+    import time
+    return time.monotonic() - 1
+
+
+def test_resolver_shares_one_budget_between_image_and_avatar(tmp_path):
+    fake_now = [100.0]
+    net = Net({"https://x.com/a.png": HttpError("slow")})
+
+    def slow(*a, **k):
+        fake_now[0] += 9  # the image attempt eats the whole budget
+        return net(*a, **k)
+
+    r = resolver(tmp_path, slow, clock=lambda: fake_now[0])
+    assert r.image_for(msg("![p](https://x.com/a.png)", avatar_url="https://x.com/av.png")) is None
+    assert len(net.calls) == 1
+
+
+def test_recent_cache_files_are_not_pruned(tmp_path):
+    r = resolver(tmp_path, Net(), cache_cap_bytes=1)
+    r.cache_dir.mkdir(parents=True)
+    fresh = r.cache_dir / "fresh.png"
+    fresh.write_bytes(b"x" * 100)
+    keep = r.cache_dir / "keep.png"
+    keep.write_bytes(b"y")
+    r._prune(keep=keep)
+    assert fresh.exists()
+    old = r.cache_dir / "old.png"
+    old.write_bytes(b"x" * 100)
+    os.utime(old, (1, 1))
+    r._prune(keep=keep)
+    assert not old.exists() and fresh.exists()
+
+
+def test_server_avatar_outside_media_paths_is_fetched_without_credentials(tmp_path):
+    av = "https://chat.example.com/avatar/5"
+    net = Net({av: ("image/png", PNG)})
+    r = resolver(tmp_path, net, external_images=False)
+    assert r.image_for(msg("hi", avatar_url=av)) is not None
+    assert net.calls[0][1] is None

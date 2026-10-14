@@ -67,6 +67,7 @@ notifier = "/opt/homebrew/bin/terminal-notifier"
         (MINIMAL + '[defaults]\nnotify_channel_messages = "yes"', "notify_channel"),
         (MINIMAL + "[output]\nplayer = []", "player"),
         (MINIMAL + '[output]\nplayer = "play"', "player"),
+        (MINIMAL + '[output]\nexternal_images = "yes"', "external_images"),
     ],
 )
 def test_bad_config_is_rejected(text, message):
@@ -239,3 +240,8 @@ def test_rules_can_be_disabled():
     assert [r.enabled for r in config.rules] == [False, True]
     with pytest.raises(ConfigError, match="rule 'r'"):
         rule_config('name = "r"\nmatch = "mention"\nenabled = "no"\n')
+
+
+def test_external_images_defaults_off_and_parses():
+    assert parse_config(MINIMAL).external_images is False
+    assert parse_config(MINIMAL + "[output]\nexternal_images = true").external_images is True

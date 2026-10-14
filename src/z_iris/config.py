@@ -116,6 +116,7 @@ class Config:
     notify_channel_messages: bool = False
     player: tuple[str, ...] = ("play", "-q")
     notifier: str = "terminal-notifier"
+    external_images: bool = False
     master_volume: int = 100
     rules: tuple[Rule, ...] = ()
     behaviour: dict = field(default_factory=dict)  # [defaults] overrides of BEHAVIOUR
@@ -303,6 +304,10 @@ def parse_config(text: str, sounds_dir: Path | None = None) -> Config:
     if not isinstance(notifier, str) or not notifier:
         raise ConfigError("notifier must be a command name or path")
 
+    external_images = output.get("external_images", False)
+    if not isinstance(external_images, bool):
+        raise ConfigError("external_images must be true or false")
+
     return Config(
         servers=servers,
         sound=sound,
@@ -310,6 +315,7 @@ def parse_config(text: str, sounds_dir: Path | None = None) -> Config:
         notify_channel_messages=notify_channel_messages,
         player=tuple(player),
         notifier=notifier,
+        external_images=external_images,
         master_volume=master_volume,
         rules=_rules(data, {server.name for server in servers}, sounds),
         behaviour=_behaviour(defaults, ""),
