@@ -78,6 +78,22 @@ one sample per kind.
 - Server list changes need a restart. A config that fails to parse keeps the
   old one and shows the problem in the menu.
 
+## Scheduling (engine)
+
+`engine.py` sits between the pipeline and the output and applies, per notification:
+
+- Focus: `[focus] mode` (or an active quiet-hours window, using `quiet_mode`). An explicit
+  mode beats quiet hours. `mentions_and_dms` drops everything but DMs, group DMs and
+  personal or wildcard mentions. `silent` keeps banners but no sound or flash.
+- `min_gap`: inside the gap since the last sound for the same rule (else same
+  channel/topic or DM), the banner shows but sound and flash are skipped.
+- `batch_window`: the first message plays; later ones for the same key are held and
+  become one silent summary banner such as "3 new in #ops" when the window ends.
+- `repeat`, `repeat_every`, `repeat_boost`: extra sounds, each louder, until the message
+  is read in any client, deleted, the count runs out, or you pause.
+
+`--dry-run` prints each engine decision.
+
 ## Roadmap
 
 Phase 3: repetition, intervals, intensity,

@@ -2,17 +2,24 @@
 
 from __future__ import annotations
 
-import sys
 import threading
 from urllib.parse import urlparse
 
 from z_iris.config import ServerConfig
+from z_iris.engine import Engine
 from z_iris.mutes import MuteState
 from z_iris.output import Output
 from z_iris.pipeline import Pipeline
 from z_iris.settings import Settings
 
-EVENT_TYPES = ["message", "subscription", "user_topic", "muted_topics"]
+EVENT_TYPES = [
+    "message",
+    "subscription",
+    "user_topic",
+    "muted_topics",
+    "update_message_flags",
+    "delete_message",
+]
 
 
 def host_of(site: str) -> str:
@@ -58,6 +65,7 @@ class ServerStream(threading.Thread):
         controls: Controls,
         board: StatusBoard,
         client_factory=_default_client,
+        engine=None,
     ) -> None:
         super().__init__(daemon=True, name=f"z-iris-{server.name}")
         self.server = server
@@ -66,6 +74,7 @@ class ServerStream(threading.Thread):
         self.controls = controls
         self.board = board
         self.client_factory = client_factory
+        self.engine = engine or Engine(output, settings, controls)
         self._stop_requested = threading.Event()
 
     def stop(self) -> None:
@@ -126,11 +135,7 @@ class ServerStream(threading.Thread):
             for event in response["events"]:
                 last_event_id = max(last_event_id, event.get("id", last_event_id))
                 notification = pipeline.handle(event)
-                if notification is not None and not self.controls.paused.is_set():
-                    self._deliver(notification)
-
-    def _deliver(self, notification) -> None:
-        try:
-            self.output.deliver(notification)
-        except Exception as error:  # a broken player must not stop the stream
-            print(f"z-iris: could not deliver notification: {error}", file=sys.stderr)
+                if notification is not None:
+                    self.engine.submit(notification)
+                elif event.get("type") != "message":
+                    self.engine.handle_event(self.server.name, event)
