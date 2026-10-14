@@ -49,12 +49,11 @@ class Settings:
         mtime = self._stat()
         if not force and mtime == self._mtime:
             return self.error
-        self._mtime = mtime
         try:
             new = load_config(self._path)
         except ConfigError as error:
             return self._set(self._config, str(error))
-        except OSError as error:
+        except Exception as error:  # a bad edit must never stop streaming
             return self._set(self._config, f"cannot read config: {error}")
 
         old = self._config
@@ -64,6 +63,7 @@ class Settings:
         return self._set(new, None)
 
     def _set(self, config: Config, error: str | None) -> str | None:
+        self._mtime = self._stat()
         with self._lock:
             self._config = config
             self._error = error

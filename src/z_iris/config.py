@@ -59,9 +59,23 @@ def _percent(value: object, label: str) -> int:
     return value
 
 
+def _tables(data: dict, key: str) -> list[dict]:
+    value = data.get(key, [])
+    if not isinstance(value, list) or not all(isinstance(v, dict) for v in value):
+        raise ConfigError(f"[[{key}]] must be a list of tables, written [[{key}]]")
+    return value
+
+
+def _table(data: dict, key: str) -> dict:
+    value = data.get(key, {})
+    if not isinstance(value, dict):
+        raise ConfigError(f"[{key}] must be a table")
+    return value
+
+
 def _rules(data: dict, server_names: set[str]) -> tuple[Rule, ...]:
     rules: list[Rule] = []
-    for index, raw in enumerate(data.get("rule", [])):
+    for index, raw in enumerate(_tables(data, "rule")):
         name = raw.get("name")
         if not isinstance(name, str) or not name:
             raise ConfigError(f"rule number {index + 1} needs a name")
@@ -73,6 +87,8 @@ def _rules(data: dict, server_names: set[str]) -> tuple[Rule, ...]:
         channel = raw.get("channel")
         if channel is not None and (not isinstance(channel, str) or not channel):
             raise ConfigError(f"{label}: channel must be a name")
+        if channel is not None and kind not in ("channel", "topic"):
+            raise ConfigError(f"{label}: channel only applies to channel and topic rules")
         if kind == "channel" and channel is None:
             raise ConfigError(f"{label}: a channel rule needs channel")
 
@@ -83,7 +99,7 @@ def _rules(data: dict, server_names: set[str]) -> tuple[Rule, ...]:
                 raise ConfigError(f"{label}: a {kind} rule needs {kind}")
             try:
                 pattern = re.compile(source, re.IGNORECASE)
-            except re.error as error:
+            except (re.error, OverflowError, RecursionError, ValueError) as error:
                 raise ConfigError(f"{label}: bad regular expression: {error}") from error
 
         server = raw.get("server")
@@ -119,7 +135,7 @@ def _rules(data: dict, server_names: set[str]) -> tuple[Rule, ...]:
 
 
 def _servers(data: dict) -> tuple[ServerConfig, ...]:
-    raw_servers = data.get("server", [])
+    raw_servers = _tables(data, "server")
     if not raw_servers:
         raise ConfigError("at least one [[server]] is required")
     servers: list[ServerConfig] = []
@@ -146,8 +162,8 @@ def parse_config(text: str) -> Config:
         raise ConfigError(f"invalid TOML: {error}") from error
 
     servers = _servers(data)
-    defaults = data.get("defaults", {})
-    output = data.get("output", {})
+    defaults = _table(data, "defaults")
+    output = _table(data, "output")
 
     volume = _percent(defaults.get("volume", 60), "volume")
     master_volume = _percent(defaults.get("master_volume", 100), "master_volume")

@@ -162,3 +162,23 @@ def test_resolve_action():
     )
     action = resolve_action(config, "work", config.rules[0])
     assert action == Action("none", 20, "full", "r")
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        MINIMAL + '[rule]\nname = "r"\n',
+        "defaults = 3\n" + MINIMAL,
+        "output = 3\n" + MINIMAL,
+        '[server]\nname = "w"\n',
+        MINIMAL + '[[rule]]\nname = "r"\nmatch = "keyword"\nkeyword = "a{99999999999}"\n',
+    ],
+)
+def test_wrong_shapes_and_huge_regexes_are_config_errors(text):
+    with pytest.raises(ConfigError):
+        parse_config(text)
+
+
+def test_channel_is_rejected_on_kinds_that_ignore_it():
+    with pytest.raises(ConfigError, match="rule 'r'"):
+        rule_config('name = "r"\nmatch = "keyword"\nkeyword = "x"\nchannel = "ops"\n')

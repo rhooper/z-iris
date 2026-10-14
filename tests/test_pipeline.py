@@ -126,4 +126,13 @@ def test_a_fully_silent_rule_drops_the_message():
         '[[rule]]\nname = "quiet"\nmatch = "channel"\nchannel = "ops"\n'
         'sound = "none"\nbanner = "off"\n'
     )
-    assert pipeline(rules=rules).handle(event(["mentioned"])) is None
+    assert pipeline(rules=rules).handle(event(["wildcard_mentioned"])) is None
+
+
+def test_silent_channel_rule_still_lets_a_personal_mention_through():
+    rules = (
+        '[[rule]]\nname = "bots"\nmatch = "channel"\nchannel = "ops"\n'
+        'sound = "none"\nbanner = "off"\n'
+    )
+    n = pipeline(rules=rules).handle(event(["mentioned"]))
+    assert n is not None and n.reason == "mention"

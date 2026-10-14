@@ -23,7 +23,8 @@ notifier = "terminal-notifier"
 
 # Rules. The most specific matching rule wins: topic, keyword, mention, channel,
 # group_dm, dm. A higher "priority" (default 0) overrides that order, and ties
-# go to file order. Every field except name and match is optional.
+# go to file order. Only name and match are always required (channel, topic and keyword rules
+# also need their own field). A silent rule still lets a personal @-mention through.
 #   sound:  "synth", "none", or a path to a file sox can play
 #   volume: 0 to 100, before the server and master scaling
 #   banner: "full", "title" (no message text) or "off"

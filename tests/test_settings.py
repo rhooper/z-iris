@@ -62,3 +62,11 @@ def test_a_missing_file_is_an_error_not_a_crash(tmp_path):
     path.unlink()
     assert settings.reload(force=True)
     assert settings.config.servers
+
+
+def test_wrong_shape_edit_keeps_config_and_error_persists(tmp_path):
+    path, settings = make(tmp_path)
+    write(path, BASE + '[rule]\nname = "r"\n')
+    error = settings.reload()
+    assert error
+    assert settings.reload() == error

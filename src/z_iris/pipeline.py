@@ -56,9 +56,14 @@ class Pipeline:
         rule = pick_rule(config.rules, message)
         if rule is not None:
             action = resolve_action(config, self.server, rule)
-            if action.banner == "off" and (action.sound == "none" or action.volume == 0):
+            silent = action.banner == "off" and (
+                action.sound == "none" or action.volume == 0
+            )
+            # A rule that silences a channel must not swallow a personal ping.
+            if not silent:
+                return Notification(message, narrow_url(message), "rule", action)
+            if not message.is_mention:
                 return None
-            return Notification(message, narrow_url(message), "rule", action)
 
         decision = decide(
             message, self.mutes, self.self_id, config.notify_channel_messages

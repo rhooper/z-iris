@@ -64,7 +64,6 @@ class IrisApp(rumps.App):
         self.title = _PAUSED_TITLE if self.controls.paused.is_set() else _ACTIVE_TITLE
 
     def _show_config_error(self, error: str | None) -> None:
-        # rumps cannot hide an item, so the first line is blank when all is well.
         self.error_item.title = f"Config problem: {error[:80]}" if error else "Config OK"
 
     def reload_config(self, _sender) -> None:
