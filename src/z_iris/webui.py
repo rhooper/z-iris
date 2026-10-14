@@ -75,7 +75,11 @@ class EditorServer:
         """Run recent messages through the draft in the payload. Saves nothing."""
         text = apply_edit(self.config_path.read_text(), payload, self.sounds_dir)
         draft = Settings(parse_config(text, self.sounds_dir))
-        return self.preview_source.preview(draft, refresh=bool(payload.get("refresh")))
+        return self.preview_source.preview(
+            draft,
+            refresh=bool(payload.get("refresh")),
+            more=bool(payload.get("more")),
+        )
 
     @property
     def sounds_dir(self) -> Path:

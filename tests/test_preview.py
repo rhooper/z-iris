@@ -127,3 +127,60 @@ def test_older_mentions_outside_the_recent_window_are_included_once():
     entries = src.preview(settings())["servers"][0]["messages"]
     assert [e["id"] for e in entries] == [11, 10, 2]
     assert entries[2]["why"] == "rule" or entries[2]["why"] == "mention"
+
+
+def test_fetch_more_pages_back_from_the_oldest_message_and_keeps_the_cache():
+    class Paging(FakeClient):
+        def get_messages(self, request):
+            if request.get("narrow"):
+                return {"result": "success", "messages": []}
+            self.requests.append(request)
+            if request["anchor"] == "newest":
+                return {"result": "success", "messages": [stream_message(10), stream_message(11)],
+                        "found_oldest": False}
+            assert request["anchor"] == 10 and request["include_anchor"] is False
+            return {"result": "success", "messages": [stream_message(8), stream_message(9)],
+                    "found_oldest": True}
+
+    clients = []
+    def factory(_rc):
+        clients.append(Paging([]))
+        return clients[-1]
+
+    src = PreviewSource(factory)
+    first = src.preview(settings())["servers"][0]
+    assert (first["fetched"], first["complete"]) == (2, False)
+    more = src.preview(settings(), more=True)["servers"][0]
+    assert [e["id"] for e in more["messages"]] == [11, 10, 9, 8]
+    assert (more["fetched"], more["complete"]) == (4, True)
+    # once the oldest message is reached another request changes nothing
+    again = src.preview(settings(), more=True)["servers"][0]
+    assert again["fetched"] == 4
+    assert not any(r["anchor"] == 8 for c in clients for r in c.requests)
+
+
+def test_a_failed_page_keeps_what_was_already_fetched():
+    src = source([stream_message(1)])
+    src.preview(settings())
+    src.client_factory = lambda _rc: (_ for _ in ()).throw(OSError("offline"))
+    result = src.preview(settings(), more=True)["servers"][0]
+    assert result["fetched"] == 1 and "offline" in result["error"]
+    assert [e["id"] for e in result["messages"]] == [1]
+
+
+def test_paging_continues_from_the_window_not_from_an_old_mention():
+    class Mixed(FakeClient):
+        def get_messages(self, request):
+            self.requests.append(request)
+            if request.get("narrow"):
+                return {"result": "success", "messages": [stream_message(2, flags=["mentioned"])]}
+            if request["anchor"] == "newest":
+                return {"result": "success", "messages": [stream_message(10), stream_message(11)],
+                        "found_oldest": False}
+            assert request["anchor"] == 10
+            return {"result": "success", "messages": [stream_message(9)], "found_oldest": True}
+
+    src = PreviewSource(lambda _rc: Mixed([]))
+    src.preview(settings())
+    ids = [e["id"] for e in src.preview(settings(), more=True)["servers"][0]["messages"]]
+    assert ids == [11, 10, 9, 2]

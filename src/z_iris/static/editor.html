@@ -52,6 +52,7 @@
   <h2>Rules</h2>
   <div class="row" style="margin-bottom:8px">
     <button type="button" id="preview">Preview against recent messages</button>
+    <button type="button" id="more" disabled>Fetch 1000 older</button>
     <small id="previewnote">Runs your last 1000 Zulip messages (muted ones included) through these rules, saved or not.</small>
   </div>
   <div id="summary"></div>
@@ -160,7 +161,10 @@ function renderSummary() {
   for (const m of all) counts[m.why] = (counts[m.why] || 0) + 1;
   const parts = Object.entries(counts).map(([why, n]) => `${n} ${why}`);
   const errors = previewData.servers.filter(sv => sv.error).map(sv => `${sv.name}: ${sv.error}`);
-  box.append(el("div", {className:"card"}, el("div", {textContent:`${all.length} recent messages: ${parts.join(", ") || "none"}`}), ...errors.map(e => el("div", {className:"bad", textContent:e}))));
+  const done = previewData.servers.length > 0 && previewData.servers.every(sv => sv.complete);
+  const more = document.getElementById("more");
+  more.disabled = done; more.textContent = done ? "No older messages" : "Fetch 1000 older";
+  box.append(el("div", {className:"card"}, el("div", {textContent:`${all.length} messages checked${done ? " (all of them)" : ""}: ${parts.join(", ") || "none"}`}), ...errors.map(e => el("div", {className:"bad", textContent:e}))));
   const loose = all.filter(m => m.rule_index === null).slice(0, 30);
   if (loose.length) { un.hidden = false; document.getElementById("unmatchedlist").replaceChildren(...loose.map(messageRow)); }
   renderRulesOnly();
@@ -205,6 +209,12 @@ document.getElementById("preview").addEventListener("click", async () => {
   try { previewData = await api("POST", "api/preview", {...state, refresh: true}); setStatus(""); renderSummary(); }
   catch (e) { setStatus(e.message, "bad"); }
   finally { button.disabled = false; }
+});
+document.getElementById("more").addEventListener("click", async () => {
+  const button = document.getElementById("more");
+  button.disabled = true; setStatus("Fetching older messages…");
+  try { previewData = await api("POST", "api/preview", {...state, more: true}); setStatus(""); renderSummary(); }
+  catch (e) { setStatus(e.message, "bad"); button.disabled = false; }
 });
 document.getElementById("add").addEventListener("click", () => { state.rules.push({name:"New rule", match:"mention"}); clearPreview(); });
 document.getElementById("save").addEventListener("click", async () => {

@@ -93,7 +93,7 @@ the page. Sounds are chosen from a menu, and Add sound uploads a file into the s
 folder. Test plays a sound through sox at the
 volume shown.
 
-Preview against recent messages fetches your last 1000 messages (read-only,
+Preview against recent messages fetches your last 1000 messages (Fetch 1000 older pages further back, up to 10,000) (read-only,
 through the zulip client and your zuliprc) and runs them through the rules on
 the page, saved or not. Each rule shows the messages that use it and the sound
 and volume they would get. Other messages are summarised by reason (muted, own

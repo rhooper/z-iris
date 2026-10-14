@@ -17,6 +17,7 @@ from z_iris.stream import _default_client, host_of
 
 FETCH_COUNT = 1000
 MENTION_COUNT = 50
+MAX_MESSAGES = 10_000
 SNIPPET = 200
 
 
@@ -27,6 +28,8 @@ class _Snapshot:
     self_id: int
     mutes: MuteState
     messages: list[dict]
+    complete: bool = False  # the oldest message on the server is included
+    window_oldest: int | None = None  # where the next older page starts
 
 
 def _where(message: Message) -> str:
@@ -81,6 +84,7 @@ class PreviewSource:
         if reply.get("result") != "success":
             raise RuntimeError(reply.get("msg", "could not fetch messages"))
         messages = {m["id"]: m for m in reply["messages"] if "id" in m}
+        window_oldest = min(messages) if messages else None
         # Mentions are rare, so the recent window may hold none. Fetch the
         # latest ones separately so a mention rule has something to show.
         mentioned = client.get_messages(
@@ -98,8 +102,34 @@ class PreviewSource:
                     messages.setdefault(message["id"], message)
         ordered = [messages[key] for key in sorted(messages)]
         return _Snapshot(
-            self.now(), host_of(client.base_url), profile["user_id"], mutes, ordered
+            self.now(), host_of(client.base_url), profile["user_id"], mutes, ordered,
+            bool(reply.get("found_oldest")), window_oldest,
         )
+
+    def _older(self, server: ServerConfig, snapshot: _Snapshot) -> None:
+        """Fetch one more page of older messages into the snapshot."""
+        if snapshot.complete or len(snapshot.messages) >= MAX_MESSAGES:
+            return
+        client = self.client_factory(server.zuliprc)
+        oldest = snapshot.window_oldest
+        reply = client.get_messages(
+            {
+                "anchor": oldest if oldest is not None else "newest",
+                "include_anchor": False,
+                "num_before": FETCH_COUNT,
+                "num_after": 0,
+                "apply_markdown": False,
+            }
+        )
+        if reply.get("result") != "success":
+            raise RuntimeError(reply.get("msg", "could not fetch messages"))
+        known = {m["id"] for m in snapshot.messages}
+        fresh = [m for m in reply["messages"] if "id" in m and m["id"] not in known]
+        snapshot.messages = sorted(snapshot.messages + fresh, key=lambda m: m["id"])
+        page_ids = [m["id"] for m in reply["messages"] if "id" in m]
+        if page_ids:
+            snapshot.window_oldest = min(page_ids)
+        snapshot.complete = bool(reply.get("found_oldest")) or not page_ids
 
     def _snapshot(self, server: ServerConfig, refresh: bool) -> _Snapshot:
         cached = self._cache.get(server.name)
@@ -109,19 +139,28 @@ class PreviewSource:
         self._cache[server.name] = snapshot
         return snapshot
 
-    def preview(self, draft: Settings, refresh: bool = False) -> dict:
+    def preview(self, draft: Settings, refresh: bool = False, more: bool = False) -> dict:
         servers = []
         with self._lock:
             for server in draft.config.servers:
+                error = None
                 try:
-                    snapshot = self._snapshot(server, refresh)
-                except Exception as error:
+                    snapshot = self._snapshot(server, refresh and not more)
+                    if more:
+                        try:
+                            self._older(server, snapshot)
+                        except Exception as problem:
+                            error = str(problem)
+                except Exception as problem:
                     servers.append(
-                        {"name": server.name, "error": str(error), "fetched": 0,
-                         "messages": []}
+                        {"name": server.name, "error": str(problem), "fetched": 0,
+                         "complete": False, "messages": []}
                     )
                     continue
-                servers.append(self._evaluate(server, snapshot, draft))
+                entry = self._evaluate(server, snapshot, draft)
+                if error:
+                    entry["error"] = error
+                servers.append(entry)
         return {"servers": servers}
 
     def _evaluate(self, server: ServerConfig, snapshot: _Snapshot, draft: Settings) -> dict:
@@ -159,5 +198,6 @@ class PreviewSource:
         return {
             "name": server.name,
             "fetched": len(snapshot.messages),
+            "complete": snapshot.complete,
             "messages": entries,
         }
