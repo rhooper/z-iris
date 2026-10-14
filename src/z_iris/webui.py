@@ -13,8 +13,9 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from importlib import resources
 from pathlib import Path
 
-from z_iris.config import ConfigError
+from z_iris.config import ConfigError, parse_config
 from z_iris.editing import apply_edit, read_editable
+from z_iris.preview import PreviewSource
 from z_iris.output import _spawn, sound_command
 from z_iris.settings import Settings
 from z_iris.sounds import SoundError, add_sound, builtin_names, library, user_names
@@ -26,10 +27,12 @@ class EditorServer:
         settings: Settings,
         config_path: Path,
         spawn: Callable[[list[str]], object] = _spawn,
+        preview_source: PreviewSource | None = None,
     ) -> None:
         self.settings = settings
         self.config_path = config_path
         self.spawn = spawn
+        self.preview_source = preview_source or PreviewSource()
         self.token = secrets.token_urlsafe(16)
         self._write_lock = threading.Lock()
         self._httpd: ThreadingHTTPServer | None = None
@@ -67,6 +70,12 @@ class EditorServer:
             temporary.write_text(new)
             os.replace(temporary, self.config_path)
         self.settings.reload(force=True)
+
+    def preview(self, payload: dict) -> dict:
+        """Run recent messages through the draft in the payload. Saves nothing."""
+        text = apply_edit(self.config_path.read_text(), payload, self.sounds_dir)
+        draft = Settings(parse_config(text, self.sounds_dir))
+        return self.preview_source.preview(draft, refresh=bool(payload.get("refresh")))
 
     @property
     def sounds_dir(self) -> Path:
@@ -190,6 +199,11 @@ def _make_handler(editor: EditorServer):
                         lambda: {"name": editor.upload_sound(
                             payload.get("filename"), payload.get("data"))}
                     )
+                return
+            if route == "api/preview":
+                payload = self._body()
+                if payload is not None:
+                    self._guarded_value(lambda: editor.preview(payload))
                 return
             if route != "api/test":
                 if route is not None:

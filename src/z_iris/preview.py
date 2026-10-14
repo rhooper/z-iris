@@ -15,7 +15,7 @@ from z_iris.pipeline import Pipeline
 from z_iris.settings import Settings
 from z_iris.stream import _default_client, host_of
 
-FETCH_COUNT = 300
+FETCH_COUNT = 1000
 SNIPPET = 200
 
 

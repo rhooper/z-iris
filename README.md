@@ -91,3 +91,9 @@ the running app picks the change up at once. zuliprc paths are never sent to
 the page. Sounds are chosen from a menu, and Add sound uploads a file into the sounds
 folder. Test plays a sound through sox at the
 volume shown.
+
+Preview against recent messages fetches your last 1000 messages (read-only,
+through the zulip client and your zuliprc) and runs them through the rules on
+the page, saved or not. Each rule shows the messages that use it and the sound
+and volume they would get. Other messages are summarised by reason (muted, own
+message, no rule). Nothing is saved and nothing plays.

@@ -24,6 +24,10 @@
   #status { min-height:1.4em; } .bad { color:var(--bad); } .ok { color:var(--ok); }
   .bar { position:sticky; bottom:0; background:var(--bg); padding:10px 0; border-top:1px solid var(--line); margin-top:16px; }
   small { color:var(--muted); }
+  .msg { border-top:1px solid var(--line); padding:6px 0; font-size:13px; } .msg b { font-weight:600; }
+  .tag { font-size:11px; border:1px solid var(--line); border-radius:10px; padding:1px 7px; color:var(--muted); white-space:nowrap; }
+  .tag.on { color:var(--ok); border-color:var(--ok); }
+  .snippet { color:var(--muted); overflow-wrap:anywhere; }
 </style>
 </head>
 <body>
@@ -46,8 +50,14 @@
   </div>
 
   <h2>Rules</h2>
+  <div class="row" style="margin-bottom:8px">
+    <button type="button" id="preview">Preview against recent messages</button>
+    <small id="previewnote">Runs your last 1000 Zulip messages (muted ones included) through these rules, saved or not.</small>
+  </div>
+  <div id="summary"></div>
   <div id="rules"></div>
   <button id="add">Add rule</button>
+  <details class="card" id="unmatched" hidden><summary>Messages no rule matched</summary><div id="unmatchedlist"></div></details>
 
   <div class="bar row">
     <button class="primary" id="save">Save</button>
@@ -59,6 +69,8 @@
 const base = location.pathname;
 const KINDS = [["topic","Topic"],["keyword","Keyword"],["mention","Mention"],["channel","Channel"],["group_dm","Group DM"],["dm","Direct message"]];
 let state = {servers:[], defaults:{}, rules:[], sounds:[]};
+let previewData = null;
+function clearPreview() { previewData = null; renderSummary(); }
 
 function el(tag, props, ...kids) {
   const node = Object.assign(document.createElement(tag), props || {});
@@ -123,11 +135,43 @@ function renderDefaults() {
   sbox.hidden = state.servers.length === 0;
 }
 
+function allPreviewMessages() {
+  return previewData ? previewData.servers.flatMap(sv => sv.messages.map(m => ({...m, server: sv.name}))) : [];
+}
+function messageRow(m) {
+  const tag = m.notify ? el("span", {className:"tag on", textContent:`${m.sound} @ ${m.volume}%`}) : el("span", {className:"tag", textContent:m.why});
+  return el("div", {className:"msg"},
+    el("div", {className:"row"}, el("b", {textContent:m.sender}), el("span", {textContent:m.where}), tag),
+    el("div", {className:"snippet", textContent:m.text}));
+}
+function previewBlock(index) {
+  if (!previewData) return null;
+  const hits = allPreviewMessages().filter(m => m.rule_index === index);
+  const block = el("details", {open: hits.length > 0}, el("summary", {textContent: `${hits.length} recent message${hits.length === 1 ? "" : "s"} use this rule`}));
+  for (const m of hits.slice(0, 5)) block.append(messageRow(m));
+  if (hits.length > 5) block.append(el("small", {textContent:`and ${hits.length - 5} more`}));
+  return block;
+}
+function renderSummary() {
+  const box = document.getElementById("summary"), un = document.getElementById("unmatched");
+  box.replaceChildren(); un.hidden = true;
+  if (!previewData) { renderRulesOnly(); return; }
+  const all = allPreviewMessages(), counts = {};
+  for (const m of all) counts[m.why] = (counts[m.why] || 0) + 1;
+  const parts = Object.entries(counts).map(([why, n]) => `${n} ${why}`);
+  const errors = previewData.servers.filter(sv => sv.error).map(sv => `${sv.name}: ${sv.error}`);
+  box.append(el("div", {className:"card"}, el("div", {textContent:`${all.length} recent messages: ${parts.join(", ") || "none"}`}), ...errors.map(e => el("div", {className:"bad", textContent:e}))));
+  const loose = all.filter(m => m.rule_index === null).slice(0, 30);
+  if (loose.length) { un.hidden = false; document.getElementById("unmatchedlist").replaceChildren(...loose.map(messageRow)); }
+  renderRulesOnly();
+}
+function renderRulesOnly() { renderRules(); }
+
 function renderRules() {
   const box = document.getElementById("rules");
   box.replaceChildren(...state.rules.map((rule, i) => {
     const needs = rule.match;
-    const fields = [field("Matches", select(KINDS, rule.match, v => { rule.match = v; renderRules(); }))];
+    const fields = [field("Matches", select(KINDS, rule.match, v => { rule.match = v; previewData = null; renderRules(); }))];
     if (needs === "channel" || needs === "topic") fields.push(field(needs === "channel" ? "Channel name" : "Channel (optional)", text(rule.channel, v => rule.channel = v)));
     if (needs === "topic") fields.push(field("Topic (regular expression)", text(rule.topic, v => rule.topic = v)));
     if (needs === "keyword") fields.push(field("Keyword (regular expression)", text(rule.keyword, v => rule.keyword = v)));
@@ -145,16 +189,24 @@ function renderRules() {
     priority.addEventListener("input", () => rule.priority = parseInt(priority.value, 10) || 0);
     fields.push(field("Priority", priority));
 
-    const move = (by) => { const j = i + by; if (j < 0 || j >= state.rules.length) return; [state.rules[i], state.rules[j]] = [state.rules[j], state.rules[i]]; renderRules(); };
+    const move = (by) => { const j = i + by; if (j < 0 || j >= state.rules.length) return; [state.rules[i], state.rules[j]] = [state.rules[j], state.rules[i]]; previewData = null; renderRules(); };
     const mk = (label, fn) => { const b = el("button", {type:"button", textContent:label}); b.addEventListener("click", fn); return b; };
-    const del = mk("Delete", () => { state.rules.splice(i, 1); renderRules(); });
+    const del = mk("Delete", () => { state.rules.splice(i, 1); clearPreview(); });
     return el("div", {className:"card"},
       el("div", {className:"head"}, text(rule.name, v => rule.name = v, "Rule name"), el("div", {className:"row"}, mk("Up", () => move(-1)), mk("Down", () => move(1)), del)),
-      el("div", {className:"grid"}, ...fields));
+      el("div", {className:"grid"}, ...fields),
+      ...[previewBlock(i)].filter(Boolean));
   }));
 }
 
-document.getElementById("add").addEventListener("click", () => { state.rules.push({name:"New rule", match:"mention"}); renderRules(); });
+document.getElementById("preview").addEventListener("click", async () => {
+  const button = document.getElementById("preview");
+  button.disabled = true; setStatus("Fetching recent messages…");
+  try { previewData = await api("POST", "api/preview", {...state, refresh: true}); setStatus(""); renderSummary(); }
+  catch (e) { setStatus(e.message, "bad"); }
+  finally { button.disabled = false; }
+});
+document.getElementById("add").addEventListener("click", () => { state.rules.push({name:"New rule", match:"mention"}); clearPreview(); });
 document.getElementById("save").addEventListener("click", async () => {
   try { await api("PUT", "api/config", state); setStatus("Saved. z-iris is using it now.", "ok"); }
   catch (e) { setStatus(e.message, "bad"); }

@@ -130,3 +130,34 @@ def test_bad_uploads_are_rejected(editor):
     for body in [{"filename": "../x.wav", "data": "AAAA"}, {"filename": "a.wav", "data": "!!"},
                  {"filename": "a.wav"}, {"filename": "a.exe", "data": "AAAA"}]:
         assert call("POST", f"/{token}/api/sounds", body)[0] == 400
+
+
+def test_preview_runs_the_draft_not_the_saved_rules(tmp_path):
+    from z_iris.preview import PreviewSource
+    from tests.test_preview import FakeClient, stream_message
+
+    path = tmp_path / "config.toml"
+    path.write_text(TEXT)
+    settings = Settings(load_config(path), path)
+    source = PreviewSource(lambda _rc: FakeClient([stream_message(1, channel="ci")]))
+    server = EditorServer(settings, path, spawn=lambda c: None, preview_source=source)
+    url = server.start()
+    host, port = server.address
+    token = url.rstrip("/").rsplit("/", 1)[1]
+    try:
+        def post(body):
+            conn = http.client.HTTPConnection(host, port, timeout=5)
+            conn.request("POST", f"/{token}/api/preview", json.dumps(body),
+                         {"Host": f"127.0.0.1:{port}", "Content-Type": "application/json"})
+            r = conn.getresponse()
+            return r.status, json.loads(r.read())
+
+        draft = [{"name": "ci", "match": "channel", "channel": "ci", "volume": 40}]
+        status, data = post({"rules": draft})
+        entry = data["servers"][0]["messages"][0]
+        assert status == 200 and (entry["rule_index"], entry["volume"]) == (0, 40)
+        assert path.read_text() == TEXT  # nothing saved
+        status, data = post({"rules": [{"name": "x", "match": "mention", "volume": 500}]})
+        assert status == 400 and "volume" in data["error"]
+    finally:
+        server.stop()
