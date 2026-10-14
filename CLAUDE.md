@@ -4,7 +4,8 @@ macOS menubar notifier for Zulip. Design: `docs/design.md`. Plans: `docs/plan-ph
 
 ## Commands
 
-- Install: `uv sync --python 3.13`
+- Install: `uv sync --python /opt/homebrew/opt/python@3.13/bin/python3.13` (the app bundle needs Homebrew's 3.13)
+- App bundle: `scripts/claude/build_app.sh [dest.app]`; icons: `scripts/claude/make_icon.py`
 - Test: `uv run pytest -q`
 - Run: `uv run z-iris` (`--dry-run`, `--headless`, `--autoreload`, `probe`, `edit`)
 
@@ -17,4 +18,4 @@ macOS menubar notifier for Zulip. Design: `docs/design.md`. Plans: `docs/plan-ph
 
 ## Modules (src/z_iris)
 
-config, rules, sounds, settings, editing, preview, channels, loudness, webui, reloader, message, narrow, mutes, policy, pipeline, output, stream, menubar, __main__.
+config, rules, sounds, settings, editing, preview, channels, loudness, webui, reloader, message, narrow, mutes, policy, pipeline, output, notify (desktop-notifier backend, bundle only), stream, menubar, __main__.

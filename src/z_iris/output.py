@@ -6,9 +6,11 @@ import subprocess
 import sys
 import threading
 from collections.abc import Callable
+from pathlib import Path
 from typing import Protocol
 
 from z_iris.message import Message
+from z_iris.notify import DesktopNotifierBackend, Notifier, in_bundle
 from z_iris.pipeline import Notification
 from z_iris.settings import Settings
 
@@ -41,13 +43,38 @@ def _safe_argument(text: str) -> str:
     return text
 
 
-def banner_body(message: Message, limit: int = 200) -> str:
+def plain_body(message: Message, limit: int = 200) -> str:
     text = " ".join(message.content.split())
     if not text:
         return "(no text)"
     if len(text) > limit:
         text = text[: limit - 1] + "…"
-    return _safe_argument(text)
+    return text
+
+
+def banner_body(message: Message, limit: int = 200) -> str:
+    text = plain_body(message, limit)
+    return text if not message.content.strip() else _safe_argument(text)
+
+
+def banner_group(message: Message) -> str:
+    return f"z-iris-{message.server}-{message.id}"
+
+
+def terminal_notifier_command(
+    notifier: str, title: str, body: str, url: str, group: str
+) -> list[str]:
+    return [
+        notifier,
+        "-title",
+        _safe_argument(title),
+        "-message",
+        _safe_argument(body),
+        "-open",
+        url,
+        "-group",
+        group,
+    ]
 
 
 def banner_command(notifier: str, notification: Notification) -> list[str]:
@@ -55,19 +82,11 @@ def banner_command(notifier: str, notification: Notification) -> list[str]:
     body = (
         "New message"
         if notification.action.banner == "title"
-        else banner_body(message)
+        else plain_body(message)
     )
-    return [
-        notifier,
-        "-title",
-        _safe_argument(banner_title(message)),
-        "-message",
-        body,
-        "-open",
-        notification.url,
-        "-group",
-        f"z-iris-{message.server}-{message.id}",
-    ]
+    return terminal_notifier_command(
+        notifier, banner_title(message), body, notification.url, banner_group(message)
+    )
 
 
 class Output(Protocol):
@@ -120,19 +139,66 @@ def _audible(notification: Notification) -> bool:
     return action.sound != "none" and action.volume > 0
 
 
+class TerminalNotifier:
+    """The fallback backend: the terminal-notifier binary."""
+
+    def __init__(
+        self, spawn: Callable[[list[str]], object] = _spawn, binary: str = "terminal-notifier"
+    ) -> None:
+        self.spawn = spawn
+        self.binary = binary
+
+    def show(self, title, body, url, image=None, group=None, silent=True) -> None:
+        self.spawn(
+            terminal_notifier_command(self.binary, title, body, url, group or "z-iris")
+        )
+
+    def clear(self, group: str) -> None:
+        self.spawn([self.binary, "-remove", group])
+
+
+def make_notifier(spawn: Callable[[list[str]], object] = _spawn) -> Notifier:
+    """Native banners inside the z-iris app bundle, terminal-notifier otherwise."""
+    fallback = TerminalNotifier(spawn)
+    if in_bundle():
+        return DesktopNotifierBackend(fallback)
+    return fallback
+
+
 class RealOutput:
     def __init__(
         self,
         settings: Settings,
         spawn: Callable[[list[str]], object] = _spawn,
+        notifier: Notifier | None = None,
+        image_for: Callable[[Message], Path | None] | None = None,
     ) -> None:
         self.settings = settings
         self.spawn = spawn
         self.visual = NullVisual()
+        self.notifier = notifier or make_notifier(spawn)
+        self.image_for = image_for
+        if settings.config.notifier != "terminal-notifier":
+            print(
+                "z-iris: [output] notifier is ignored; banners are native now",
+                file=sys.stderr,
+            )
 
     def banner(self, notification: Notification) -> None:
-        if notification.action.banner != "off":
-            self.spawn(banner_command(self.settings.config.notifier, notification))
+        action = notification.action
+        if action.banner == "off":
+            return
+        message = notification.message
+        body = "New message" if action.banner == "title" else plain_body(message)
+        image = None
+        if self.image_for is not None and action.banner != "title":
+            try:
+                image = self.image_for(message)
+            except Exception as error:
+                print(f"z-iris: image lookup failed: {error}", file=sys.stderr)
+        self.notifier.show(
+            banner_title(message), body, notification.url, image, banner_group(message), True
+        )
 
     def sound(self, notification: Notification, volume: int | None = None) -> None:
         action = notification.action

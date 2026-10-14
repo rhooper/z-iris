@@ -11,8 +11,9 @@ keyword, mention, DM or group DM. See `docs/design.md` for the roadmap.
 ## Setup
 
 ```sh
-brew install sox terminal-notifier
-uv sync --python 3.13
+brew install sox python@3.13 terminal-notifier
+uv sync --python /opt/homebrew/opt/python@3.13/bin/python3.13
+scripts/claude/build_app.sh     # builds ~/Applications/z-iris.app (native banners)
 mkdir -p ~/.config/z-iris && cp config.example.toml ~/.config/z-iris/config.toml
 ```
 
@@ -45,13 +46,24 @@ The register response does not include your user id, so z-iris asks for your
 profile separately. The legacy `muted_topics` shape is handled but untested
 against a real server.
 
-## Banner click-through
+## Banners and the app bundle
 
-Banners use terminal-notifier 3.x, which needs notification permission. If a
-banner never appears, z-iris prints `terminal-notifier exit 3` on stderr. Allow
-it in System Settings, Notifications, terminal-notifier. Clicking a banner
-opens a `zulip://<host>/#narrow/...` link, which needs a Zulip Desktop build
-with `zulip://` support (the `feat/zulip-url-handler` branch of zulip-desktop).
+macOS only lets an app bundle post native notifications, so z-iris runs as its
+own bundle, `~/Applications/z-iris.app` (id `ca.toybox.z-iris`, no Dock icon).
+`scripts/claude/build_app.sh [dest.app]` builds it: a copy of Homebrew's
+`Python.app` that runs `python -m z_iris` with this checkout's `src` and `.venv`.
+Rebuild after `brew upgrade python@3.13` or if you move the checkout. Start it with
+`~/Applications/z-iris.app/Contents/MacOS/z-iris` (same arguments as `uv run z-iris`).
+
+The first banner asks "z-iris would like to send you notifications": click Allow.
+Banners carry the sender's avatar when an image resolver is wired in, and clicking
+one opens a `zulip://<host>/#narrow/...` link (needs a Zulip Desktop build with
+`zulip://` support, the `feat/zulip-url-handler` branch of zulip-desktop).
+
+Outside the bundle (`uv run z-iris`) or if notifications are not allowed, z-iris
+prints one line on stderr and falls back to terminal-notifier, so banners never
+vanish. `[output] notifier` is ignored. `scripts/claude/make_icon.py` regenerates
+the icons in `src/z_iris/static/`.
 
 ## Rules and volume
 
