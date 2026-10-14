@@ -8,6 +8,12 @@ set -euo pipefail
 
 root="$(CDPATH= cd "$(dirname "$0")/../.." && pwd)"
 dest="${1:-$HOME/Applications/z-iris.app}"
+dest="${dest%/}"
+# rm -rf below: only ever remove something that is named like an app bundle.
+case "$(basename "$dest")" in
+	?*.app) ;;
+	*) echo "refusing: destination must be a path ending in .app (got $dest)" >&2; exit 1 ;;
+esac
 python_app="${PYTHON_APP:-/opt/homebrew/opt/python@3.13/Frameworks/Python.framework/Versions/3.13/Resources/Python.app}"
 icon="$root/src/z_iris/static/z-iris.icns"
 
@@ -44,6 +50,9 @@ PLIST
 cat > "$dest/Contents/MacOS/z-iris" <<LAUNCHER
 #!/bin/bash
 here="\$(CDPATH= cd "\$(dirname "\$0")" && pwd)"
+# Finder, open and login items start with PATH=/usr/bin:/bin:/usr/sbin:/sbin,
+# which hides sox's play and terminal-notifier.
+export PATH="/opt/homebrew/bin:/usr/local/bin:\$PATH"
 export PYTHONPATH="$root/src:$sites"
 export PYTHONNOUSERSITE=1
 exec "\$here/Python" -m z_iris "\$@"
