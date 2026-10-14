@@ -161,3 +161,30 @@ def test_preview_runs_the_draft_not_the_saved_rules(tmp_path):
         assert status == 400 and "volume" in data["error"]
     finally:
         server.stop()
+
+
+def test_channels_endpoint_lists_subscribed_channels(tmp_path):
+    from pathlib import Path
+
+    from z_iris.channels import ChannelSource
+
+    class C:
+        def get_subscriptions(self):
+            return {"result": "success", "subscriptions": [{"name": "ops"}, {"name": "dev"}]}
+
+    path = tmp_path / "config.toml"
+    path.write_text(TEXT)
+    server = EditorServer(Settings(load_config(path), path), path,
+                          channel_source=ChannelSource(lambda _rc: C()))
+    url = server.start()
+    host, port = server.address
+    token = url.rstrip("/").rsplit("/", 1)[1]
+    try:
+        conn = http.client.HTTPConnection(host, port, timeout=5)
+        conn.request("GET", f"/{token}/api/channels", headers={"Host": f"127.0.0.1:{port}"})
+        r = conn.getresponse()
+        data = json.loads(r.read())
+        assert r.status == 200 and data["all"] == ["dev", "ops"]
+        assert data["servers"][0]["name"] == "work"
+    finally:
+        server.stop()

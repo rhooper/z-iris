@@ -13,6 +13,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from importlib import resources
 from pathlib import Path
 
+from z_iris.channels import ChannelSource
 from z_iris.config import ConfigError, parse_config
 from z_iris.editing import apply_edit, read_editable
 from z_iris.preview import PreviewSource
@@ -28,11 +29,13 @@ class EditorServer:
         config_path: Path,
         spawn: Callable[[list[str]], object] = _spawn,
         preview_source: PreviewSource | None = None,
+        channel_source: ChannelSource | None = None,
     ) -> None:
         self.settings = settings
         self.config_path = config_path
         self.spawn = spawn
         self.preview_source = preview_source or PreviewSource()
+        self.channel_source = channel_source or ChannelSource()
         self.token = secrets.token_urlsafe(16)
         self._write_lock = threading.Lock()
         self._httpd: ThreadingHTTPServer | None = None
@@ -176,6 +179,10 @@ def _make_handler(editor: EditorServer):
             if route == "":
                 page = resources.files("z_iris").joinpath("static/editor.html")
                 self._reply(200, page.read_bytes(), "text/html; charset=utf-8")
+            elif route == "api/channels":
+                self._guarded_value(
+                    lambda: editor.channel_source.channels(editor.settings.config.servers)
+                )
             elif route == "api/config":
                 text = editor.config_path.read_text()
                 data = read_editable(text)

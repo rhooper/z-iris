@@ -65,12 +65,14 @@
     <span id="status" role="status"></span>
   </div>
 </main>
+<div id="datalists"></div>
 <script>
 "use strict";
 const base = location.pathname;
 const KINDS = [["topic","Topic"],["keyword","Keyword"],["mention","Mention (@you)"],["wildcard","Wildcard mention (@all, @everyone, @channel, @topic)"],["alert_word","Alert word (your Zulip alert words)"],["channel","Channel"],["group_dm","Group DM"],["dm","Direct message"]];
 let state = {servers:[], defaults:{}, rules:[], sounds:[]};
 let previewData = null;
+let channelLists = {all: [], servers: {}};
 function clearPreview() { previewData = null; renderSummary(); }
 
 function el(tag, props, ...kids) {
@@ -79,8 +81,9 @@ function el(tag, props, ...kids) {
   return node;
 }
 function field(text, input) { return el("div", {}, el("label", {textContent:text}), input); }
-function text(value, onchange, placeholder) {
+function text(value, onchange, placeholder, listId) {
   const input = el("input", {type:"text", value:value ?? "", placeholder:placeholder || ""});
+  if (listId) input.setAttribute("list", listId);
   input.addEventListener("input", () => onchange(input.value));
   return input;
 }
@@ -176,10 +179,10 @@ function renderRules() {
   box.replaceChildren(...state.rules.map((rule, i) => {
     const needs = rule.match;
     const fields = [field("Matches", select(KINDS, rule.match, v => { rule.match = v; previewData = null; renderRules(); }))];
-    if (needs === "channel" || needs === "topic") fields.push(field(needs === "channel" ? "Channel name" : "Channel (optional)", text(rule.channel, v => rule.channel = v)));
+    if (needs === "channel" || needs === "topic") fields.push(field(needs === "channel" ? "Channel name" : "Channel (optional)", text(rule.channel, v => rule.channel = v, "start typing…", "channels-" + (rule.server || ""))));
     if (needs === "topic") fields.push(field("Topic (regular expression)", text(rule.topic, v => rule.topic = v)));
     if (needs === "keyword") fields.push(field("Keyword (regular expression)", text(rule.keyword, v => rule.keyword = v)));
-    fields.push(field("Server", select([["", "any"], ...state.servers.map(s => [s.name, s.name])], rule.server, v => rule.server = v)));
+    fields.push(field("Server", select([["", "any"], ...state.servers.map(s => [s.name, s.name])], rule.server, v => { rule.server = v; renderRules(); })));
     const sound = select(soundOptions(true, rule.sound), rule.sound || "", v => rule.sound = v);
     const test = el("button", {type:"button", textContent:"Test"});
     test.addEventListener("click", async () => {
@@ -225,9 +228,23 @@ document.getElementById("save").addEventListener("click", async () => {
 function renderSounds() {
   document.querySelector("#soundlist small").textContent = state.sounds.length + " sounds available";
 }
+function renderChannelLists() {
+  const make = (id, names) => el("datalist", {id}, ...names.map(n => el("option", {value:n})));
+  document.getElementById("datalists").replaceChildren(
+    make("channels-", channelLists.all),
+    ...Object.entries(channelLists.servers).map(([name, names]) => make("channels-" + name, names)));
+}
+async function loadChannels() {
+  try {
+    const data = await api("GET", "api/channels");
+    channelLists = {all: data.all, servers: Object.fromEntries(data.servers.map(sv => [sv.name, sv.channels]))};
+    renderChannelLists();
+  } catch (e) { /* suggestions are optional */ }
+}
 async function load() {
   state = await api("GET", "api/config");
   renderDefaults(); renderRules(); renderSounds();
+  loadChannels();
 }
 document.getElementById("addsound").addEventListener("click", async () => {
   const file = document.getElementById("upload").files[0];
