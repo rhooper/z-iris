@@ -81,3 +81,11 @@ def test_precedence_kind_then_priority_then_file_order():
 
 def test_no_match_returns_none():
     assert pick_rule([], channel()) is None
+
+
+def test_alert_word_rule_matches_only_alert_word_messages():
+    r = rule("alert_word")
+    assert pick_rule([r], channel(flags=["has_alert_word"])) is r
+    assert pick_rule([r], dm(flags=["has_alert_word"])) is r
+    assert pick_rule([r], channel(flags=["mentioned"])) is None
+    assert pick_rule([r], channel()) is None

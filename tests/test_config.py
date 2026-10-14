@@ -219,3 +219,8 @@ def test_unknown_sound_name_lists_the_choices():
 def test_a_typo_in_the_default_sound_is_a_config_error():
     with pytest.raises(ConfigError, match="default sound"):
         parse_config(MINIMAL + '[defaults]\nsound = "nope"\n')
+
+
+def test_alert_word_rule_parses():
+    config = rule_config('name = "a"\nmatch = "alert_word"\nvolume = 70\n')
+    assert config.rules[0].kind == "alert_word"

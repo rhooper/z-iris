@@ -31,8 +31,10 @@ class FakeClient:
     base_url = "https://chat.example.com/"
     calls = 0
 
-    def __init__(self, messages):
+    def __init__(self, messages, mentions=()):
         self.messages = messages
+        self.mentions = list(mentions)
+        self.requests = []
 
     def register(self, **kwargs):
         FakeClient.calls += 1
@@ -48,6 +50,9 @@ class FakeClient:
 
     def get_messages(self, request):
         assert request["anchor"] == "newest" and request["num_after"] == 0
+        self.requests.append(request)
+        if request.get("narrow") == [{"operator": "is", "operand": "mentioned"}]:
+            return {"result": "success", "messages": self.mentions}
         return {"result": "success", "messages": self.messages}
 
 
@@ -113,3 +118,12 @@ def test_a_failing_server_reports_an_error_not_a_crash():
 def test_a_malformed_message_is_skipped():
     result = source([{"id": 1}, stream_message(2)]).preview(settings())
     assert [e["id"] for e in result["servers"][0]["messages"]] == [2]
+
+
+def test_older_mentions_outside_the_recent_window_are_included_once():
+    recent = [stream_message(10), stream_message(11, flags=["mentioned"])]
+    older = [stream_message(2, flags=["mentioned"]), stream_message(11, flags=["mentioned"])]
+    src = PreviewSource(lambda _rc: FakeClient(recent, older))
+    entries = src.preview(settings())["servers"][0]["messages"]
+    assert [e["id"] for e in entries] == [11, 10, 2]
+    assert entries[2]["why"] == "rule" or entries[2]["why"] == "mention"

@@ -16,6 +16,7 @@ from z_iris.settings import Settings
 from z_iris.stream import _default_client, host_of
 
 FETCH_COUNT = 1000
+MENTION_COUNT = 50
 SNIPPET = 200
 
 
@@ -79,9 +80,25 @@ class PreviewSource:
         )
         if reply.get("result") != "success":
             raise RuntimeError(reply.get("msg", "could not fetch messages"))
+        messages = {m["id"]: m for m in reply["messages"] if "id" in m}
+        # Mentions are rare, so the recent window may hold none. Fetch the
+        # latest ones separately so a mention rule has something to show.
+        mentioned = client.get_messages(
+            {
+                "anchor": "newest",
+                "num_before": MENTION_COUNT,
+                "num_after": 0,
+                "apply_markdown": False,
+                "narrow": [{"operator": "is", "operand": "mentioned"}],
+            }
+        )
+        if mentioned.get("result") == "success":
+            for message in mentioned["messages"]:
+                if "id" in message:
+                    messages.setdefault(message["id"], message)
+        ordered = [messages[key] for key in sorted(messages)]
         return _Snapshot(
-            self.now(), host_of(client.base_url), profile["user_id"], mutes,
-            reply["messages"],
+            self.now(), host_of(client.base_url), profile["user_id"], mutes, ordered
         )
 
     def _snapshot(self, server: ServerConfig, refresh: bool) -> _Snapshot:

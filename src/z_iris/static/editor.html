@@ -67,7 +67,7 @@
 <script>
 "use strict";
 const base = location.pathname;
-const KINDS = [["topic","Topic"],["keyword","Keyword"],["mention","Mention"],["channel","Channel"],["group_dm","Group DM"],["dm","Direct message"]];
+const KINDS = [["topic","Topic"],["keyword","Keyword"],["mention","Mention (@you or @all)"],["alert_word","Alert word (your Zulip alert words)"],["channel","Channel"],["group_dm","Group DM"],["dm","Direct message"]];
 let state = {servers:[], defaults:{}, rules:[], sounds:[]};
 let previewData = null;
 function clearPreview() { previewData = null; renderSummary(); }

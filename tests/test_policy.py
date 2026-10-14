@@ -42,7 +42,7 @@ def dm_msg(sender=9):
         (dm_msg(), mutes(), False, True, "dm"),
         (channel_msg(["mentioned"]), mutes(), False, True, "mention"),
         (channel_msg(["wildcard_mentioned"]), mutes(), False, True, "mention"),
-        (channel_msg(["has_alert_word"]), mutes(), False, True, "mention"),
+        (channel_msg(["has_alert_word"]), mutes(), False, True, "alert word"),
         (channel_msg(), mutes(), False, False, "not enabled"),
         (channel_msg(), mutes(), True, True, "channel"),
         (channel_msg(), mutes(muted_channel=True), True, False, "muted"),
