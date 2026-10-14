@@ -1,1 +1,147 @@
-<!doctype html><title>z-iris</title>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>z-iris rules</title>
+<style>
+  :root { --bg:#fafafa; --fg:#1d1d1f; --card:#fff; --line:#d8d8dc; --accent:#0a6cff; --bad:#c62828; --ok:#2e7d32; --muted:#6b6b72; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#161618; --fg:#ececf0; --card:#222226; --line:#3a3a40; --accent:#5aa2ff; --bad:#ff6b6b; --ok:#6fcf7f; --muted:#9a9aa3; }
+  }
+  body { background:var(--bg); color:var(--fg); font:15px/1.4 -apple-system, system-ui, sans-serif; margin:0; padding:16px; }
+  main { max-width:860px; margin:0 auto; }
+  h1 { font-size:20px; } h2 { font-size:16px; margin:24px 0 8px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:12px; margin:8px 0; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; }
+  label { display:block; font-size:12px; color:var(--muted); }
+  input, select, button { font:inherit; color:var(--fg); background:var(--bg); border:1px solid var(--line); border-radius:6px; padding:6px 8px; width:100%; box-sizing:border-box; }
+  input[type=range] { padding:0; } input[type=checkbox] { width:auto; }
+  button { width:auto; cursor:pointer; } button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .head { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; }
+  .head input { font-weight:600; max-width:320px; }
+  #status { min-height:1.4em; } .bad { color:var(--bad); } .ok { color:var(--ok); }
+  .bar { position:sticky; bottom:0; background:var(--bg); padding:10px 0; border-top:1px solid var(--line); margin-top:16px; }
+  small { color:var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>z-iris rules</h1>
+  <small>The most specific rule wins: topic, keyword, mention, channel, group DM, DM. Priority overrides that. Comments in your config file are kept.</small>
+
+  <h2>Volume and defaults</h2>
+  <div class="card grid" id="defaults"></div>
+  <div class="card grid" id="servers"></div>
+
+  <h2>Rules</h2>
+  <div id="rules"></div>
+  <button id="add">Add rule</button>
+
+  <div class="bar row">
+    <button class="primary" id="save">Save</button>
+    <span id="status" role="status"></span>
+  </div>
+</main>
+<script>
+"use strict";
+const base = location.pathname;
+const KINDS = [["topic","Topic"],["keyword","Keyword"],["mention","Mention"],["channel","Channel"],["group_dm","Group DM"],["dm","Direct message"]];
+let state = {servers:[], defaults:{}, rules:[]};
+
+function el(tag, props, ...kids) {
+  const node = Object.assign(document.createElement(tag), props || {});
+  for (const kid of kids) node.append(kid);
+  return node;
+}
+function field(text, input) { return el("div", {}, el("label", {textContent:text}), input); }
+function text(value, onchange, placeholder) {
+  const input = el("input", {type:"text", value:value ?? "", placeholder:placeholder || ""});
+  input.addEventListener("input", () => onchange(input.value));
+  return input;
+}
+function select(options, value, onchange) {
+  const node = el("select");
+  for (const [v, label] of options) node.append(el("option", {value:v, textContent:label}));
+  node.value = value ?? "";
+  node.addEventListener("change", () => onchange(node.value));
+  return node;
+}
+function slider(value, onchange, allowUnset) {
+  const out = el("span", {textContent: value == null ? "default" : value + "%"});
+  const input = el("input", {type:"range", min:0, max:100, value: value ?? 60});
+  input.addEventListener("input", () => { onchange(+input.value); out.textContent = input.value + "%"; });
+  const row = el("div", {className:"row"}, input, out);
+  if (allowUnset) {
+    const reset = el("button", {type:"button", textContent:"default"});
+    reset.addEventListener("click", () => { onchange(null); out.textContent = "default"; });
+    row.append(reset);
+  }
+  return row;
+}
+function setStatus(message, cls) { const s = document.getElementById("status"); s.textContent = message; s.className = cls || ""; }
+
+async function api(method, route, body) {
+  const res = await fetch(base + route, {method, headers:{"Content-Type":"application/json"}, body: body ? JSON.stringify(body) : undefined});
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || res.statusText);
+  return data;
+}
+
+function renderDefaults() {
+  const d = state.defaults, box = document.getElementById("defaults");
+  box.replaceChildren(
+    field("Master volume", slider(d.master_volume, v => d.master_volume = v)),
+    field("Default rule volume", slider(d.volume, v => d.volume = v)),
+    field("Default sound (synth, none or file path)", text(d.sound, v => d.sound = v)),
+    field("Notify for every channel message", (() => {
+      const c = el("input", {type:"checkbox", checked: !!d.notify_channel_messages});
+      c.addEventListener("change", () => d.notify_channel_messages = c.checked); return c; })()),
+  );
+  const sbox = document.getElementById("servers");
+  sbox.replaceChildren(...state.servers.map(s => field(`Server ${s.name} volume`, slider(s.volume, v => s.volume = v))));
+  sbox.hidden = state.servers.length === 0;
+}
+
+function renderRules() {
+  const box = document.getElementById("rules");
+  box.replaceChildren(...state.rules.map((rule, i) => {
+    const needs = rule.match;
+    const fields = [field("Matches", select(KINDS, rule.match, v => { rule.match = v; renderRules(); }))];
+    if (needs === "channel" || needs === "topic") fields.push(field(needs === "channel" ? "Channel name" : "Channel (optional)", text(rule.channel, v => rule.channel = v)));
+    if (needs === "topic") fields.push(field("Topic (regular expression)", text(rule.topic, v => rule.topic = v)));
+    if (needs === "keyword") fields.push(field("Keyword (regular expression)", text(rule.keyword, v => rule.keyword = v)));
+    fields.push(field("Server", select([["", "any"], ...state.servers.map(s => [s.name, s.name])], rule.server, v => rule.server = v)));
+    const sound = text(rule.sound, v => rule.sound = v, "default");
+    const test = el("button", {type:"button", textContent:"Test"});
+    test.addEventListener("click", async () => {
+      try { await api("POST", "api/test", {sound: rule.sound || state.defaults.sound, volume: rule.volume ?? state.defaults.volume}); setStatus(""); }
+      catch (e) { setStatus(e.message, "bad"); }
+    });
+    fields.push(field("Sound (synth, none or file path)", el("div", {className:"row"}, sound, test)));
+    fields.push(field("Volume", slider(rule.volume, v => rule.volume = v, true)));
+    fields.push(field("Banner", select([["", "full"], ["title", "title only"], ["off", "off"]], rule.banner, v => rule.banner = v)));
+    const priority = el("input", {type:"number", value: rule.priority || 0});
+    priority.addEventListener("input", () => rule.priority = parseInt(priority.value, 10) || 0);
+    fields.push(field("Priority", priority));
+
+    const move = (by) => { const j = i + by; if (j < 0 || j >= state.rules.length) return; [state.rules[i], state.rules[j]] = [state.rules[j], state.rules[i]]; renderRules(); };
+    const mk = (label, fn) => { const b = el("button", {type:"button", textContent:label}); b.addEventListener("click", fn); return b; };
+    const del = mk("Delete", () => { state.rules.splice(i, 1); renderRules(); });
+    return el("div", {className:"card"},
+      el("div", {className:"head"}, text(rule.name, v => rule.name = v, "Rule name"), el("div", {className:"row"}, mk("Up", () => move(-1)), mk("Down", () => move(1)), del)),
+      el("div", {className:"grid"}, ...fields));
+  }));
+}
+
+document.getElementById("add").addEventListener("click", () => { state.rules.push({name:"New rule", match:"mention"}); renderRules(); });
+document.getElementById("save").addEventListener("click", async () => {
+  try { await api("PUT", "api/config", state); setStatus("Saved. z-iris is using it now.", "ok"); }
+  catch (e) { setStatus(e.message, "bad"); }
+});
+
+api("GET", "api/config").then(data => { state = data; renderDefaults(); renderRules(); }).catch(e => setStatus(e.message, "bad"));
+</script>
+</body>
+</html>

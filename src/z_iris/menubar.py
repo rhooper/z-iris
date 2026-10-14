@@ -9,6 +9,7 @@ import rumps
 from AppKit import NSApplication, NSApplicationActivationPolicyAccessory
 
 from z_iris.settings import Settings
+from z_iris.webui import EditorServer
 from z_iris.stream import Controls, StatusBoard
 
 _ACTIVE_TITLE = "◉"
@@ -21,6 +22,7 @@ class IrisApp(rumps.App):
     ) -> None:
         super().__init__("z-iris", title=_ACTIVE_TITLE, quit_button=None)
         self.settings = settings
+        self.editor = EditorServer(settings, config_path)
         self.controls = controls
         self.board = board
         self.config_path = config_path
@@ -35,6 +37,7 @@ class IrisApp(rumps.App):
             *self.server_items.values(),
             None,
             self.pause_item,
+            rumps.MenuItem("Edit rules…", callback=self.edit_rules),
             rumps.MenuItem("Reload config", callback=self.reload_config),
             rumps.MenuItem("Open config file", callback=self.open_config),
             None,
@@ -65,6 +68,9 @@ class IrisApp(rumps.App):
 
     def _show_config_error(self, error: str | None) -> None:
         self.error_item.title = f"Config problem: {error[:80]}" if error else "Config OK"
+
+    def edit_rules(self, _sender) -> None:
+        subprocess.run(["open", self.editor.start()], check=False)
 
     def reload_config(self, _sender) -> None:
         self._show_config_error(self.settings.reload(force=True))

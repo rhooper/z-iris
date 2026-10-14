@@ -75,5 +75,14 @@ one sample per kind.
 
 ## Roadmap
 
-Phase 2b: a settings window. Phase 3: repetition, intervals, intensity,
+Phase 3: repetition, intervals, intensity,
 batching and focus modes. See `docs/design.md`.
+
+## Rule editor
+
+Menubar, Edit rules…, or `uv run z-iris edit`. It opens a page served on
+127.0.0.1 only, behind a random token in the URL. Saving validates with the same
+parser the app uses, writes `config.toml.bak` first, keeps your comments, and
+the running app picks the change up at once. zuliprc paths are never sent to
+the page. Sound files are typed as paths. Test plays a sound through sox at the
+volume shown.

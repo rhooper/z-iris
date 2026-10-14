@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import subprocess
 import sys
 import threading
 from pathlib import Path
@@ -43,7 +44,7 @@ def main(argv: list[str] | None = None) -> int:
         help="print what would notify, play nothing; implies --headless",
     )
     parser.add_argument("--headless", action="store_true", help="no menubar app")
-    parser.add_argument("command", nargs="?", choices=["probe"])
+    parser.add_argument("command", nargs="?", choices=["probe", "edit"])
     args = parser.parse_args(argv)
 
     try:
@@ -54,6 +55,19 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "probe":
         return _probe(config)
+
+    if args.command == "edit":
+        from z_iris.webui import EditorServer
+
+        editor = EditorServer(Settings(config, args.config), args.config)
+        url = editor.start()
+        print(f"z-iris editor: {url}  (Ctrl-C to stop)")
+        subprocess.run(["open", url], check=False)
+        try:
+            threading.Event().wait()
+        except KeyboardInterrupt:
+            pass
+        return 0
 
     controls = Controls()
     board = StatusBoard()
