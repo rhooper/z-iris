@@ -3,7 +3,11 @@ name = "z-iris"
 version = "0.1.0"
 description = "Menubar notifier for Zulip with custom sounds"
 requires-python = ">=3.11"
-dependencies = ["zulip>=0.9.0", "rumps>=0.4.0"]
+dependencies = [
+    "zulip>=0.9.0",
+    "rumps>=0.4.0",
+    "tomlkit>=0.15.1",
+]
 
 [project.scripts]
 z-iris = "z_iris.__main__:main"
