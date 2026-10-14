@@ -125,14 +125,16 @@ CONFIG = parse_config('[[server]]\nname = "work"\nzuliprc = "/x"\n')
 
 def deliver(action, capture):
     n = Notification(channel(), "zulip://h/#narrow/x", "rule", action)
-    RealOutput(Settings(CONFIG), spawn=capture.append).deliver(n)
+    out = RealOutput(Settings(CONFIG), spawn=capture.append)
+    out.deliver(n)
+    out.drain()
 
 
 def test_rule_sound_and_volume_reach_the_player():
     calls = []
     deliver(Action("/a/b.wav", 25, "full", "r"), calls)
-    sound, banner = calls  # sound first, so a slow banner never delays it
-    assert banner[0] == "terminal-notifier"
+    banner = next(c for c in calls if c[0] == "terminal-notifier")
+    sound = next(c for c in calls if c[0] == "play")
     assert sound == ["play", "-q", "/a/b.wav", "vol", "0.25"]
 
 
@@ -174,6 +176,7 @@ def test_output_steps_can_be_called_separately():
     flashes = []
     out.visual = type("V", (), {"flash": lambda self, action: flashes.append(action.flash)})()
     out.banner(n)
+    out.drain()
     assert [c[0] for c in calls] == ["terminal-notifier"]
     out.sound(n)
     assert calls[-1][-2:] == ["vol", "0.50"]
@@ -183,6 +186,7 @@ def test_output_steps_can_be_called_separately():
     assert flashes == ["top"]
     calls.clear(); flashes.clear()
     out.deliver(n)
+    out.drain()
     assert len(calls) == 2 and flashes == ["top"]
 
 
@@ -203,6 +207,7 @@ def native(action, image_for=None, content="hello"):
     fake = FakeNotifier()
     out = RealOutput(Settings(CONFIG), spawn=lambda c: None, notifier=fake, image_for=image_for)
     out.banner(Notification(channel(content), "zulip://h/#narrow/x", "rule", action))
+    out.drain()
     return fake.shown
 
 
@@ -254,12 +259,56 @@ def test_terminal_notifier_clear_uses_remove():
     assert calls == [["terminal-notifier", "-remove", "g"]]
 
 
-def test_a_custom_notifier_setting_is_ignored_with_a_warning(capsys):
+def test_the_notifier_setting_is_the_terminal_notifier_binary():
+    from z_iris.output import TerminalNotifier
+
     config = parse_config(
         '[[server]]\nname = "work"\nzuliprc = "/x"\n[output]\nnotifier = "/x/tn"\n'
     )
-    RealOutput(Settings(config), spawn=lambda c: None, notifier=FakeNotifier())
-    assert "notifier is ignored" in capsys.readouterr().err
+    calls = []
+    out = RealOutput(Settings(config), spawn=calls.append)
+    assert isinstance(out.notifier, TerminalNotifier)
+    out.banner(Notification(channel(), "u", "rule", Action("none", 0, "full", "r")))
+    out.drain()
+    assert calls[0][0] == "/x/tn"
+
+
+def test_spawn_failures_are_logged_to_the_file_when_stderr_is_not_a_tty(tmp_path):
+    from z_iris.notify import log_problem
+
+    log = tmp_path / "Logs" / "z-iris.log"
+    log_problem("cannot run play", path=log, tty=False)
+    assert "cannot run play" in log.read_text()
+
+
+def test_the_log_is_capped_with_one_backup(tmp_path):
+    from z_iris.notify import log_problem
+
+    log = tmp_path / "z-iris.log"
+    for n in range(40):
+        log_problem(f"line {n} " + "x" * 50, path=log, tty=False, cap=500)
+    assert log.stat().st_size <= 500 + 100
+    assert (tmp_path / "z-iris.log.1").exists()
+    assert not (tmp_path / "z-iris.log.2").exists()
+
+
+def test_on_a_tty_problems_go_to_stderr_only(tmp_path, capsys):
+    from z_iris.notify import log_problem
+
+    log = tmp_path / "z-iris.log"
+    log_problem("oops", path=log, tty=True)
+    assert "oops" in capsys.readouterr().err and not log.exists()
+
+
+def test_spawn_of_a_missing_binary_is_logged(tmp_path, monkeypatch):
+    import z_iris.notify as notify
+    from z_iris.output import _spawn
+
+    log = tmp_path / "z-iris.log"
+    monkeypatch.setattr(notify, "LOG_PATH", log)
+    monkeypatch.setattr(notify, "_stderr_is_tty", lambda: False)
+    assert _spawn(["/nonexistent/z-iris-test-binary"]) is None
+    assert "cannot run" in log.read_text()
 
 
 def test_menubar_icon_falls_back_to_text_when_missing(tmp_path):
@@ -273,3 +322,48 @@ def test_a_batch_summary_title_replaces_the_sender_title():
     n = Notification(channel(), "zulip://h/#narrow/x", "rule", ACTION, summary="3 new in #ops")
     command = banner_command("terminal-notifier", n)
     assert command[command.index("-title") + 1] == "3 new in #ops"
+
+
+def test_banner_returns_at_once_while_the_image_is_fetched():
+    import threading
+
+    gate, started = threading.Event(), threading.Event()
+
+    def slow(message):
+        started.set()
+        assert gate.wait(5)
+        return None
+
+    fake = FakeNotifier()
+    out = RealOutput(Settings(CONFIG), spawn=lambda c: None, notifier=fake, image_for=slow)
+    n = Notification(channel(), "zulip://h/#narrow/x", "rule", Action("none", 0, "full", "r"))
+    out.banner(n)  # must not wait for the fetch
+    assert started.wait(5) and fake.shown == []
+    gate.set()
+    out.drain()
+    assert len(fake.shown) == 1
+    out.close()
+
+
+def test_banners_keep_their_order_and_close_does_not_hang():
+    import threading
+
+    gate = threading.Event()
+    fake = FakeNotifier()
+    out = RealOutput(
+        Settings(CONFIG), spawn=lambda c: None, notifier=fake,
+        image_for=lambda m: gate.wait(5) and None,
+    )
+    for text in ("one", "two", "three"):
+        out.banner(Notification(channel(text), "u", "rule", Action("none", 0, "full", "r")))
+    gate.set()
+    out.drain()
+    assert [s[1] for s in fake.shown] == ["one", "two", "three"]
+    blocker = threading.Event()
+    stuck = RealOutput(
+        Settings(CONFIG), spawn=lambda c: None, notifier=FakeNotifier(),
+        image_for=lambda m: blocker.wait(30),
+    )
+    stuck.banner(Notification(channel(), "u", "rule", Action("none", 0, "full", "r")))
+    stuck.close(timeout=0.2)  # returns although the worker is stuck
+    blocker.set()

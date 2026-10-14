@@ -23,6 +23,10 @@ from z_iris.settings import Settings
 from z_iris.sounds import SoundError, add_sound, builtin_names, delete_sound, library, user_names
 
 
+def _no_flasher(_action: dict) -> object:
+    raise ConfigError("flash is only available in the menubar app")
+
+
 FLASH_MODES = ("none", "screen", "top", "bottom", "left", "right")
 
 
@@ -40,7 +44,7 @@ class EditorServer:
         self.spawn = spawn
         self.preview_source = preview_source or PreviewSource()
         self.channel_source = channel_source or ChannelSource()
-        self.flasher: Callable[[dict], object] = lambda _action: None
+        self.flasher: Callable[[dict], object] = _no_flasher
         self.token = secrets.token_urlsafe(16)
         self._write_lock = threading.Lock()
         self._httpd: ThreadingHTTPServer | None = None
