@@ -1,3 +1,8 @@
+import shutil
+import subprocess
+
+import pytest
+
 from z_iris.config import Action
 from z_iris.message import Message
 from z_iris.output import banner_body, banner_command, banner_title, sound_command
@@ -21,11 +26,31 @@ def dm(ids=(9,)):
     )
 
 
-def test_sound_command_for_synth_and_files():
+def test_sound_command_uses_the_vol_effect():
     assert sound_command(("play", "-q"), "synth", 60) == [
-        "play", "-q", "-v", "0.60", "-n", "synth", "0.15", "sine", "880",
+        "play", "-q", "-n", "synth", "0.15", "sine", "880", "vol", "0.60",
     ]
-    assert sound_command(("play",), "/a/b.wav", 5) == ["play", "-v", "0.05", "/a/b.wav"]
+    assert sound_command(("play",), "/a/b.wav", 5) == ["play", "/a/b.wav", "vol", "0.05"]
+
+
+@pytest.mark.skipif(shutil.which("sox") is None, reason="needs sox")
+@pytest.mark.parametrize("sound", ["synth", "file"])
+def test_volume_really_scales_the_signal(sound, tmp_path):
+    # The -v input option is ignored for generated input, which once made
+    # every rule volume a no-op. Measure the real output instead.
+    wav = tmp_path / "t.wav"
+    subprocess.run(["sox", "-n", str(wav), "synth", "0.15", "sine", "880"], check=True)
+    target = "synth" if sound == "synth" else str(wav)
+
+    def peak(volume):
+        command = sound_command(("sox",), target, volume)
+        command = [*command[:2], "-n", *command[2:]]
+        out = subprocess.run([*command, "stat"], capture_output=True, text=True)
+        line = next(l for l in out.stderr.splitlines() if "Maximum amplitude" in l)
+        return float(line.split()[-1])
+
+    assert peak(100) > 0.9
+    assert 0.2 < peak(25) < 0.3
 
 
 def test_titles():
@@ -112,7 +137,7 @@ def test_rule_sound_and_volume_reach_the_player():
     deliver(Action("/a/b.wav", 25, "full", "r"), calls)
     banner, sound = calls
     assert banner[0] == "terminal-notifier"
-    assert sound == ["play", "-q", "-v", "0.25", "/a/b.wav"]
+    assert sound == ["play", "-q", "/a/b.wav", "vol", "0.25"]
 
 
 @pytest.mark.parametrize("action", [Action("none", 60, "full", "r"), Action("synth", 0, "full", "r")])
@@ -140,7 +165,7 @@ def test_dry_run_names_the_rule_and_volume(capsys):
     n = Notification(channel(), "zulip://h/#narrow/x", "rule", Action("synth", 33, "full", "ops"))
     DryRunOutput(Settings(CONFIG)).deliver(n)
     out = capsys.readouterr().out
-    assert "rule ops" in out and "-v 0.33" in out
+    assert "rule ops" in out and "vol 0.33" in out
     n = Notification(channel(), "zulip://h/#narrow/x", "dm", ACTION)
     DryRunOutput(Settings(CONFIG)).deliver(n)
     assert "rule default" in capsys.readouterr().out

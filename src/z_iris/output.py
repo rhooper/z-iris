@@ -16,10 +16,12 @@ _ZERO_WIDTH_SPACE = "​"
 
 
 def sound_command(player: tuple[str, ...], sound: str, volume: int) -> list[str]:
+    # The vol effect, not the -v input option: -v is ignored for generated
+    # input such as the synth chime.
     gain = f"{volume / 100:.2f}"
     if sound == "synth":
-        return [*player, "-v", gain, "-n", "synth", "0.15", "sine", "880"]
-    return [*player, "-v", gain, sound]
+        return [*player, "-n", "synth", "0.15", "sine", "880", "vol", gain]
+    return [*player, sound, "vol", gain]
 
 
 def banner_title(message: Message) -> str:

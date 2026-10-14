@@ -91,7 +91,7 @@ def test_test_sound_plays_through_the_player_with_scaled_volume(editor):
     call, token, _, _, played = editor
     status, _ = call("POST", f"/{token}/api/test", {"sound": "synth", "volume": 50})
     assert status == 200
-    assert played[0][:3] == ["play", "-q", "-v"] and played[0][3] == "0.50"
+    assert played[0][-2:] == ["vol", "0.50"]
     assert call("POST", f"/{token}/api/test", {"sound": "/no/such.wav", "volume": 5})[0] == 400
     assert call("POST", f"/{token}/api/test", {"sound": "none", "volume": 5})[0] == 200
     assert len(played) == 1
