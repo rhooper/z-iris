@@ -241,11 +241,16 @@ def test_delete_sound_endpoint(editor, tmp_path):
     assert "Horn" not in [s["name"] for s in json.loads(listing)["sounds"]]
 
 
-def test_flash_endpoint_calls_the_flasher(editor):
+def test_flash_without_the_menubar_app_is_a_clear_400(editor):
     call, token, *_ = editor
-    # default flasher is a no-op
     body = {"flash": "top", "flash_color": "#ff0000", "flash_seconds": 1.5}
-    assert call("POST", f"/{token}/api/flash", body)[0] == 200
+    status, data = call("POST", f"/{token}/api/flash", body)
+    assert status == 400
+    assert "flash is only available in the menubar app" in json.loads(data)["error"]
+
+
+def test_flash_endpoint_validates_input(editor):
+    call, token, *_ = editor
     for bad in [{"flash": "sideways"}, {"flash": "top", "flash_color": "red"},
                 {"flash": "top", "flash_seconds": -1}, {"flash": "top", "flash_seconds": "x"}]:
         assert call("POST", f"/{token}/api/flash", bad)[0] == 400
