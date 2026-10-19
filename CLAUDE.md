@@ -18,8 +18,8 @@ macOS menubar notifier for Zulip. Design: `docs/design.md`. Plans: `docs/plan-ph
 
 ## Gotchas
 
-- The bundle's running process is the copied `Python`; it must be signed with `-i ca.toybox.z-iris` or macOS refuses notifications without prompting. Never `codesign --deep`.
-- macOS never prompts for menubar icons: they are allowed in System Settings, Menu Bar. An app started by `uv run` is listed as `uv`. `scripts/claude/statusitem_probe.py` shows whether AppKit placed the item.
+- The bundle's executable is `scripts/claude/launcher.c`, compiled against Homebrew's Python.framework. It must stay the running process (no exec of another binary) and be signed `-i ca.toybox.z-iris`, never `--deep`: otherwise macOS refuses notifications without prompting and lists the menubar item under its launcher.
+- macOS never prompts for menubar icons: they are allowed in System Settings, Menu Bar (stored in group.com.apple.controlcenter `trackedApplications`). An app started by `uv run` is listed as `uv`. `scripts/claude/statusitem_probe.py` shows whether AppKit placed the item.
 
 ## Modules (src/z_iris)
 
