@@ -23,8 +23,14 @@ from z_iris.plaintext import plain_text
         ("> quoted line\nreply", "quoted line reply"),
         ("- one\n- two\n1. three", "• one • two 1. three"),
         ("a\n\n---\n\nb", "a b"),
-        ("nice :tada: :+1: :smile:", "nice 🎉 👍 😄"),
-        ("custom :working_on_it: stays", "custom :working_on_it: stays"),
+        ("nice :tada: :+1: :octopus:", "nice 🎉 👍 🐙"),
+        # Zulip's own names, and Zulip's meaning where it differs (:smile: is 🙂).
+        (":working_on_it: :check: :upside_down: :smile:", "🛠 ✅ 🙃 🙂"),
+        # Names only the emoji package knows still expand.
+        (":white_check_mark: :face_with_tears_of_joy:", "✅ 😂"),
+        ("custom :party_parrot: stays", "custom :party_parrot: stays"),
+        ("10:30:45 and a:b:c stay", "10:30:45 and a:b:c stay"),
+        (":tada::tada: (:octopus:)", "🎉🎉 (🐙)"),
         ("```python\nprint(1)\nx = 2\n```", "print(1) x = 2"),
         ("before ```quote\nthey said hi\n``` after", "before they said hi after"),
         ("```spoiler Plot twist\nthe butler did it\n```", "[spoiler: Plot twist]"),

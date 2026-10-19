@@ -7,9 +7,15 @@ Apple Color Emoji in the notification renders.
 
 from __future__ import annotations
 
+import functools
+import json
 import re
+from pathlib import Path
 
 import emoji
+
+# Zulip's emoji names, from scripts/claude/make_zulip_emoji.py.
+_ZULIP_EMOJI = Path(__file__).parent / "static" / "zulip_emoji.json"
 
 _FENCE = re.compile(r"```[ \t]*([^\n`]*)\n?(.*?)(?:```|\Z)", re.DOTALL)
 _IMAGE = re.compile(r"!\[([^\]]*)\]\([^)]*\)")
@@ -23,7 +29,8 @@ _ITALIC_STAR = re.compile(r"(?<![\w*])\*(?=[^\s*])([^*\n]+?)(?<=[^\s*])\*(?![\w*
 _ITALIC_UNDER = re.compile(r"(?<![\w_])_(?=[^\s_])([^_\n]+?)(?<=[^\s_])_(?![\w_])")
 _CODE = re.compile(r"`([^`\n]+)`")
 _TIME = re.compile(r"<time:[^>]*>")
-_SHORTCODE = re.compile(r":([\w+\-]+):")
+# Not inside a word, so a:b:c is not read as :b:.
+_SHORTCODE = re.compile(r"(?<!\w):([\w+\-]+):(?!\w)")
 _RULE = re.compile(r"^\s*([-*_])(?:\s*\1){2,}\s*$")
 _LIST = re.compile(r"^(\s*)[-*+]\s+")
 _HEADING = re.compile(r"^\s{0,3}#{1,6}\s+")
@@ -44,8 +51,27 @@ def _link(match: re.Match) -> str:
     return f"📎 {text}" if target.startswith("/user_uploads/") else text
 
 
+@functools.cache
+def _zulip_names() -> dict[str, str]:
+    try:
+        return json.loads(_ZULIP_EMOJI.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
 def _shortcode(match: re.Match) -> str:
-    return emoji.emojize(match.group(0), language="alias")
+    # Zulip's names first, so :smile: is the 🙂 Zulip shows, not emoji's 😄.
+    char = _zulip_names().get(match.group(1))
+    return char or emoji.emojize(match.group(0), language="alias")
+
+
+def expand_emoji(text: str) -> str:
+    """Replace :shortcodes: with their emoji; unknown ones (custom realm
+    emoji) stay as written. Never raises."""
+    try:
+        return _SHORTCODE.sub(_shortcode, text)
+    except Exception:
+        return text
 
 
 def plain_text(markdown: str) -> str:
@@ -77,7 +103,7 @@ def plain_text(markdown: str) -> str:
         text = _ITALIC_STAR.sub(lambda m: m.group(1), text)
         text = _ITALIC_UNDER.sub(lambda m: m.group(1), text)
         text = _CODE.sub(lambda m: m.group(1), text)
-        text = _SHORTCODE.sub(_shortcode, text)
+        text = expand_emoji(text)
         return " ".join(text.split())
     except Exception:  # a formatting bug must never lose the message
         return " ".join(markdown.split())

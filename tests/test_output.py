@@ -5,7 +5,9 @@ import pytest
 
 from z_iris.config import Action
 from z_iris.message import Message
-from z_iris.output import banner_body, banner_command, banner_title, sound_command
+from z_iris.output import (
+    banner_body, banner_command, banner_title, notification_title, sound_command,
+)
 from z_iris.pipeline import Notification
 
 
@@ -53,6 +55,19 @@ def test_titles():
     assert banner_title(channel()) == "Ada (#ops > deploys)"
     assert banner_title(dm()) == "Ada"
     assert banner_title(dm((3, 12))) == "Ada (group)"
+
+
+def test_titles_expand_emoji_shortcodes():
+    message = Message(
+        "work", "h", 101, "channel", 9, "Ada :octopus:", "x", frozenset(), 7,
+        "ops :fire:", "ship it :rocket: :party_parrot:", (),
+    )
+    assert banner_title(message) == "Ada 🐙 (#ops 🔥 > ship it 🚀 :party_parrot:)"
+
+
+def test_batch_summary_titles_expand_emoji_shortcodes():
+    summary = Notification(channel(), "u", "r", ACTION, summary="3 new in #ops :fire:")
+    assert notification_title(summary) == "3 new in #ops 🔥"
 
 
 def test_body_collapses_whitespace_and_truncates():

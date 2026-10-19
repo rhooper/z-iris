@@ -13,7 +13,7 @@ from typing import Protocol
 from z_iris.message import Message
 from z_iris.notify import DesktopNotifierBackend, Notifier, in_bundle, log_problem
 from z_iris.pipeline import Notification
-from z_iris.plaintext import plain_text
+from z_iris.plaintext import expand_emoji, plain_text
 from z_iris.settings import Settings
 
 _ZERO_WIDTH_SPACE = "​"
@@ -27,10 +27,12 @@ def sound_command(player: tuple[str, ...], sound: str, volume: int) -> list[str]
 
 def banner_title(message: Message) -> str:
     if message.kind == "channel":
-        return f"{message.sender_name} (#{message.channel_name} > {message.topic})"
-    if len(message.dm_user_ids) > 1:
-        return f"{message.sender_name} (group)"
-    return message.sender_name
+        title = f"{message.sender_name} (#{message.channel_name} > {message.topic})"
+    elif len(message.dm_user_ids) > 1:
+        title = f"{message.sender_name} (group)"
+    else:
+        title = message.sender_name
+    return expand_emoji(title)
 
 
 # terminal-notifier reads its values through NSUserDefaults. A leading "-" is
@@ -81,7 +83,9 @@ def terminal_notifier_command(
 
 def notification_title(notification: Notification) -> str:
     """A batch summary's heading, else the sender and place."""
-    return notification.summary or banner_title(notification.message)
+    if notification.summary:
+        return expand_emoji(notification.summary)
+    return banner_title(notification.message)
 
 
 def banner_command(notifier: str, notification: Notification) -> list[str]:
