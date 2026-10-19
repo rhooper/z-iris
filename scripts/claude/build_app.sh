@@ -59,5 +59,9 @@ exec "\$here/Python" -m z_iris "\$@"
 LAUNCHER
 chmod +x "$dest/Contents/MacOS/z-iris"
 
-codesign --force --deep -s - "$dest"
+# The running process is the copied Python, so it must carry the app's id:
+# --deep would sign it as "Python-<hash>" and macOS then refuses it
+# notification permission without ever prompting.
+codesign --force -s - -i ca.toybox.z-iris "$dest/Contents/MacOS/Python"
+codesign --force -s - "$dest"
 echo "built $dest"
