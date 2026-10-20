@@ -388,3 +388,97 @@ def test_banners_keep_their_order_and_close_does_not_hang():
     stuck.banner(Notification(channel(), "u", "rule", Action("none", 0, "full", "r")))
     stuck.close(timeout=0.2)  # returns although the worker is stuck
     blocker.set()
+
+
+class RecordingNotifier:
+    def __init__(self):
+        self.calls = []
+
+    def show(self, title, body, url, image=None, group=None, silent=True):
+        self.calls.append(("show", title, body, group))
+
+    def clear(self, group):
+        self.calls.append(("clear", group))
+
+    def clear_server(self, server, keep):
+        self.calls.append(("clear_server", server, set(keep)))
+
+
+def sticky_output():
+    normal, priority = RecordingNotifier(), RecordingNotifier()
+    out = RealOutput(Settings(CONFIG), spawn=lambda c: None, notifier=normal, priority=priority)
+    return out, normal, priority
+
+
+def test_sticky_banners_go_to_the_priority_notifier():
+    out, normal, priority = sticky_output()
+    out.banner(Notification(channel(), "u", "dm", Action("none", 0, "full", "r", sticky=True)))
+    out.banner(Notification(channel(), "u", "dm", Action("none", 0, "full", "r")))
+    out.drain()
+    assert priority.calls == [("show", "Ada (#ops > deploys)", "hello", "z-iris-work-101")]
+    assert normal.calls == [("show", "Ada (#ops > deploys)", "hello", "z-iris-work-101")]
+
+
+def test_sticky_without_a_priority_notifier_is_an_ordinary_banner():
+    normal = RecordingNotifier()
+    out = RealOutput(Settings(CONFIG), spawn=lambda c: None, notifier=normal)
+    out.banner(Notification(channel(), "u", "dm", Action("none", 0, "full", "r", sticky=True)))
+    out.drain()
+    assert [c[0] for c in normal.calls] == ["show"]
+
+
+def test_banner_off_wins_over_sticky():
+    out, normal, priority = sticky_output()
+    out.banner(Notification(channel(), "u", "dm", Action("none", 0, "off", "r", sticky=True)))
+    out.drain()
+    assert normal.calls == [] and priority.calls == []
+
+
+def test_a_sticky_batch_summary_is_a_sticky_alert():
+    from dataclasses import replace
+
+    out, _, priority = sticky_output()
+    n = Notification(channel(), "u", "dm", Action("none", 0, "full", "r", sticky=True))
+    out.banner(replace(n, summary="3 new in #ops"))
+    out.drain()
+    assert priority.calls[0][1] == "3 new in #ops" and priority.calls[0][3] == "z-iris-work-101"
+
+
+def test_clear_read_clears_by_group_even_if_never_shown():
+    out, normal, priority = sticky_output()
+    out.clear_read("work", {7, 9})
+    out.drain()
+    assert sorted(priority.calls) == [("clear", "z-iris-work-7"), ("clear", "z-iris-work-9")]
+    assert normal.calls == []
+
+
+def test_clear_read_all_clears_the_whole_server():
+    out, _, priority = sticky_output()
+    out.clear_read("work", None)
+    out.drain()
+    assert priority.calls == [("clear_server", "work", set())]
+
+
+def test_clear_unless_unread_passes_the_unread_ids():
+    out, _, priority = sticky_output()
+    out.clear_unless_unread("work", {3, 4})
+    out.drain()
+    assert priority.calls == [("clear_server", "work", {3, 4})]
+
+
+def test_clearing_without_a_priority_notifier_does_nothing():
+    out = RealOutput(Settings(CONFIG), spawn=lambda c: None, notifier=RecordingNotifier())
+    out.clear_read("work", {1})
+    out.clear_unless_unread("work", set())
+    out.drain()
+
+
+def test_dry_run_describes_clears(capsys):
+    dry = DryRunOutput(Settings(CONFIG))
+    dry.clear_read("work", {1, 2})
+    dry.clear_read("work", None)
+    dry.clear_unless_unread("work", {5})
+    out = capsys.readouterr().out
+    assert "[dry-run] work: clear sticky alerts for 2 read messages" in out
+    assert "[dry-run] work: clear sticky alerts for all read messages" in out
+    assert "[dry-run] work: clear sticky alerts except 1 unread" in out

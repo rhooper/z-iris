@@ -80,6 +80,12 @@ class Collect:
         if len(self.items) >= self.want:
             self.done.set()
 
+    def clear_read(self, server, ids):
+        pass
+
+    def clear_unless_unread(self, server, unread):
+        pass
+
 
 def make_stream(client, output, controls=None):
     config = Config(servers=(ServerConfig("w", Path("/x")),))

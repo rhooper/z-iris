@@ -61,6 +61,12 @@ class Recorder:
     def sound(self, n, volume=None):
         self.calls.append(("sound", n, volume))
 
+    def clear_read(self, server, ids):
+        self.calls.append(("clear_read", server, ids))
+
+    def clear_unless_unread(self, server, unread):
+        self.calls.append(("clear_unless_unread", server, unread))
+
     def flash(self, n):
         self.calls.append(("flash", n))
 

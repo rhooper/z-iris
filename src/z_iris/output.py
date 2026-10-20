@@ -13,6 +13,7 @@ from typing import Protocol
 from z_iris.message import Message
 from z_iris.notify import DesktopNotifierBackend, Notifier, in_bundle, log_problem
 from z_iris.pipeline import Notification
+from z_iris.prioritylink import PriorityNotifier
 from z_iris.plaintext import expand_emoji, plain_text
 from z_iris.settings import Settings
 
@@ -61,8 +62,13 @@ def banner_body(message: Message, limit: int = 200) -> str:
     return text if not message.content.strip() else _safe_argument(text)
 
 
+def group_id(server: str, ident: int) -> str:
+    """The id a message's banner or alert carries, so it can be cleared."""
+    return f"z-iris-{server}-{ident}"
+
+
 def banner_group(message: Message) -> str:
-    return f"z-iris-{message.server}-{message.id}"
+    return group_id(message.server, message.id)
 
 
 def terminal_notifier_command(
@@ -109,6 +115,8 @@ class Output(Protocol):
     def banner(self, notification: Notification) -> None: ...
     def sound(self, notification: Notification, volume: int | None = None) -> None: ...
     def flash(self, notification: Notification) -> None: ...
+    def clear_read(self, server: str, ids: set[int] | None) -> None: ...
+    def clear_unless_unread(self, server: str, unread: set[int]) -> None: ...
 
 
 class NullVisual:
@@ -230,8 +238,10 @@ class RealOutput:
         spawn: Callable[[list[str]], object] = _spawn,
         notifier: Notifier | None = None,
         image_for: Callable[[Message], Path | None] | None = None,
+        priority: PriorityNotifier | None = None,
     ) -> None:
         self.settings = settings
+        self.priority = priority  # sticky alerts; None outside the app bundle
         self.spawn = spawn
         self.visual = NullVisual()
         self.notifier = notifier or make_notifier(spawn, settings.config.notifier)
@@ -242,10 +252,13 @@ class RealOutput:
         """Returns at once; the image lookup and the notifier call run on a worker."""
         if notification.action.banner == "off":
             return
+        if not self._submit(lambda: self._show_banner(notification)):
+            print("z-iris: banner queue full; banner dropped", file=sys.stderr)
+
+    def _submit(self, job: Callable[[], None]) -> bool:
         if self._worker is None:
             self._worker = _BannerWorker()
-        if not self._worker.submit(lambda: self._show_banner(notification)):
-            print("z-iris: banner queue full; banner dropped", file=sys.stderr)
+        return self._worker.submit(job)
 
     def _show_banner(self, notification: Notification) -> None:
         action = notification.action
@@ -257,10 +270,32 @@ class RealOutput:
                 image = self.image_for(message)
             except Exception as error:
                 log_problem(f"image lookup failed: {error}")
-        self.notifier.show(
+        sticky = action.sticky and self.priority is not None
+        (self.priority if sticky else self.notifier).show(
             notification_title(notification), body, notification.url, image,
             banner_group(message), True
         )
+
+    # Clears run on the banner worker, so they stay ordered after the shows.
+
+    def clear_read(self, server: str, ids: set[int] | None) -> None:
+        """Remove sticky alerts for messages read (or deleted) elsewhere. A
+        clear is sent by group even for alerts this run never showed."""
+        priority = self.priority
+        if priority is None:
+            return
+        if ids is None:
+            self._submit(lambda: priority.clear_server(server, set()))
+            return
+        for ident in sorted(ids):
+            group = group_id(server, ident)
+            self._submit(lambda group=group: priority.clear(group))
+
+    def clear_unless_unread(self, server: str, unread: set[int]) -> None:
+        priority = self.priority
+        if priority is not None:
+            kept = set(unread)
+            self._submit(lambda: priority.clear_server(server, kept))
 
     def drain(self, timeout: float | None = 5.0) -> None:
         """Wait until every banner submitted so far has been shown."""
@@ -292,6 +327,13 @@ class RealOutput:
 class DryRunOutput:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
+
+    def clear_read(self, server: str, ids: set[int] | None) -> None:
+        what = "all read messages" if ids is None else f"{len(ids)} read messages"
+        print(f"[dry-run] {server}: clear sticky alerts for {what}", flush=True)
+
+    def clear_unless_unread(self, server: str, unread: set[int]) -> None:
+        print(f"[dry-run] {server}: clear sticky alerts except {len(unread)} unread", flush=True)
 
     def banner(self, notification: Notification) -> None:
         self.deliver(notification)
