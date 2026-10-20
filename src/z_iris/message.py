@@ -25,6 +25,7 @@ class Message:
     topic: str | None
     dm_user_ids: tuple[int, ...]  # everyone but me, sorted; just me for a self-DM
     avatar_url: str | None = None  # the sender's avatar as the server gave it
+    dm_names: tuple[str, ...] = ()  # full names in dm_user_ids order; "" if unknown
 
     @property
     def is_mention(self) -> bool:
@@ -64,12 +65,15 @@ def message_from_event(server: str, host: str, self_id: int, event: dict) -> Mes
             dm_user_ids=(),
         )
 
-    others = sorted({person["id"] for person in raw["display_recipient"]} - {self_id})
+    names = {person["id"]: person.get("full_name", "") for person in raw["display_recipient"]}
+    others = sorted(set(names) - {self_id})
+    ids = tuple(others) or (self_id,)
     return Message(
         **common,
         kind="dm",
         channel_id=None,
         channel_name=None,
         topic=None,
-        dm_user_ids=tuple(others) or (self_id,),
+        dm_user_ids=ids,
+        dm_names=tuple(names.get(i, "") for i in ids),
     )

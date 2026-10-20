@@ -13,6 +13,7 @@ import subprocess
 import tempfile
 import threading
 import time
+from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
 
@@ -206,6 +207,14 @@ def default_cache_dir() -> Path:
     return Path(os.path.expanduser("~")) / "Library/Caches/z-iris/media"
 
 
+@dataclass(frozen=True)
+class MessageImages:
+    """A message's two images: the sender's avatar and its first own picture."""
+
+    avatar: Path | None = None
+    picture: Path | None = None
+
+
 class ImageResolver:
     def __init__(
         self,
@@ -244,24 +253,29 @@ class ImageResolver:
         return bool(flag() if callable(flag) else flag)
 
     def image_for(self, message) -> Path | None:
+        """One image: the message's own picture, else the sender's avatar."""
+        images = self.images_for(message)
+        return images.picture or images.avatar
+
+    def images_for(self, message) -> MessageImages:
+        """Both images, within one shared time budget. Never raises."""
+        picture = avatar = None
         try:
             client = self.registry.get(message.server)
             deadline = self.clock() + self.total_budget
             for url in extract_image_urls(message.content)[:1]:
-                path = self._fetch(
+                picture = self._fetch(
                     message.server, client, url, self.max_image_bytes,
                     self.image_px, deadline,
                 )
-                if path:
-                    return path
             if message.avatar_url and self.clock() < deadline:
-                return self._fetch(
+                avatar = self._fetch(
                     message.server, client, message.avatar_url,
                     self.max_avatar_bytes, self.avatar_px, deadline, avatar=True,
                 )
         except Exception:
             pass
-        return None
+        return MessageImages(avatar=avatar, picture=picture)
 
     # internals
 
