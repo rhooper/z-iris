@@ -206,10 +206,11 @@ def _make_handler(editor: EditorServer):
                 self._json(403, {"error": "bad host"})
                 return None
             prefix = f"/{editor.token}/"
-            if not self.path.startswith(prefix):
+            path = self.path.split("?", 1)[0]  # the page reads its own query (?expand)
+            if not path.startswith(prefix):
                 self._json(404, {"error": "not found"})
                 return None
-            return self.path[len(prefix):]
+            return path[len(prefix):]
 
         def _body(self) -> dict | None:
             origin = self.headers.get("Origin")

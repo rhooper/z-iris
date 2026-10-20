@@ -543,6 +543,7 @@ async function loadChannels() {
 async function load() {
   state = await api("GET", "api/config");
   loadCollapsed();
+  if (new URLSearchParams(location.search).has("expand")) expanded = new Set(state.rules);  // ?expand: open every rule
   renderDefaults(); renderRules(); renderSounds();
   loadDeleted(); renderDeleted();
   loadChannels();

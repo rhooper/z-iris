@@ -314,3 +314,10 @@ def test_a_used_sound_can_be_replaced_by_none(editor, tmp_path):
     call("PUT", f"/{token}/api/config", {"rules": [{"name": "r", "match": "dm", "sound": "Horn"}]})
     status, _ = call("POST", f"/{token}/api/sounds/delete", {"name": "Horn", "replacement": "none"})
     assert status == 200 and load_config(path).rules[0].sound == "none"
+
+
+def test_the_page_ignores_a_query_string(editor):
+    call, token, *_ = editor
+    status, body = call("GET", f"/{token}/?expand")
+    assert status == 200 and b"<html" in body
+    assert call("GET", f"/{token}/api/config?x=1")[0] == 200
