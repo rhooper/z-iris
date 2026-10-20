@@ -42,6 +42,9 @@
   input[type=color] { padding:1px 2px; height:32px; min-width:48px; }
   .mine { display:flex; gap:8px; align-items:center; justify-content:space-between; border-top:1px solid var(--line); padding:6px 0; }
   .snippet { color:var(--muted); overflow-wrap:anywhere; }
+  /* 1 to 4 columns of sounds, by window width. */
+  .soundgrid { display:grid; grid-template-columns:repeat(auto-fill, minmax(max(180px, calc((100% - 30px) / 4)), 1fr)); column-gap:10px; }
+  .soundgrid .mine { padding:4px 0; } .soundgrid .mine button { padding:2px 8px; font-size:13px; }
   .hint { text-decoration:underline dotted; text-underline-offset:2px; cursor:help; }
   /* Sections: title in a narrow left column, fields packed beside it. */
   .sect { display:grid; grid-template-columns:120px 1fr; gap:4px 10px; align-items:start; margin-top:2px; padding-top:6px; }
@@ -54,9 +57,9 @@
   #rules .card input, #rules .card select, #rules .card button { padding:3px 6px; font-size:13px; }
   #rules .card label { font-size:11px; }
   #rules .card input[type=color] { height:26px; }
-  #rules .card .row { flex-wrap:nowrap; gap:6px; }
-  #rules .card .row > select, #rules .card .row > input:not([type=checkbox]) { flex:1; min-width:0; }
-  #rules .card .row > input[type=range] { min-width:90px; }
+  #rules .card .grid .row { flex-wrap:nowrap; gap:6px; }
+  #rules .card .grid .row > select, #rules .card .grid .row > input:not([type=checkbox]) { flex:1; min-width:0; }
+  #rules .card .grid .row > input[type=range] { min-width:90px; }
 </style>
 </head>
 <body>
@@ -523,8 +526,9 @@ function renderSounds() {
     idle();
     return row(x, actions);
   });
-  box.replaceChildren(heading("Bundled tones"), ...bundled.map(x => row(x, el("span", {className:"row"}, play(x.name)))),
-    ...(mine.length ? [heading("Your sounds"), ...mineRows] : []));
+  const grid = rows => el("div", {className:"soundgrid"}, ...rows);
+  box.replaceChildren(heading("Bundled tones"), grid(bundled.map(x => row(x, el("span", {className:"row"}, play(x.name))))),
+    ...(mine.length ? [heading("Your sounds"), grid(mineRows)] : []));
 }
 // Removing a sound something uses asks what to use instead; the server switches
 // the saved config, and the same switch is applied to unsaved edits here.
