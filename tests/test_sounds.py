@@ -147,3 +147,18 @@ def test_mid_tones_are_middle_c_sines(name, seconds):
     crossings = sum(1 for a, b in zip(middle, middle[1:]) if a < 0 <= b)
     hz = crossings / (len(middle) / rate)
     assert abs(hz - 261.63) < 6
+
+
+def test_sos_marks_start_and_end_with_a_key_click():
+    import wave
+
+    with wave.open(str(library(None)["sos"]), "rb") as tone:
+        rate, frames = tone.getframerate(), tone.readframes(tone.getnframes())
+    samples = [abs(int.from_bytes(frames[i:i + 2], "little", signed=True)) for i in range(0, len(frames), 2)]
+    peak = max(samples)
+    onset = next(i for i, s in enumerate(samples) if s > 0.05 * peak)
+    # Hard keying: within 1 ms of the first sound it is already loud.
+    assert max(samples[onset:onset + rate // 1000]) > 0.5 * peak
+    # And a click as the key lifts: the last 2 ms of sound are not a fade.
+    end = max(i for i, s in enumerate(samples) if s > 0.05 * peak)
+    assert max(samples[end - 2 * rate // 1000:end + 1]) > 0.3 * peak

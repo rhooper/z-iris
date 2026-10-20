@@ -7,7 +7,8 @@ seven-dot gap between repeats. About 18 words per minute.
 
 A spark transmitter's note was not a clean beep: the receiver heard the spark
 rate (here 600 a second) as a raspy, buzzy tone, each spark a short ringing
-burst, slightly irregular, with a little crackle.
+burst, slightly irregular, with a little crackle. Keying was hard, and each
+key-down and key-up adds a short click.
 
 Date: 2026-10-20
 Usage: uv run python scripts/claude/gen_morse.py   (from the repo root)
@@ -28,7 +29,9 @@ DOT = 1.2 / WPM  # seconds, the PARIS standard
 SPARKS_PER_SECOND = 600
 RING_HZ = 1800  # each spark rings briefly at this pitch
 RING_DECAY = 0.0006  # seconds
-RAMP = 0.004  # soft keying edges, so the key does not click
+RAMP = 0.0005  # hard keying, as a key or relay switches the transmitter
+CLICK = 0.002  # the contact's own tick at key-down and key-up
+CLICK_LEVEL = 0.9
 OUT = Path(__file__).resolve().parents[2] / "src" / "z_iris" / "sounds" / "sos.wav"
 
 
@@ -61,6 +64,12 @@ def spark(seconds: float, rng: random.Random) -> list[float]:
     return [v + 0.06 * (rng.random() - 0.5) for v in out]  # crackle
 
 
+def click(rng: random.Random) -> list[float]:
+    """A key contact: a 2 ms burst of noise that dies away fast."""
+    count = int(CLICK * RATE)
+    return [CLICK_LEVEL * (2 * rng.random() - 1) * math.exp(-5 * i / count) for i in range(count)]
+
+
 def main() -> None:
     rng = random.Random(1912)  # the same file every time
     marks = keying("...---...", repeats=2)
@@ -72,6 +81,9 @@ def main() -> None:
         for i, value in enumerate(note):
             gain = min(1.0, i / ramp, (len(note) - 1 - i) / ramp)
             track[int(start * RATE) + i] += value * gain
+        for at in (int(start * RATE), int((start + length) * RATE)):  # key down, key up
+            for i, value in enumerate(click(rng)):
+                track[at + i] += value
     peak = max(abs(v) for v in track) or 1.0
     with wave.open(str(OUT), "wb") as out:
         out.setnchannels(1)
