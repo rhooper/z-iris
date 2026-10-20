@@ -198,3 +198,18 @@ def test_clears_without_the_app_are_quiet(tmp_path):
     link.clear("z-iris-w-1")
     link.clear_server("w", set())
     assert started == [] and warnings == []
+
+
+def test_clear_groups_is_one_request(tmp_path):
+    child = FakeChild()
+    link, _, _, _ = notifier(tmp_path, [child])
+    link.clear_groups(["z-iris-w-1", "z-iris-w-2"])
+    assert child.requests[1:] == [{"op": "clear", "groups": ["z-iris-w-1", "z-iris-w-2"]}]
+
+
+def test_repeated_clear_failures_warn_once(tmp_path):
+    children = [FakeChild({"clear": {"ok": False, "reason": "boom"}})]
+    link, _, warnings, _ = notifier(tmp_path, children)
+    for _ in range(3):
+        link.clear("z-iris-w-1")
+    assert len([w for w in warnings if "could not clear" in w]) == 1

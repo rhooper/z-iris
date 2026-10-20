@@ -287,9 +287,10 @@ class RealOutput:
         if ids is None:
             self._submit(lambda: priority.clear_server(server, set()))
             return
-        for ident in sorted(ids):
-            group = group_id(server, ident)
-            self._submit(lambda group=group: priority.clear(group))
+        # One job per event: marking a channel read can list thousands of ids.
+        groups = [group_id(server, ident) for ident in sorted(ids)]
+        if not self._submit(lambda: priority.clear_groups(groups)):
+            log_problem("banner queue full; sticky alerts not cleared")
 
     def clear_unless_unread(self, server: str, unread: set[int]) -> None:
         priority = self.priority

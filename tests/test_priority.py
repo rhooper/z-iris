@@ -152,3 +152,10 @@ def test_serve_answers_each_line_in_order(tmp_path):
         {"ok": True, "allowed": True, "style": "alert"},
         {"ok": False, "reason": "bad json"},
     ]
+
+
+def test_clear_touches_only_alerts_on_screen(tmp_path):
+    notifier = FakeNotifier(delivered=["z-iris-w-3"])
+    groups = [f"z-iris-w-{i}" for i in range(1, 5001)]
+    assert handle(service(tmp_path, notifier), {"op": "clear", "groups": groups}) == {"ok": True}
+    assert notifier.cleared == ["z-iris-w-3"]

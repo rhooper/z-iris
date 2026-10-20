@@ -400,6 +400,9 @@ class RecordingNotifier:
     def clear(self, group):
         self.calls.append(("clear", group))
 
+    def clear_groups(self, groups):
+        self.calls.append(("clear_groups", list(groups)))
+
     def clear_server(self, server, keep):
         self.calls.append(("clear_server", server, set(keep)))
 
@@ -448,7 +451,7 @@ def test_clear_read_clears_by_group_even_if_never_shown():
     out, normal, priority = sticky_output()
     out.clear_read("work", {7, 9})
     out.drain()
-    assert sorted(priority.calls) == [("clear", "z-iris-work-7"), ("clear", "z-iris-work-9")]
+    assert priority.calls == [("clear_groups", ["z-iris-work-7", "z-iris-work-9"])]
     assert normal.calls == []
 
 
@@ -482,3 +485,14 @@ def test_dry_run_describes_clears(capsys):
     assert "[dry-run] work: clear sticky alerts for 2 read messages" in out
     assert "[dry-run] work: clear sticky alerts for all read messages" in out
     assert "[dry-run] work: clear sticky alerts except 1 unread" in out
+
+
+def test_a_bulk_read_is_one_clear_and_never_drops_banners():
+    out, normal, priority = sticky_output()
+    out.clear_read("work", set(range(1, 5001)))
+    out.banner(Notification(channel(), "u", "dm", Action("none", 0, "full", "r")))
+    out.drain()
+    clears = [c for c in priority.calls if c[0] == "clear_groups"]
+    assert len(clears) == 1 and len(clears[0][1]) == 5000
+    assert clears[0][1][0] == "z-iris-work-1"
+    assert [c[0] for c in normal.calls] == ["show"]

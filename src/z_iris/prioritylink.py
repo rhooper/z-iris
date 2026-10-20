@@ -126,6 +126,7 @@ class PriorityNotifier:
         self._state: str | None = None  # for warnings on changes only
         self._style_warned = False
         self._why = "no reply"  # why the last request failed, for the warning
+        self._clear_failing = False  # warn about failed clears once per run of them
 
     def _transition(self, state: str, text: str) -> None:
         if self._state != state:
@@ -195,7 +196,10 @@ class PriorityNotifier:
         self.fallback.show(title, body, url, image, group, silent)
 
     def clear(self, group: str) -> None:
-        self._clear({"op": "clear", "groups": [group]})
+        self.clear_groups([group])
+
+    def clear_groups(self, groups: list[str]) -> None:
+        self._clear({"op": "clear", "groups": list(groups)})
 
     def clear_server(self, server: str, keep: set[int]) -> None:
         self._clear({"op": "clear_server", "server": server, "keep": sorted(keep)})
@@ -204,6 +208,9 @@ class PriorityNotifier:
         if not executable(self.app).is_file():
             return  # no app, so no alerts to clear
         reply = self._request(request)
-        if reply is None or not reply.get("ok"):
+        if reply is not None and reply.get("ok"):
+            self._clear_failing = False
+        elif not self._clear_failing:
+            self._clear_failing = True
             reason = reply.get("reason") if reply else self._why
             self.warn(f"z-iris priority could not clear alerts ({reason})")

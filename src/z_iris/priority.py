@@ -132,8 +132,11 @@ class PriorityService:
         return {"ok": True}
 
     async def _clear(self, groups: list[str]) -> None:
+        # Only what is on screen: a bulk read can name thousands of groups.
+        delivered = set(await self.notifier.get_current_notifications())
         for group in groups:
-            await self.notifier.clear(group)
+            if group in delivered:
+                await self.notifier.clear(group)
         self.urls.drop(groups)
 
     async def _clear_server(self, request: dict) -> dict:
