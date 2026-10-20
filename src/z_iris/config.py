@@ -61,6 +61,7 @@ BEHAVIOUR: dict[str, tuple] = {
     "min_gap": (_number(0, 3600, True), 0),
     "batch_window": (_number(0, 300, True), 0),
     "sticky": (_bool, False),
+    "stay": (_number(0, 3600, True), 0),  # seconds on screen; 0 is a normal banner
 }
 
 
@@ -146,6 +147,7 @@ class Action:
     min_gap: int = 0
     batch_window: int = 0
     sticky: bool = False
+    stay: int = 0  # seconds a persistent alert stays; 0 is a normal banner
     rule_index: int | None = None  # which rule, for per-rule state (labels can repeat)
 
 

@@ -239,6 +239,13 @@ class _BannerWorker:
         self._thread.join(timeout)
 
 
+def _start_timer(seconds: float, fn: Callable[[], None]) -> threading.Timer:
+    timer = threading.Timer(seconds, fn)
+    timer.daemon = True
+    timer.start()
+    return timer
+
+
 class RealOutput:
     def __init__(
         self,
@@ -248,7 +255,9 @@ class RealOutput:
         image_for: Callable[[Message], Path | None] | None = None,
         priority: PriorityNotifier | None = None,
         images_for: Callable[[Message], MessageImages] | None = None,
+        timer: Callable[[float, Callable[[], None]], object] | None = None,
     ) -> None:
+        self.timer = timer or _start_timer  # removes stay= alerts when their time is up
         self.images_for = images_for  # avatar and picture apart; wins over image_for
         self.settings = settings
         self.priority = priority  # sticky alerts; None outside the app bundle
@@ -288,10 +297,15 @@ class RealOutput:
                 image = self.image_for(message)
         except Exception as error:
             log_problem(f"image lookup failed: {error}")
-        sticky = action.sticky and self.priority is not None
-        (self.priority if sticky else self.notifier).show(
-            title, body, notification.url, image, banner_group(message), True, sender=sender
+        # sticky stays until read; stay= for that many seconds; both need z-iris priority
+        persistent = (action.sticky or action.stay > 0) and self.priority is not None
+        group = banner_group(message)
+        (self.priority if persistent else self.notifier).show(
+            title, body, notification.url, image, group, True, sender=sender
         )
+        if persistent and not action.sticky:
+            priority = self.priority
+            self.timer(action.stay, lambda: self._submit(lambda: priority.clear_groups([group])))
 
     # Clears run on the banner worker, so they stay ordered after the shows.
 
@@ -371,8 +385,8 @@ class DryRunOutput:
             if _audible(notification)
             else "silent"
         )
-        sticky = "sticky " if action.sticky else ""
-        banner = "no banner" if action.banner == "off" else f"{sticky}banner {action.banner}"
+        keep = "sticky " if action.sticky else f"stays {action.stay}s " if action.stay else ""
+        banner = "no banner" if action.banner == "off" else f"{keep}banner {action.banner}"
         flash = "" if action.flash == "none" else f", flash {action.flash}"
         print(
             f"[dry-run] {notification.message.server} ({notification.reason}): "

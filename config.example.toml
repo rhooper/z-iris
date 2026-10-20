@@ -42,6 +42,8 @@ player = ["play", "-q"]
 #   banner: "full", "title" (no message text) or "off"
 #   sticky: true keeps the notification on screen until you read the message
 #           (shown by z-iris-priority.app; also settable in [defaults])
+#   stay:   seconds to keep it on screen (1 to 3600), then it goes; also by
+#           z-iris-priority.app. macOS banners otherwise fade after ~5 s
 #   server: limit the rule to one [[server]] name
 #
 # [[rule]]

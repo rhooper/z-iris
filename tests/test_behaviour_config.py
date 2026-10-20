@@ -80,3 +80,16 @@ def test_sticky_is_a_rule_and_default_switch():
 def test_sticky_must_be_a_boolean(value):
     with pytest.raises(ConfigError, match="sticky must be true or false"):
         parse_config(BASE + f'[[rule]]\nname = "r"\nmatch = "dm"\nsticky = {value}\n')
+
+
+def test_stay_is_seconds_on_screen():
+    config = parse_config(BASE + '[defaults]\nstay = 20\n[[rule]]\nmatch = "dm"\nstay = 45\n')
+    assert resolve_action(config, "work", config.rules[0]).stay == 45
+    assert resolve_action(config, "work", None).stay == 20
+    assert resolve_action(parse_config(BASE), "work", None).stay == 0
+
+
+@pytest.mark.parametrize("value", ["-1", "3601", '"long"', "true"])
+def test_stay_must_be_whole_seconds_up_to_an_hour(value):
+    with pytest.raises(ConfigError, match="stay"):
+        parse_config(BASE + f'[[rule]]\nmatch = "dm"\nstay = {value}\n')

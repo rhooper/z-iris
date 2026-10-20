@@ -27,7 +27,7 @@
   .msg { border-top:1px solid var(--line); padding:6px 0; font-size:13px; } .msg b { font-weight:600; }
   .tag { font-size:11px; border:1px solid var(--line); border-radius:10px; padding:1px 7px; color:var(--muted); white-space:nowrap; }
   .tag.on { color:var(--ok); border-color:var(--ok); }
-  .combo { position:relative; } .combo ul { position:absolute; z-index:5; left:0; right:0; top:100%; margin:2px 0 0; padding:2px; list-style:none; background:var(--card); border:1px solid var(--line); border-radius:6px; max-height:220px; overflow:auto; box-shadow:0 4px 14px rgba(0,0,0,.18); }
+  .combo { position:relative; } .combo ul { position:absolute; z-index:5; left:0; right:0; top:100%; margin:2px 0 0; padding:2px; list-style:none; background:var(--card); border:1px solid var(--line); border-radius:6px; max-height:50vh; overflow:auto; box-shadow:0 4px 14px rgba(0,0,0,.18); }
   .combo li { padding:4px 8px; border-radius:4px; cursor:pointer; } .combo li.active, .combo li:hover { background:var(--accent); color:#fff; }
   .card.off { opacity:.55; } .toggle { display:flex; align-items:center; gap:4px; font-size:13px; color:var(--fg); }
   .gone { display:flex; gap:8px; align-items:center; justify-content:space-between; border-top:1px solid var(--line); padding:6px 0; }
@@ -134,7 +134,7 @@ function el(tag, props, ...kids) {
 // Help text is a tooltip (dotted label), so expanded cards stay compact.
 function field(text, input, help) { return el("div", help ? {title:help} : {}, el("label", {textContent:text, className: help ? "hint" : ""}), input); }
 function sect(title, help, ...fields) { return el("div", {className:"sect"}, el("h3", {textContent:title, title:help, className: help ? "hint" : ""}), el("div", {className:"grid"}, ...fields)); }
-const BUILTIN = {flash:"none", flash_color:"#ff3b30", flash_seconds:0.6, repeat:0, repeat_every:30, repeat_boost:0, min_gap:0, batch_window:0, sticky:false};
+const BUILTIN = {flash:"none", flash_color:"#ff3b30", flash_seconds:0.6, repeat:0, repeat_every:30, repeat_boost:0, min_gap:0, batch_window:0, sticky:false, stay:0};
 const FLASHES = [["none","none"],["screen","whole screen"],["top","top bar"],["bottom","bottom bar"],["left","left bar"],["right","right bar"]];
 function text(value, onchange, placeholder) {
   const input = el("input", {type:"text", value:value ?? "", placeholder:placeholder || ""});
@@ -156,7 +156,7 @@ function combo(value, onchange, getOptions, placeholder, onpick) {
   const paint = () => items.forEach((li, i) => li.classList.toggle("active", i === active));
   const open = () => {
     const needle = input.value.trim().toLowerCase();
-    const names = getOptions().filter(n => n.toLowerCase().includes(needle)).slice(0, 12);
+    const names = getOptions().filter(n => n.toLowerCase().includes(needle));  // all of them; the list scrolls
     items = names.map(n => {
       const li = el("li", {textContent:n});
       li.addEventListener("mousedown", e => { e.preventDefault(); choose(n); });
@@ -244,15 +244,25 @@ function behaviourSections(obj, isRule) {
     catch (e) { setStatus(e.message, "bad"); }
   });
   const notification = select([["", isRule ? "show (default)" : "show"], ["title", "title only"], ["off", "off"]], obj.banner, v => obj.banner = v);
-  const STICKY = [["true", "stays until read"], ["false", "fades"]];
-  const stickyLabel = v => STICKY.find(s => s[0] === String(v))[1];
-  const stickyValue = obj.sticky === undefined || obj.sticky === null ? (isRule ? "" : String(BUILTIN.sticky)) : String(obj.sticky);
-  const sticky = select(isRule ? [["", "(default: " + stickyLabel(inherit("sticky")) + ")"], ...STICKY] : STICKY, stickyValue,
-    v => obj.sticky = v === "" ? null : v === "true");
+  // Keep on screen: fades (a normal banner), for N seconds (stay), or until read (sticky).
+  const KEEP = [["fades", "fades"], ["seconds", "for a time"], ["read", "until read"]];
+  const keepOf = o => o.sticky === true ? "read" : (o.stay > 0 ? "seconds" : (o.sticky === false || o.stay === 0 ? "fades" : ""));
+  const inheritedKeep = () => { const k = keepOf(d); return k || "fades"; };
+  const keepLabel = k => KEEP.find(x => x[0] === k)[1] + (k === "seconds" ? ` (${d.stay}s)` : "");
+  const secs = el("input", {type:"number", min:1, max:3600, step:1, value: obj.stay > 0 ? obj.stay : 30, title:"seconds"});
+  const keepValue = keepOf(obj) || (isRule ? "" : "fades");
+  const keep = select(isRule ? [["", "(default: " + keepLabel(inheritedKeep()) + ")"], ...KEEP] : KEEP, keepValue, v => {
+    if (v === "") { delete obj.sticky; delete obj.stay; }
+    else { obj.sticky = v === "read"; obj.stay = v === "seconds" ? (+secs.value || 30) : 0; }
+    secs.hidden = v !== "seconds";
+  });
+  secs.hidden = keepValue !== "seconds";
+  secs.addEventListener("input", () => { if (+secs.value > 0) obj.stay = Math.min(3600, Math.round(+secs.value)); });
+  const sticky = el("div", {className:"row"}, keep, secs);
   return [
     sect("Banner", "The banner on your screen. Sound and flash are separate settings.",
       field("Desktop notification", notification, "Show the whole message, only the sender and place, or no banner at all."),
-      field("Keep on screen", sticky, "Stays until read: shown by z-iris priority as an alert that stays until you click it, close it, or read the message elsewhere.")),
+      field("Keep on screen", sticky, "For a time or until read: shown by z-iris priority as an alert that stays that long (or until you click it, close it, or read the message elsewhere). Fades: a normal banner, about 5 seconds.")),
     sect("Flash", "A coloured flash across the screen, for when you cannot hear the sound.",
       field("Flash", flashSel, "Where the flash appears."),
       field("Flash colour", colorRow),
@@ -378,7 +388,7 @@ function ruleSummary(rule) {
   const sep = () => el("span", {className:"sep", textContent:"·"});
   const tag = text => el("span", {className:"tag", textContent:text});
   const extras = [];
-  if (rule.sticky === true) extras.push("sticky");
+  if (rule.sticky === true) extras.push("sticky"); else if (rule.stay > 0) extras.push("stays " + rule.stay + "s");
   if (rule.banner === "title") extras.push("title only"); else if (rule.banner === "off") extras.push("no banner");
   if (rule.flash && rule.flash !== "none") extras.push("flash " + rule.flash);
   if (rule.repeat > 0) extras.push("repeat ×" + rule.repeat);

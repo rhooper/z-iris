@@ -79,7 +79,10 @@ over its own scheme, host and port, and only for `/user_uploads/`,
 
 ## Sticky alerts
 
-A rule with `sticky = true` (or `sticky = true` in `[defaults]`) keeps its
+macOS banners fade after about 5 seconds, and apps cannot change that. A rule
+with `stay = 30` keeps its notification on screen for 30 seconds (1 to 3600),
+then removes it, or sooner if you read the message. A rule with
+`sticky = true` (or `sticky = true` in `[defaults]`) keeps its
 notification on screen until you deal with it, for messages you must not miss
 while away, such as DMs. macOS sets banners or persistent alerts once per app, so
 these come from a second app, `~/Applications/z-iris-priority.app`

@@ -43,13 +43,13 @@ RULE_FIELDS = (
     "description", "match", "channel", "topic", "keyword", "server", "sound",
     "volume", "banner", "priority", "enabled", "flash", "flash_color",
     "flash_seconds", "repeat", "repeat_every", "repeat_boost", "min_gap",
-    "batch_window", "sticky",
+    "batch_window", "sticky", "stay",
 )
 FOCUS_FIELDS = ("mode", "quiet_hours", "quiet_mode")
 DEFAULT_FIELDS = (
     "sound", "volume", "master_volume", "notify_channel_messages", "flash",
     "flash_color", "flash_seconds", "repeat", "repeat_every", "repeat_boost",
-    "min_gap", "batch_window", "sticky",
+    "min_gap", "batch_window", "sticky", "stay",
 )
 
 

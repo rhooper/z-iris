@@ -540,3 +540,54 @@ def test_a_batch_summary_has_no_sender():
     n = Notification(channel(), "u", "rule", Action("none", 0, "full", "r"))
     fake = with_images(None, MessageImages(AV, None), replace(n, summary="3 new in #ops"))
     assert fake.senders == [None]
+
+
+class FakeTimers:
+    def __init__(self):
+        self.pending = []
+
+    def __call__(self, seconds, fn):
+        self.pending.append((seconds, fn))
+
+    def fire(self):
+        for _seconds, fn in self.pending:
+            fn()
+        self.pending = []
+
+
+def staying_output():
+    normal, priority, timers = RecordingNotifier(), RecordingNotifier(), FakeTimers()
+    out = RealOutput(Settings(CONFIG), spawn=lambda c: None, notifier=normal, priority=priority,
+                     timer=timers)
+    return out, normal, priority, timers
+
+
+def test_stay_shows_a_persistent_alert_and_removes_it_after_the_time():
+    out, normal, priority, timers = staying_output()
+    out.banner(Notification(channel(), "u", "dm", Action("none", 0, "full", "r", stay=30)))
+    out.drain()
+    assert [c[0] for c in priority.calls] == ["show"] and normal.calls == []
+    assert [s for s, _ in timers.pending] == [30]
+    timers.fire()
+    out.drain()
+    assert priority.calls[-1] == ("clear_groups", ["z-iris-work-101"])
+
+
+def test_sticky_wins_over_stay():
+    out, _, priority, timers = staying_output()
+    out.banner(Notification(channel(), "u", "dm", Action("none", 0, "full", "r", sticky=True, stay=30)))
+    out.drain()
+    assert [c[0] for c in priority.calls] == ["show"] and timers.pending == []
+
+
+def test_stay_without_the_priority_app_is_an_ordinary_banner():
+    normal, timers = RecordingNotifier(), FakeTimers()
+    out = RealOutput(Settings(CONFIG), spawn=lambda c: None, notifier=normal, timer=timers)
+    out.banner(Notification(channel(), "u", "dm", Action("none", 0, "full", "r", stay=30)))
+    out.drain()
+    assert [c[0] for c in normal.calls] == ["show"] and timers.pending == []
+
+
+def test_dry_run_says_how_long_it_stays(capsys):
+    DryRunOutput(Settings(CONFIG)).deliver(Notification(channel(), "u", "dm", Action("synth", 33, "full", "r", stay=30)))
+    assert "stays 30s banner full" in capsys.readouterr().out
