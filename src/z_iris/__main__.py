@@ -6,11 +6,14 @@ import argparse
 import subprocess
 import sys
 import threading
+from datetime import datetime, timezone
 from pathlib import Path
 
 from z_iris.config import DEFAULT_PATH, Config, ConfigError, load_config
 from z_iris.engine import Engine
-from z_iris.output import DryRunOutput, RealOutput
+from z_iris.notify import in_bundle, log_problem
+from z_iris.output import DryRunOutput, RealOutput, make_notifier
+from z_iris.prioritylink import PRIORITY_APP, PriorityNotifier, profile_days_left
 from z_iris.settings import Settings
 from z_iris.stream import Controls, ServerStream, StatusBoard
 
@@ -42,7 +45,19 @@ def _real_output(settings: Settings) -> RealOutput:
     resolver = ImageResolver(
         default_registry, external_images=lambda: settings.config.external_images
     )
-    return RealOutput(settings, image_for=resolver.image_for)
+    notifier = make_notifier(binary=settings.config.notifier)
+    priority = None
+    if in_bundle():
+        # Sticky alerts come from z-iris-priority.app; it falls back to our banners.
+        priority = PriorityNotifier(notifier)
+        now = datetime.now(timezone.utc).replace(tzinfo=None)  # profiles use naive UTC
+        days = profile_days_left(PRIORITY_APP, now)
+        if days is not None and days < 2:
+            log_problem(
+                f"z-iris priority's development profile expires in {days:.1f} days; "
+                "rebuild it from Xcode and re-run build_app.sh"
+            )
+    return RealOutput(settings, notifier=notifier, image_for=resolver.image_for, priority=priority)
 
 
 def _close_output(output) -> None:

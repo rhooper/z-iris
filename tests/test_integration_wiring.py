@@ -39,3 +39,39 @@ def test_editor_flasher_accepts_the_action_dict_shape():
     flasher = lambda action: visual.flash(SimpleNamespace(**action))  # as menubar wires it
     flasher({"flash": "top", "flash_color": "#ff0000", "flash_seconds": 1.0})
     assert seen == [("top", "#ff0000", 1.0)]
+
+
+def _bundle(monkeypatch, inside, days=None):
+    from z_iris import __main__ as entry
+    from z_iris import output
+
+    monkeypatch.setattr(entry, "in_bundle", lambda: inside)
+    monkeypatch.setattr(output, "in_bundle", lambda: inside)
+    monkeypatch.setattr(entry, "profile_days_left", lambda app, now: days)
+    warnings = []
+    monkeypatch.setattr(entry, "log_problem", warnings.append)
+    config = parse_config('[[server]]\nname = "w"\nzuliprc = "/x"\n')
+    return entry._real_output(Settings(config)), warnings
+
+
+def test_bundle_output_has_a_priority_notifier(monkeypatch):
+    from z_iris.prioritylink import PriorityNotifier
+
+    out, warnings = _bundle(monkeypatch, True)
+    assert isinstance(out.priority, PriorityNotifier)
+    assert out.priority.fallback is out.notifier
+    assert warnings == []
+    out.close()
+
+
+def test_outside_the_bundle_there_is_no_priority_notifier(monkeypatch):
+    out, _ = _bundle(monkeypatch, False)
+    assert out.priority is None
+
+
+def test_an_expiring_profile_is_warned_at_startup(monkeypatch):
+    out, warnings = _bundle(monkeypatch, True, days=1.5)
+    assert len(warnings) == 1 and "expires in 1.5 days" in warnings[0]
+    out.close()
+    _, quiet = _bundle(monkeypatch, True, days=30)
+    assert quiet == []
