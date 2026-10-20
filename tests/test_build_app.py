@@ -46,3 +46,27 @@ def test_the_launcher_is_a_signed_native_executable_that_runs_z_iris(tmp_path):
         [str(launcher), "--help"], capture_output=True, text=True
     ).stdout
     assert help_text.startswith("usage: z-iris")
+
+
+@pytest.mark.skipif(
+    not Path("/opt/homebrew/opt/python@3.13").exists(), reason="needs Homebrew Python 3.13"
+)
+def test_the_priority_app_is_built_beside_z_iris(tmp_path):
+    import plistlib
+
+    result = run(tmp_path / "z-iris.app")
+    assert result.returncode == 0, result.stderr
+    app = tmp_path / "z-iris-priority.app"
+    info = plistlib.loads((app / "Contents" / "Info.plist").read_bytes())
+    assert info["CFBundleIdentifier"] == "ca.toybox.z-iris.priority"
+    assert info["CFBundleExecutable"] == "z-iris-priority"
+    assert info["CFBundleDisplayName"] == "z-iris priority"
+    assert info["NSUserNotificationAlertStyle"] == "alert"
+    assert info["LSUIElement"] is True
+    executable = app / "Contents" / "MacOS" / "z-iris-priority"
+    assert executable.read_bytes()[:4] == b"\xcf\xfa\xed\xfe"
+    assert b"z_iris.priority" in executable.read_bytes()
+    signature = subprocess.run(["codesign", "-dv", str(app)], capture_output=True, text=True).stderr
+    assert "Identifier=ca.toybox.z-iris.priority" in signature
+    main = plistlib.loads((tmp_path / "z-iris.app" / "Contents" / "Info.plist").read_bytes())
+    assert "NSUserNotificationAlertStyle" not in main

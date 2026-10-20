@@ -156,3 +156,106 @@ class PriorityService:
         url = self.urls.pop(group)
         if url:
             self.opener(url)
+
+
+def serve(
+    lines: Iterable[str],
+    service: PriorityService,
+    write: Callable[[str], None],
+    run: Callable,
+) -> None:
+    """One reply line per request line, in order. Blank lines are skipped."""
+    for line in lines:
+        if not line.strip():
+            continue
+        try:
+            request = json.loads(line)
+        except ValueError:
+            reply = _bad("bad json")
+        else:
+            reply = run(service.handle(request))
+        write(json.dumps(reply) + "\n")
+
+
+# The app. Everything below needs macOS and the z-iris-priority.app bundle.
+
+_STYLES = {0: "none", 1: "banner", 2: "alert"}
+IDLE_EXIT = 30.0  # seconds after z-iris goes away (or a click relaunch) before quitting
+
+
+class MacNotifier:
+    """desktop-notifier plus the alert style, which it does not expose."""
+
+    def __init__(self, on_clicked: Callable[[str], None]) -> None:
+        from desktop_notifier import DesktopNotifier
+
+        self._notifier = DesktopNotifier(app_name="z-iris priority")
+        # Per-notification callbacks are lost when a click relaunches the app;
+        # the app-wide one always gets the identifier.
+        self._notifier.on_clicked = on_clicked
+
+    def __getattr__(self, name):
+        return getattr(self._notifier, name)
+
+    async def alert_style(self) -> str:
+        import asyncio
+        from concurrent.futures import Future
+
+        from rubicon.objc import Block, ObjCClass, ObjCInstance, objc_id
+        from rubicon.objc.runtime import load_library
+
+        load_library("UserNotifications")
+        center = ObjCClass("UNUserNotificationCenter").currentNotificationCenter()
+        future: Future = Future()
+
+        def handler(settings: objc_id) -> None:
+            future.set_result(int(ObjCInstance(settings).alertStyle))
+
+        center.getNotificationSettingsWithCompletionHandler(Block(handler, None, objc_id))
+        return _STYLES.get(await asyncio.wrap_future(future), "none")
+
+
+def main(argv: list[str] | None = None) -> int:
+    import asyncio
+    import sys
+    import threading
+    import time
+
+    from AppKit import NSApplication, NSApplicationActivationPolicyAccessory
+    from PyObjCTools import AppHelper
+
+    app = NSApplication.sharedApplication()
+    app.setActivationPolicy_(NSApplicationActivationPolicyAccessory)
+
+    loop = asyncio.new_event_loop()
+    threading.Thread(target=loop.run_forever, daemon=True, name="notify").start()
+    last_activity = [time.monotonic()]
+
+    def clicked(group: str) -> None:
+        last_activity[0] = time.monotonic()
+        service.clicked(group)
+
+    service = PriorityService(MacNotifier(clicked), UrlStore())
+
+    def run(coroutine):
+        return asyncio.run_coroutine_threadsafe(coroutine, loop).result()
+
+    def write(text: str) -> None:
+        sys.stdout.write(text)
+        sys.stdout.flush()
+
+    def read() -> None:
+        serve(sys.stdin, service, write, run)
+        # z-iris has gone, or macOS launched this app only to deliver a click.
+        last_activity[0] = time.monotonic()
+        while time.monotonic() - last_activity[0] < IDLE_EXIT:
+            time.sleep(1)
+        AppHelper.callAfter(app.terminate_, None)
+
+    threading.Thread(target=read, daemon=True, name="requests").start()
+    AppHelper.runEventLoop()
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

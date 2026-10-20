@@ -2,12 +2,17 @@
  * `-m z_iris`. Being the bundle's own CFBundleExecutable (not a script that
  * execs a copied Python) lets macOS match the process to ca.toybox.z-iris, so
  * the menubar item is listed as z-iris instead of whatever launched it.
- * 2026-10-19. Built by build_app.sh, which defines Z_IRIS_PYTHONPATH.
+ * 2026-10-19. Built by build_app.sh, which defines Z_IRIS_PYTHONPATH and,
+ * for z-iris-priority.app, Z_IRIS_MODULE.
  */
 #include <Python.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifndef Z_IRIS_MODULE
+#define Z_IRIS_MODULE "z_iris"
+#endif
 
 int main(int argc, char **argv) {
 	/* Finder, open and login items start with PATH=/usr/bin:/bin:/usr/sbin:/sbin,
@@ -29,7 +34,7 @@ int main(int argc, char **argv) {
 		return 1;
 	args[0] = argv[0];
 	args[1] = "-m";
-	args[2] = "z_iris";
+	args[2] = Z_IRIS_MODULE;
 	for (int i = 1; i < argc; i++)
 		args[i + 2] = argv[i];
 	return Py_BytesMain(argc + 2, args);

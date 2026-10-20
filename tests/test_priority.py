@@ -139,3 +139,16 @@ def test_url_store_survives_restart_and_corruption(tmp_path):
     store.put("h", "zulip://y")
     store.drop(["h"])
     assert store.pop("h") is None
+
+
+def test_serve_answers_each_line_in_order(tmp_path):
+    from z_iris.priority import serve
+
+    written = []
+    serve(['{"op":"status"}\n', "garbage\n", "\n"], service(tmp_path), written.append, asyncio.run)
+    replies = [__import__("json").loads(line) for line in written]
+    assert all(line.endswith("\n") and line.count("\n") == 1 for line in written)
+    assert replies == [
+        {"ok": True, "allowed": True, "style": "alert"},
+        {"ok": False, "reason": "bad json"},
+    ]
