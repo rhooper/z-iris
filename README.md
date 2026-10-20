@@ -121,7 +121,8 @@ one sample per kind.
   Topic and keyword values are case-insensitive regular expressions.
 - `sound`: a sound name or `none`. Names are the bundled tones (chime, ping,
   bell, blip, knock, double, triple, rise, fall, alert, urgent, low, soft, and the
-  Yamaha DX7-style FM tones dx-epiano, dx-bells, dx-marimba, dx-bass, dx-brass) and
+  Yamaha DX7-style FM tones dx-epiano, dx-piano-c, dx-bells, dx-marimba, dx-bass,
+  dx-brass) and
   any file in `~/.config/z-iris/sounds/` (the file name without its extension).
   Add your own in the editor, or drop a file in that folder. Older configs
   that give a file path still work. `volume`: 0 to 100.

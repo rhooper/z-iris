@@ -7,7 +7,7 @@ small two- and three-operator versions of famous factory presets, short enough
 for a notification.
 
 Date: 2026-10-20
-Usage: uv run python scripts/claude/gen_dx7_tones.py   (from the repo root)
+Usage: uv run python scripts/claude/gen_dx7_tones.py [name ...]   (from the repo root)
 Then: uv run z-iris normalize --dir src/z_iris/sounds --no-backup
 """
 
@@ -106,6 +106,16 @@ def epiano() -> list[float]:
     return track
 
 
+def piano_c() -> list[float]:
+    """E.PIANO 1, one short middle C (C4). A little more index and tine than the
+    motif, so the low note still has its bell-like edge."""
+    track: list[float] = []
+    place(track, note(261.63, 0.6, mod_ratio=1.0, index=2.0, index_decay=0.3,
+                      index_floor=0.4, amp_decay=0.3, tine_ratio=14.0, tine_index=2.6,
+                      tine_level=0.45), 0.0)
+    return track
+
+
 def bells() -> list[float]:
     """TUB BELLS: an inharmonic 3.5:1 modulator, a slow index fall, a long ring
     and a slightly detuned second carrier for the beating."""
@@ -148,6 +158,9 @@ def brass() -> list[float]:
 
 
 if __name__ == "__main__":
-    for name, make in (("dx-epiano", epiano), ("dx-bells", bells), ("dx-marimba", marimba),
-                       ("dx-bass", bass), ("dx-brass", brass)):
-        write(name, make())
+    import sys
+
+    tones = {"dx-epiano": epiano, "dx-piano-c": piano_c, "dx-bells": bells,
+             "dx-marimba": marimba, "dx-bass": bass, "dx-brass": brass}
+    for name in sys.argv[1:] or tones:  # names to make just those
+        write(name, tones[name]())
