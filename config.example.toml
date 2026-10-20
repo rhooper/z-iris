@@ -9,7 +9,7 @@ zuliprc = "~/.zuliprc"
 [defaults]
 # A sound name: a bundled tone (chime, ping, bell, blip, knock, double, triple,
 # rise, fall, alert, urgent, low, soft; DX7-style FM: dx-epiano, dx-piano-c, dx-bells,
-# dx-marimba, dx-bass, dx-brass), a file you added in the editor, or "none".
+# dx-marimba, dx-bass, dx-brass; sos: Morse SOS, spark-gap), a file you added in the editor, or "none".
 sound = "chime"
 # Percent of the system output level, 0 to 100.
 volume = 60

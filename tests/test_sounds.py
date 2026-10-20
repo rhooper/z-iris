@@ -109,3 +109,27 @@ def test_dx7_tones_are_short_mono_wavs():
             seconds = tone.getnframes() / tone.getframerate()
             assert tone.getnchannels() == 1 and tone.getsampwidth() == 2
             assert 0.2 < seconds <= 2.0, (name, seconds)
+
+
+def test_sos_is_bundled_and_is_the_morse_prosign():
+    import wave
+
+    assert "sos" in builtin_names()
+    with wave.open(str(library(None)["sos"]), "rb") as tone:
+        rate, frames = tone.getframerate(), tone.readframes(tone.getnframes())
+    samples = [int.from_bytes(frames[i:i + 2], "little", signed=True) for i in range(0, len(frames), 2)]
+    # On/off keying, measured in 5 ms windows: the marks of ...---... sent twice.
+    window = rate // 200
+    loud = [max(abs(s) for s in samples[i:i + window]) > 2000 for i in range(0, len(samples) - window, window)]
+    marks, run = [], 0
+    for on in loud + [False]:
+        if on:
+            run += 1
+        elif run:
+            marks.append(run)
+            run = 0
+    assert len(marks) == 18
+    short, long = min(marks), max(marks)
+    assert 2.5 < long / short < 3.5  # a dash is three dots
+    pattern = "".join("-" if m > (short + long) / 2 else "." for m in marks)
+    assert pattern == "...---..." * 2
