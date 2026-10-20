@@ -70,7 +70,7 @@
       <span id="soundlist"><small></small></span>
     </div>
     <div id="mysounds"></div>
-    <small>Bundled tones plus your own. Your files are copied into the sounds folder next to your config, up to 10 MB.</small>
+    <small>Play any tone. Your files are copied into the sounds folder next to your config, up to 10 MB; removing one that rules use asks what to use instead.</small>
   </div>
 
   <h2>Rules</h2>
@@ -186,7 +186,7 @@ function setStatus(message, cls) { const s = document.getElementById("status"); 
 async function api(method, route, body) {
   const res = await fetch(base + route, {method, headers:{"Content-Type":"application/json"}, body: body ? JSON.stringify(body) : undefined});
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error || res.statusText);
+  if (!res.ok) { const error = new Error(data.error || res.statusText); error.data = data; throw error; }
   return data;
 }
 
@@ -307,13 +307,13 @@ function updateReadouts() {
   for (const {node, rule} of readouts) { const {text, tip} = playsText(rule); node.textContent = text; node.title = tip; }
 }
 
-// ---- rule cards collapse to one line; the set is remembered per browser tab
-const COLLAPSED_KEY = "z-iris-collapsed";
-let collapsed = new Set();
-function saveCollapsed() { try { sessionStorage.setItem(COLLAPSED_KEY, JSON.stringify(state.rules.map((r, i) => collapsed.has(r) ? i : -1).filter(i => i >= 0))); } catch (e) {} }
+// ---- rule cards start collapsed to one line; the expanded ones are remembered per browser tab
+const EXPANDED_KEY = "z-iris-expanded";
+let expanded = new Set();
+function saveCollapsed() { try { sessionStorage.setItem(EXPANDED_KEY, JSON.stringify(state.rules.map((r, i) => expanded.has(r) ? i : -1).filter(i => i >= 0))); } catch (e) {} }
 function loadCollapsed() {
-  try { const list = JSON.parse(sessionStorage.getItem(COLLAPSED_KEY) || "[]"); collapsed = new Set(list.map(i => state.rules[i]).filter(Boolean)); }
-  catch (e) { collapsed = new Set(); }
+  try { const list = JSON.parse(sessionStorage.getItem(EXPANDED_KEY) || "[]"); expanded = new Set(list.map(i => state.rules[i]).filter(Boolean)); }
+  catch (e) { expanded = new Set(); }
 }
 
 function allPreviewMessages() {
@@ -353,10 +353,25 @@ function renderRulesOnly() { renderRules(); }
 
 function ruleSummary(rule) {
   const kind = (KINDS.find(k => k[0] === rule.match) || [0, rule.match])[1].replace(/ \(.*\)/, "");
+  const target = rule.match === "channel" && rule.channel ? " #" + rule.channel
+    : rule.match === "topic" ? (rule.channel ? " #" + rule.channel + " >" : "") + (rule.topic ? " /" + rule.topic + "/" : "")
+    : rule.match === "keyword" && rule.keyword ? " /" + rule.keyword + "/" : "";
   const sound = rule.sound || state.defaults.sound || "chime";
+  const volume = rule.volume ?? state.defaults.volume;
   const sep = () => el("span", {className:"sep", textContent:"·"});
-  return el("div", {className:"oneline"}, el("b", {textContent: rule.name || "(unnamed)"}), sep(), el("span", {textContent: kind}), sep(),
-    el("span", {textContent: sound === "none" ? "silent" : sound + (rule.sound ? "" : " (default)")}), sep(),
+  const tag = text => el("span", {className:"tag", textContent:text});
+  const extras = [];
+  if (rule.sticky === true) extras.push("sticky");
+  if (rule.banner === "title") extras.push("title only"); else if (rule.banner === "off") extras.push("no banner");
+  if (rule.flash && rule.flash !== "none") extras.push("flash " + rule.flash);
+  if (rule.repeat > 0) extras.push("repeat ×" + rule.repeat);
+  if (rule.batch_window > 0) extras.push("batch " + rule.batch_window + "s");
+  if (rule.min_gap > 0) extras.push("gap " + rule.min_gap + "s");
+  if (rule.server) extras.push("server " + rule.server);
+  if (rule.priority) extras.push("priority " + rule.priority);
+  return el("div", {className:"oneline"}, el("b", {textContent: rule.name || "(unnamed)"}), sep(), el("span", {textContent: kind + target}), sep(),
+    el("span", {textContent: sound === "none" ? "silent" : sound + (rule.sound ? "" : " (default)") + (volume != null ? " " + volume + "%" : "")}),
+    ...extras.map(tag),
     el("span", {className: "tag" + (rule.enabled === false ? "" : " on"), textContent: rule.enabled === false ? "off" : "on"}));
 }
 
@@ -390,8 +405,8 @@ function renderRules() {
     const on = el("input", {type:"checkbox", checked: rule.enabled !== false});
     on.addEventListener("change", () => { rule.enabled = on.checked; if (on.checked) delete rule.enabled; card.classList.toggle("off", !on.checked); });
     const toggle = el("label", {className:"toggle"}, on, "On");
-    const isCollapsed = collapsed.has(rule);
-    const chev = mk(isCollapsed ? "Expand" : "Collapse", () => { if (collapsed.has(rule)) collapsed.delete(rule); else collapsed.add(rule); saveCollapsed(); renderRules(); });
+    const isCollapsed = !expanded.has(rule);
+    const chev = mk(isCollapsed ? "Expand" : "Collapse", () => { if (expanded.has(rule)) expanded.delete(rule); else expanded.add(rule); saveCollapsed(); renderRules(); });
     chev.className = "chev"; chev.setAttribute("aria-expanded", String(!isCollapsed));
     const plays = el("span", {className:"plays"});
     readouts.push({node: plays, rule});
@@ -406,7 +421,7 @@ function renderRules() {
   updateReadouts();
 }
 
-function setAllCollapsed(flag) { collapsed = flag ? new Set(state.rules) : new Set(); saveCollapsed(); renderRules(); }
+function setAllCollapsed(flag) { expanded = flag ? new Set() : new Set(state.rules); saveCollapsed(); renderRules(); }
 document.getElementById("collapseall").addEventListener("click", () => setAllCollapsed(true));
 document.getElementById("expandall").addEventListener("click", () => setAllCollapsed(false));
 
@@ -427,7 +442,7 @@ function makeMore() {
   document.getElementById("morewrap").replaceChildren(button);
   return button;
 }
-document.getElementById("add").addEventListener("click", () => { state.rules.push({name:"New rule", match:"mention"}); clearPreview(); changed(true); });
+document.getElementById("add").addEventListener("click", () => { const rule = {name:"New rule", match:"mention"}; state.rules.push(rule); expanded.add(rule); saveCollapsed(); clearPreview(); changed(true); });
 
 // ---- autosave: every edit applies by itself, a moment after you stop typing
 let saveTimer = null, saving = false, dirty = false;
@@ -479,28 +494,45 @@ setInterval(renderDeleted, 15000);
 
 function renderSounds() {
   document.querySelector("#soundlist small").textContent = state.sounds.length + " sounds available";
-  const mine = state.sounds.filter(x => x.yours), box = document.getElementById("mysounds");
-  box.replaceChildren(...(mine.length ? [el("h3", {textContent:"Your sounds", style:"font-size:13px; margin:10px 0 0"})] : []), ...mine.map(x => {
-    const row = el("div", {className:"mine"}), actions = el("span", {className:"row"});
-    const mk = (label, fn) => { const b = el("button", {type:"button", textContent:label}); b.addEventListener("click", fn); return b; };
-    const idle = () => {
-      actions.replaceChildren(
-        mk("Test", async () => { try { await api("POST", "api/test", {sound: x.name, volume: state.defaults.volume ?? 60}); setStatus(""); } catch (e) { setStatus(e.message, "bad"); } }),
-        mk("Delete", () => actions.replaceChildren(el("span", {textContent:`Delete "${x.name}"?`}), mk("Yes, delete", () => removeSound(x.name)), mk("Cancel", idle))));
-    };
-    row.dataset.sound = x.name;
+  const box = document.getElementById("mysounds");
+  const mk = (label, fn) => { const b = el("button", {type:"button", textContent:label}); b.addEventListener("click", fn); return b; };
+  const play = name => mk("Play", async () => { try { await api("POST", "api/test", {sound: name, volume: state.defaults.volume ?? 60}); setStatus(""); } catch (e) { setStatus(e.message, "bad"); } });
+  const heading = text => el("h3", {textContent:text, style:"font-size:13px; margin:10px 0 0"});
+  const row = (x, actions) => { const r = el("div", {className:"mine"}, el("span", {textContent:x.name}), actions); r.dataset.sound = x.name; return r; };
+  const bundled = state.sounds.filter(x => !x.yours), mine = state.sounds.filter(x => x.yours);
+  const mineRows = mine.map(x => {
+    const actions = el("span", {className:"row"});
+    const idle = () => actions.replaceChildren(play(x.name),
+      mk("Remove", () => actions.replaceChildren(el("span", {textContent:`Remove "${x.name}"?`}), mk("Yes, remove", () => removeSound(x.name, null, actions, idle)), mk("Cancel", idle))));
     idle();
-    row.append(el("span", {textContent:x.name}), actions);
-    return row;
-  }));
+    return row(x, actions);
+  });
+  box.replaceChildren(heading("Bundled tones"), ...bundled.map(x => row(x, el("span", {className:"row"}, play(x.name)))),
+    ...(mine.length ? [heading("Your sounds"), ...mineRows] : []));
 }
-async function removeSound(name) {
+// Removing a sound something uses asks what to use instead; the server switches
+// the saved config, and the same switch is applied to unsaved edits here.
+async function removeSound(name, replacement, actions, idle) {
   try {
-    await api("POST", "api/sounds/delete", {name});
+    await api("POST", "api/sounds/delete", replacement == null ? {name} : {name, replacement});
+    if (replacement != null) {
+      if (state.defaults.sound === name) state.defaults.sound = replacement;
+      for (const rule of state.rules) if (rule.sound === name) rule.sound = replacement;
+    }
     state.sounds = (await api("GET", "api/config")).sounds;
     renderDefaults(); renderRules(); renderSounds();
-    setStatus(`Deleted "${name}".`, "ok");
-  } catch (e) { renderSounds(); setStatus(e.message, "bad"); }
+    setStatus(replacement == null ? `Removed "${name}".` : `Removed "${name}"; now using "${replacement}" instead.`, "ok");
+  } catch (e) {
+    const usedBy = e.data && e.data.used_by;
+    if (!usedBy || !actions) { renderSounds(); setStatus(e.message, "bad"); return; }
+    const choices = [["none", "none (silent)"], ...state.sounds.filter(x => x.name !== name).map(x => [x.name, x.name])];
+    let pick = choices.find(c => c[0] === "chime") ? "chime" : choices[0][0];
+    const chooser = select(choices, pick, v => pick = v);
+    const mk = (label, fn) => { const b = el("button", {type:"button", textContent:label}); b.addEventListener("click", fn); return b; };
+    actions.replaceChildren(el("span", {textContent:`Used by ${usedBy.join(", ")}. Use instead:`}), chooser,
+      mk("Replace and remove", () => removeSound(name, pick, actions, idle)), mk("Cancel", idle));
+    setStatus("");
+  }
 }
 async function loadChannels() {
   try {
