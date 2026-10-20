@@ -30,6 +30,7 @@ class FakeClient:
 
     def register(self, **kwargs):
         self.registered += 1
+        self.register_kwargs = kwargs
         return {
             "result": "success",
             "queue_id": f"q{self.registered}",
@@ -284,3 +285,15 @@ def test_each_register_reconciles_unread():
     stream.stop()
     wait_until(lambda: len(engine.reconciled) >= 2)
     assert engine.reconciled == [("w", {1, 2}), ("w", {3})]
+
+
+
+def test_register_asks_for_full_avatar_urls():
+    # With client_gravatar on (the server's default for some clients), Gravatar
+    # and default avatars arrive as no URL at all, and so no face to show.
+    client = FakeClient([])
+    stream = make_stream(client, Collect(want=1))
+    stream.start()
+    wait_until(lambda: client.registered >= 1)
+    stream.stop()
+    assert client.register_kwargs.get("client_gravatar") is False

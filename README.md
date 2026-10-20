@@ -71,7 +71,9 @@ Notification images: z-iris shows the first image in a message, else the sender'
 avatar. By default it fetches only files on your Zulip server (uploads,
 thumbnails, avatars) and Gravatar avatars. Fetching an image from any other host
 tells that host your IP address and that you are online, so it is off unless you
-set `[output] external_images = true`. Credentials are only sent to your server
+set `[output] external_images = true`. Sender avatars are always fetched (without
+credentials) from wherever the server says they live, such as its S3 storage or
+Gravatar: the server chooses that URL, not the sender. Credentials are only sent to your server
 over its own scheme, host and port, and only for `/user_uploads/`,
 `/user_avatars/` and `/thumbnail` paths.
 

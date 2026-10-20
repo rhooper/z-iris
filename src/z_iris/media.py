@@ -306,8 +306,12 @@ class ImageResolver:
                 if not avatar:
                     return None  # the server's own host, but not a media path
                 # server avatars such as /avatar/<id> are public: no credentials
-            elif not (self.external_images or (avatar and _gravatar(absolute))):
-                return None  # other hosts would see this machine's address
+            elif not (self.external_images or avatar):
+                # A message's own picture can point anywhere its sender likes,
+                # and that host would see this machine's address. An avatar URL
+                # is set by the server (its storage, or Gravatar), so it is fetched,
+                # without credentials.
+                return None
             kwargs = {"deadline": deadline}
             if auth:
                 kwargs["auth_base"] = base

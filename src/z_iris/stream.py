@@ -111,7 +111,9 @@ class ServerStream(threading.Thread):
     def _session(self) -> None:
         client = self.client_factory(self.server.zuliprc)
         default_registry.set(self.server.name, client)
-        registered = client.register(event_types=EVENT_TYPES, apply_markdown=False)
+        registered = client.register(
+            event_types=EVENT_TYPES, apply_markdown=False, client_gravatar=False
+        )
         if registered.get("result") != "success":
             raise RuntimeError(registered.get("msg", "register failed"))
         unread = unread_ids(registered)

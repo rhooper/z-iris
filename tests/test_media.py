@@ -487,13 +487,6 @@ def test_external_images_off_still_fetches_server_uploads_and_avatars(tmp_path):
     assert r.image_for(msg("hi", avatar_url=av)) is not None
 
 
-def test_external_images_off_skips_foreign_non_gravatar_avatar(tmp_path):
-    net = Net({"https://evil.org/me.png": ("image/png", PNG)})
-    r = resolver(tmp_path, net, external_images=False)
-    assert r.image_for(msg("hi", avatar_url="https://evil.org/me.png")) is None
-    assert net.calls == []
-
-
 def test_external_images_callable_is_read_each_time(tmp_path):
     flag = [False]
     net = Net({"https://x.com/a.png": ("image/png", PNG)})
@@ -579,3 +572,21 @@ def test_image_for_still_prefers_the_picture(tmp_path):
     r = resolver(tmp_path, net)
     m = msg("![p](https://x.com/a.png)", "https://cdn.x.com/av.png")
     assert r.image_for(m) == r.images_for(m).picture
+
+
+def test_an_avatar_on_the_server_s_storage_host_is_fetched_without_credentials(tmp_path):
+    # Servers keep avatars on their own storage, e.g. an S3 bucket. The server
+    # names that URL (a sender cannot), so it is fetched even with external images off.
+    url = "https://zulip-avatars.s3.amazonaws.com/2/abc.png"
+    net = Net({url: ("image/png", PNG)})
+    images = resolver(tmp_path, net, external_images=False).images_for(msg("x", url))
+    assert images.avatar is not None
+    assert net.calls[0][1] is None  # no credentials to the storage host
+
+
+def test_a_message_picture_on_another_host_is_still_not_fetched(tmp_path):
+    net = Net({"https://elsewhere.example/p.png": ("image/png", PNG)})
+    images = resolver(tmp_path, net, external_images=False).images_for(
+        msg("![p](https://elsewhere.example/p.png)"))
+    assert images.picture is None and net.calls == []
+
