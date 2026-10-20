@@ -63,7 +63,7 @@ class FakeFallback:
     def __init__(self):
         self.shown = []
 
-    def show(self, title, body, url, image=None, group=None, silent=True):
+    def show(self, title, body, url, image=None, group=None, silent=True, sender=None):
         self.shown.append((title, body, url, image, group))
 
     def clear(self, group):
@@ -213,3 +213,38 @@ def test_repeated_clear_failures_warn_once(tmp_path):
     for _ in range(3):
         link.clear("z-iris-w-1")
     assert len([w for w in warnings if "could not clear" in w]) == 1
+
+
+from z_iris.sender import Sender
+
+ADA = Sender("zulip:w:9", 'Ada "x"\n🎉', Path("/c/av.png"), None, "w:dm:9")
+
+
+def test_show_sends_the_sender_intact(tmp_path):
+    child = FakeChild()
+    link, fallback, _, _ = notifier(tmp_path, [child])
+    link.show("Ada", "x", "u", None, "z-iris-w-1", sender=ADA)
+    (request,) = [r for r in child.requests if r["op"] == "show"]
+    assert Sender.from_json(request["sender"]) == ADA
+
+
+def test_the_fallback_banner_keeps_the_sender(tmp_path):
+    class Fallback(FakeFallback):
+        def show(self, title, body, url, image=None, group=None, silent=True, sender=None):
+            self.shown.append((title, sender))
+
+    child = FakeChild({"show": {"ok": False, "reason": "not allowed"}})
+    fallback, warnings = Fallback(), []
+    link = PriorityNotifier(fallback, app=make_app(tmp_path), start=lambda argv: child,
+                            warn=warnings.append, timeout=1.0)
+    link.show("Ada", "x", "u", None, "g", sender=ADA)
+    assert fallback.shown == [("Ada", ADA)]
+
+
+def test_plain_replies_warn_once(tmp_path):
+    child = FakeChild({"show": {"ok": True, "plain": "no entitlement"}})
+    link, fallback, warnings, _ = notifier(tmp_path, [child])
+    link.show("Ada", "x", "u", None, "g1", sender=ADA)
+    link.show("Ada", "y", "u", None, "g2", sender=ADA)
+    assert fallback.shown == []
+    assert len([w for w in warnings if "no entitlement" in w]) == 1

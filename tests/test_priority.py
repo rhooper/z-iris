@@ -212,3 +212,49 @@ def test_clears_never_prompt(tmp_path):
     bounded(svc, {"op": "clear", "groups": ["z-iris-w-1"]})
     bounded(svc, {"op": "clear_server", "server": "w", "keep": []})
     assert notifier.prompted == 0
+
+
+from pathlib import Path
+
+from z_iris.comms import CommsError
+from z_iris.sender import Sender
+
+SENDER = Sender("zulip:w:9", "Ada", Path("/c/av.png"), None, "w:dm:9")
+
+
+class FakeComms:
+    def __init__(self, fail=None):
+        self.fail, self.sent = fail, []
+
+    async def __call__(self, **kw):
+        if self.fail:
+            raise CommsError(self.fail)
+        self.sent.append(kw)
+
+
+def comms_service(tmp_path, comms, notifier=None):
+    return PriorityService(notifier or FakeNotifier(), UrlStore(tmp_path / "urls.json"),
+                           opener=lambda url: None, comms=comms, picture_dir=tmp_path)
+
+
+def test_a_sender_is_a_time_sensitive_communication_alert(tmp_path):
+    comms, notifier = FakeComms(), FakeNotifier()
+    svc = comms_service(tmp_path, comms, notifier)
+    assert handle(svc, {**SHOW, "sender": SENDER.to_json()}) == {"ok": True}
+    (sent,) = comms.sent
+    assert (sent["identifier"], sent["urgency"], sent["sender"]) == ("z-iris-work-7", "time-sensitive", SENDER)
+    assert notifier.sent == []
+    assert UrlStore(tmp_path / "urls.json").pop("z-iris-work-7") == "zulip://h/#narrow/dm/9"
+
+
+def test_comms_failure_sends_a_plain_alert_and_says_so(tmp_path):
+    notifier = FakeNotifier()
+    svc = comms_service(tmp_path, FakeComms(fail="no entitlement"), notifier)
+    reply = handle(svc, {**SHOW, "sender": SENDER.to_json()})
+    assert reply == {"ok": True, "plain": "no entitlement"} and len(notifier.sent) == 1
+
+
+def test_a_malformed_sender_is_a_plain_alert(tmp_path):
+    comms, notifier = FakeComms(), FakeNotifier()
+    reply = handle(comms_service(tmp_path, comms, notifier), {**SHOW, "sender": {"handle": 1}})
+    assert reply == {"ok": True} and comms.sent == [] and len(notifier.sent) == 1
