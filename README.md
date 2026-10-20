@@ -84,7 +84,8 @@ these come from a second app, `~/Applications/z-iris-priority.app`
 (id `ca.toybox.z-iris.priority`), built by `build_app.sh` beside z-iris.
 
 - The first sticky alert asks "z-iris priority would like to send you
-  notifications": click Allow. In System Settings, Notifications, z-iris
+  notifications": click Allow. Until you answer, sticky messages show as
+  ordinary banners. In System Settings, Notifications, z-iris
   priority, the alert style should be Persistent (z-iris logs a warning if not).
   Turn off Summarize notifications there so they are never held back.
 - Clicking an alert opens the conversation in Zulip, even after z-iris quit.

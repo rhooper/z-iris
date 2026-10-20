@@ -7,15 +7,22 @@ from z_iris.priority import PriorityService, UrlStore
 
 
 class FakeNotifier:
-    def __init__(self, allowed=True, style="alert", delivered=()):
+    def __init__(self, allowed=True, style="alert", delivered=(), status=None):
         self.allowed = allowed
+        self.status = status or ("allowed" if allowed else "denied")
+        self.prompted = 0
+        self.answer = asyncio.Event  # created lazily inside the running loop
         self.style = style
         self.delivered = list(delivered)
         self.sent = []
         self.cleared = []
 
     async def request_authorisation(self):
+        self.prompted += 1
         return self.allowed
+
+    async def authorisation_status(self):
+        return self.status
 
     async def alert_style(self):
         return self.style
@@ -78,7 +85,7 @@ def test_show_attaches_an_existing_image(tmp_path):
 
 
 def test_show_when_not_allowed_replies_not_ok(tmp_path):
-    notifier = FakeNotifier(allowed=False)
+    notifier = FakeNotifier(allowed=False)  # status "denied"
     assert handle(service(tmp_path, notifier), SHOW) == {"ok": False, "reason": "not allowed"}
     assert notifier.sent == []
 
@@ -159,3 +166,49 @@ def test_clear_touches_only_alerts_on_screen(tmp_path):
     groups = [f"z-iris-w-{i}" for i in range(1, 5001)]
     assert handle(service(tmp_path, notifier), {"op": "clear", "groups": groups}) == {"ok": True}
     assert notifier.cleared == ["z-iris-w-3"]
+
+
+
+class PromptingNotifier(FakeNotifier):
+    """Permission not decided yet: the prompt never answers during the test."""
+
+    def __init__(self):
+        super().__init__(status="undetermined")
+
+    async def request_authorisation(self):
+        self.prompted += 1
+        await asyncio.Event().wait()
+
+
+def bounded(svc, request):
+    return asyncio.run(asyncio.wait_for(svc.handle(request), 1))
+
+
+def test_status_never_waits_for_the_permission_prompt(tmp_path):
+    notifier = PromptingNotifier()
+    reply = bounded(service(tmp_path, notifier), {"op": "status"})
+    assert reply == {"ok": True, "allowed": False, "style": "alert"}
+    assert notifier.prompted == 0
+
+
+def test_an_undecided_permission_prompts_in_the_background_on_show(tmp_path):
+    notifier = PromptingNotifier()
+    svc = service(tmp_path, notifier)
+
+    async def two_shows():
+        first = await asyncio.wait_for(svc.handle(SHOW), 1)
+        second = await asyncio.wait_for(svc.handle(SHOW), 1)
+        await asyncio.sleep(0)
+        return first, second
+
+    first, second = asyncio.run(two_shows())
+    assert first == second == {"ok": False, "reason": "waiting for permission"}
+    assert notifier.prompted == 1 and notifier.sent == []
+
+
+def test_clears_never_prompt(tmp_path):
+    notifier = PromptingNotifier()
+    svc = service(tmp_path, notifier)
+    bounded(svc, {"op": "clear", "groups": ["z-iris-w-1"]})
+    bounded(svc, {"op": "clear_server", "server": "w", "keep": []})
+    assert notifier.prompted == 0

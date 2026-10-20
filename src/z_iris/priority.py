@@ -76,6 +76,7 @@ class PriorityService:
         self.notifier = notifier
         self.urls = urls
         self.opener = opener
+        self._prompt = None  # the background permission request, once started
 
     async def handle(self, request: object) -> dict:
         try:
@@ -83,9 +84,11 @@ class PriorityService:
                 return _bad("request must be an object")
             op = request.get("op")
             if op == "status":
+                # Never the prompt: it waits for the user, and z-iris would
+                # take the silence for a hang.
                 return {
                     "ok": True,
-                    "allowed": bool(await self.notifier.request_authorisation()),
+                    "allowed": await self.notifier.authorisation_status() == "allowed",
                     "style": await self.notifier.alert_style(),
                 }
             if op == "show":
@@ -108,7 +111,15 @@ class PriorityService:
         fields = {key: request.get(key) for key in ("title", "body", "url", "group")}
         if not all(isinstance(value, str) for value in fields.values()):
             return _bad("show needs title, body, url and group strings")
-        if not await self.notifier.request_authorisation():
+        status = await self.notifier.authorisation_status()
+        if status == "undetermined":
+            # Ask in the background; z-iris shows a banner until it is answered.
+            if self._prompt is None or self._prompt.done():
+                import asyncio
+
+                self._prompt = asyncio.ensure_future(self.notifier.request_authorisation())
+            return _bad("waiting for permission")
+        if status != "allowed":
             return _bad("not allowed")
         image = request.get("image")
         attachment = (
@@ -183,6 +194,8 @@ def serve(
 # The app. Everything below needs macOS and the z-iris-priority.app bundle.
 
 _STYLES = {0: "none", 1: "banner", 2: "alert"}
+# UNAuthorizationStatus: not determined, denied, authorized, provisional, ephemeral
+_AUTH = {0: "undetermined", 1: "denied", 2: "allowed", 3: "allowed", 4: "allowed"}
 IDLE_EXIT = 30.0  # seconds after z-iris goes away (or a click relaunch) before quitting
 
 
@@ -200,7 +213,8 @@ class MacNotifier:
     def __getattr__(self, name):
         return getattr(self._notifier, name)
 
-    async def alert_style(self) -> str:
+    async def _settings(self) -> tuple[int, int]:
+        """(authorizationStatus, alertStyle), without ever prompting."""
         import asyncio
         from concurrent.futures import Future
 
@@ -212,10 +226,19 @@ class MacNotifier:
         future: Future = Future()
 
         def handler(settings: objc_id) -> None:
-            future.set_result(int(ObjCInstance(settings).alertStyle))
+            found = ObjCInstance(settings)
+            future.set_result((int(found.authorizationStatus), int(found.alertStyle)))
 
         center.getNotificationSettingsWithCompletionHandler(Block(handler, None, objc_id))
-        return _STYLES.get(await asyncio.wrap_future(future), "none")
+        return await asyncio.wrap_future(future)
+
+    async def authorisation_status(self) -> str:
+        status, _style = await self._settings()
+        return _AUTH.get(status, "denied")
+
+    async def alert_style(self) -> str:
+        _status, style = await self._settings()
+        return _STYLES.get(style, "none")
 
 
 def main(argv: list[str] | None = None) -> int:
