@@ -39,6 +39,19 @@ def _probe(config: Config) -> int:
     return 0
 
 
+PROFILE_WARN_DAYS = 14
+
+
+def _own_app() -> Path:
+    """This app bundle, wherever it was installed."""
+    try:
+        from Foundation import NSBundle
+
+        return Path(str(NSBundle.mainBundle().bundlePath()))
+    except Exception:
+        return Path.home() / "Applications" / "z-iris.app"
+
+
 def _real_output(settings: Settings) -> RealOutput:
     from z_iris.media import ImageResolver, default_registry
 
@@ -51,12 +64,14 @@ def _real_output(settings: Settings) -> RealOutput:
         # Sticky alerts come from z-iris-priority.app; it falls back to our banners.
         priority = PriorityNotifier(notifier)
         now = datetime.now(timezone.utc).replace(tzinfo=None)  # profiles use naive UTC
-        days = profile_days_left(PRIORITY_APP, now)
-        if days is not None and days < 2:
-            log_problem(
-                f"z-iris priority's development profile expires in {days:.1f} days; "
-                "rebuild it from Xcode and re-run build_app.sh"
-            )
+        for name, app in (("z-iris", _own_app()), ("z-iris priority", PRIORITY_APP)):
+            days = profile_days_left(app, now)
+            if days is not None and days < PROFILE_WARN_DAYS:
+                # An expired profile stops the app launching at all.
+                log_problem(
+                    f"{name}'s development profile expires in {days:.1f} days; "
+                    "build the Xcode project in xcode/ again and re-run build_app.sh"
+                )
     return RealOutput(settings, notifier=notifier, image_for=resolver.image_for,
                       images_for=resolver.images_for, priority=priority)
 
