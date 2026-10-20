@@ -75,3 +75,14 @@ def test_an_expiring_profile_is_warned_at_startup(monkeypatch):
     out.close()
     _, quiet = _bundle(monkeypatch, True, days=30)
     assert quiet == []
+
+
+def test_real_output_resolves_both_images_and_keeps_click_urls(monkeypatch):
+    from z_iris import output
+    from z_iris.priority import UrlStore
+
+    out, _ = _bundle(monkeypatch, True)
+    assert callable(out.images_for)
+    assert isinstance(out.notifier.urls, UrlStore)
+    assert out.notifier.urls.path.name == "banner-urls.json"
+    out.close()

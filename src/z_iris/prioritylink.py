@@ -181,6 +181,7 @@ class PriorityNotifier:
         image: Path | None = None,
         group: str | None = None,
         silent: bool = True,
+        sender=None,  # Task 6 sends it on
     ) -> None:
         reply = self._request({
             "op": "show", "title": title, "body": body, "url": url,

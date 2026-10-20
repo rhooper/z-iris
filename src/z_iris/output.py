@@ -10,10 +10,12 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Protocol
 
+from z_iris.media import MessageImages
 from z_iris.message import Message
 from z_iris.notify import DesktopNotifierBackend, Notifier, in_bundle, log_problem
 from z_iris.pipeline import Notification
 from z_iris.prioritylink import PriorityNotifier
+from z_iris.sender import sender_for
 from z_iris.plaintext import expand_emoji, plain_text
 from z_iris.settings import Settings
 
@@ -166,13 +168,17 @@ class TerminalNotifier:
         self.spawn = spawn
         self.binary = binary
 
-    def show(self, title, body, url, image=None, group=None, silent=True) -> None:
+    def show(self, title, body, url, image=None, group=None, silent=True, sender=None) -> None:
         self.spawn(
             terminal_notifier_command(self.binary, title, body, url, group or "z-iris")
         )
 
     def clear(self, group: str) -> None:
         self.spawn([self.binary, "-remove", group])
+
+
+# Click urls for z-iris's own banners, kept so a click after a restart still opens Zulip.
+BANNER_URLS = Path.home() / "Library" / "Application Support" / "z-iris" / "banner-urls.json"
 
 
 def make_notifier(
@@ -182,7 +188,9 @@ def make_notifier(
     binary is the [output] notifier setting: the fallback's command or path."""
     fallback = TerminalNotifier(spawn, binary)
     if in_bundle():
-        return DesktopNotifierBackend(fallback)
+        from z_iris.priority import UrlStore
+
+        return DesktopNotifierBackend(fallback, urls=UrlStore(BANNER_URLS))
     return fallback
 
 
@@ -239,7 +247,9 @@ class RealOutput:
         notifier: Notifier | None = None,
         image_for: Callable[[Message], Path | None] | None = None,
         priority: PriorityNotifier | None = None,
+        images_for: Callable[[Message], MessageImages] | None = None,
     ) -> None:
+        self.images_for = images_for  # avatar and picture apart; wins over image_for
         self.settings = settings
         self.priority = priority  # sticky alerts; None outside the app bundle
         self.spawn = spawn
@@ -263,17 +273,24 @@ class RealOutput:
     def _show_banner(self, notification: Notification) -> None:
         action = notification.action
         message = notification.message
-        body = "New message" if action.banner == "title" else plain_body(message)
-        image = None
-        if self.image_for is not None and action.banner != "title":
-            try:
+        title_only = action.banner == "title"
+        body = "New message" if title_only else plain_body(message)
+        title = notification_title(notification)
+        image = sender = None
+        try:
+            if self.images_for is not None:
+                images = self.images_for(message)
+                picture = None if title_only else images.picture
+                image = None if title_only else (picture or images.avatar)
+                if not notification.summary:  # a summary has no single sender
+                    sender = sender_for(message, title, MessageImages(images.avatar, picture))
+            elif self.image_for is not None and not title_only:
                 image = self.image_for(message)
-            except Exception as error:
-                log_problem(f"image lookup failed: {error}")
+        except Exception as error:
+            log_problem(f"image lookup failed: {error}")
         sticky = action.sticky and self.priority is not None
         (self.priority if sticky else self.notifier).show(
-            notification_title(notification), body, notification.url, image,
-            banner_group(message), True
+            title, body, notification.url, image, banner_group(message), True, sender=sender
         )
 
     # Clears run on the banner worker, so they stay ordered after the shows.

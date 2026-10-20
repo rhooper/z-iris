@@ -57,7 +57,8 @@ def _real_output(settings: Settings) -> RealOutput:
                 f"z-iris priority's development profile expires in {days:.1f} days; "
                 "rebuild it from Xcode and re-run build_app.sh"
             )
-    return RealOutput(settings, notifier=notifier, image_for=resolver.image_for, priority=priority)
+    return RealOutput(settings, notifier=notifier, image_for=resolver.image_for,
+                      images_for=resolver.images_for, priority=priority)
 
 
 def _close_output(output) -> None:

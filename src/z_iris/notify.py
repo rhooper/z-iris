@@ -17,6 +17,9 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any, Protocol
 
+from z_iris.comms import CommsError, group_picture, send_communication
+from z_iris.sender import Sender
+
 BUNDLE_ID = "ca.toybox.z-iris"
 
 
@@ -29,6 +32,7 @@ class Notifier(Protocol):
         image: Path | None = None,
         group: str | None = None,
         silent: bool = True,
+        sender: Sender | None = None,
     ) -> None: ...
 
     def clear(self, group: str) -> None: ...
@@ -110,6 +114,27 @@ class _RefusalWatch(logging.Handler):
             self.count += 1
 
 
+class _MemoryUrls:
+    """Click urls by group, for this run only. The app passes a priority.UrlStore
+    so a click after a restart still opens Zulip."""
+
+    def __init__(self) -> None:
+        self._urls: dict[str, str] = {}
+
+    def put(self, group: str, url: str) -> None:
+        self._urls[group] = url
+
+    def pop(self, group: str) -> str | None:
+        return self._urls.pop(group, None)
+
+    def drop(self, groups) -> None:
+        for group in list(groups):
+            self._urls.pop(group, None)
+
+
+GROUP_PICTURES = Path.home() / "Library" / "Caches" / "z-iris" / "groups"
+
+
 class DesktopNotifierBackend:
     """Runs desktop-notifier on its own asyncio loop in a daemon thread. show and
     clear return at once and never raise."""
@@ -123,7 +148,14 @@ class DesktopNotifierBackend:
         auth_timeout: float = 10.0,
         recheck_seconds: float = 300.0,
         clock: Callable[[], float] = time.monotonic,
+        comms: Callable[..., Any] = send_communication,
+        urls: Any = None,
+        picture_dir: Path = GROUP_PICTURES,
     ) -> None:
+        self.comms = comms
+        self.urls = urls if urls is not None else _MemoryUrls()
+        self.picture_dir = picture_dir
+        self._comms_warned = False
         self.fallback = fallback
         self.opener = opener
         self.factory = factory
@@ -161,6 +193,9 @@ class DesktopNotifierBackend:
         try:
             if self._notifier is None:
                 self._notifier = self.factory()
+                # Sender notifications and clicks after a restart reach only the
+                # app-wide handler, which gets just the identifier.
+                self._notifier.on_clicked = self._clicked
             self._authorised = bool(await self._notifier.request_authorisation())
         except Exception as error:
             self._notifier = None
@@ -199,6 +234,11 @@ class DesktopNotifierBackend:
             return False
         return bool(self._authorised)
 
+    def _clicked(self, group: str) -> None:
+        url = self.urls.pop(group)
+        if url:
+            self.opener(url)
+
     def show(
         self,
         title: str,
@@ -207,16 +247,41 @@ class DesktopNotifierBackend:
         image: Path | None = None,
         group: str | None = None,
         silent: bool = True,
+        sender: Sender | None = None,
     ) -> None:
-        self._submit(self._show(title, body, url, image, group, silent))
+        self._submit(self._show(title, body, url, image, group, silent, sender))
 
-    async def _show(self, title, body, url, image, group, silent) -> None:
+    async def _show(self, title, body, url, image, group, silent, sender=None) -> None:
         async with self._sends:  # FIFO: banners go out in submission order
-            await self._show_locked(title, body, url, image, group, silent)
+            await self._show_locked(title, body, url, image, group, silent, sender)
 
-    async def _show_locked(self, title, body, url, image, group, silent) -> None:
+    async def _send_from(self, sender: Sender, title, body, url, group, silent) -> bool:
+        """The sender's face as the icon. False (and one warning) if macOS
+        cannot: the caller then sends today's notification."""
+        try:
+            group_image = (group_picture(sender, self.picture_dir)
+                           if sender.group_name is not None else None)
+            await self.comms(identifier=group or "z-iris", title=title, body=body,
+                             sender=sender, urgency="active", group_image=group_image)
+        except CommsError as error:
+            if not self._comms_warned:
+                self._comms_warned = True
+                self.warn(f"sender icons unavailable ({error}); plain banners")
+            return False
+        return True
+
+    async def _show_locked(self, title, body, url, image, group, silent, sender=None) -> None:
         try:
             if await self._ready():
+                if group:
+                    self.urls.put(group, url)
+                if sender is not None and await self._send_from(
+                    sender, title, body, url, group, silent
+                ):
+                    if self._state == "fallback":
+                        self._transition("native", "native banners working again")
+                    self._state = "native"
+                    return
                 from desktop_notifier import DEFAULT_SOUND, Attachment, Notification
 
                 extra = {"identifier": group} if group else {}
@@ -227,7 +292,7 @@ class DesktopNotifierBackend:
                         body,
                         attachment=Attachment(path=image) if image else None,
                         sound=None if silent else DEFAULT_SOUND,
-                        on_clicked=lambda: self.opener(url),
+                        on_clicked=lambda: self._clicked(group) if group else self.opener(url),
                         **extra,
                     )
                 )
@@ -256,6 +321,7 @@ class DesktopNotifierBackend:
             try:
                 if await self._ready():
                     await self._notifier.clear(group)
+                    self.urls.drop([group])
                     return
             except Exception as error:
                 self.warn(f"cannot clear notification ({error})")
