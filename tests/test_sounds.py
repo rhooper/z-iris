@@ -2,6 +2,7 @@ import shutil
 import subprocess
 
 import pytest
+from pathlib import Path
 
 from z_iris.sounds import SoundError, add_sound, builtin_names, library
 
@@ -193,3 +194,18 @@ def test_moog_a_is_driven_hard():
     body = samples[int(0.05 * rate):int(0.2 * rate)]
     rms = math.sqrt(sum(x * x for x in body) / len(body))
     assert max(abs(x) for x in body) / rms < 1.9  # saturated: fat, squashed peaks
+
+
+PUBLIC_DOMAIN = ["bicycle-bell", "church-bells", "cowbell", "doorbell", "foghorn", "gong",
+                 "rooster", "singing-bowl", "steam-whistle", "typewriter-ding", "wind-chimes"]
+
+
+@pytest.mark.parametrize("name", PUBLIC_DOMAIN)
+def test_public_domain_sounds_are_bundled_with_their_source(name):
+    import wave
+
+    with wave.open(str(library(None)[name]), "rb") as tone:
+        assert tone.getnchannels() == 1 and tone.getnframes() / tone.getframerate() <= 3.01
+    sources = (Path(library(None)[name]).parent / "SOURCES.md").read_text()
+    line = next(l for l in sources.splitlines() if l.startswith(f"| {name} |"))
+    assert ("CC0" in line or "Public domain" in line) and "commons.wikimedia.org" in line

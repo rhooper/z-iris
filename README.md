@@ -156,7 +156,9 @@ one sample per kind.
   Yamaha DX7-style FM tones `dx-*` after its factory presets: epiano, piano-c,
   bells, marimba, bass, brass, vibe, koto, clav, harpsichord, steel-drum, flute,
   organ, strings, orch-chime, synlead; moog-a: a Minimoog-style A4 eighth note; and sos: SOS in Morse on a
-  1910s spark-gap wireless note) and
+  1910s spark-gap wireless note; plus eleven public-domain recordings: bicycle-bell,
+  church-bells, cowbell, doorbell, foghorn, gong, rooster, singing-bowl, steam-whistle,
+  typewriter-ding, wind-chimes, with sources in `src/z_iris/sounds/SOURCES.md`) and
   any file in `~/.config/z-iris/sounds/` (the file name without its extension).
   Add your own in the editor, or drop a file in that folder. Older configs
   that give a file path still work. `volume`: 0 to 100.

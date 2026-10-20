@@ -217,7 +217,7 @@ def test_delete_sound_endpoint(editor, tmp_path):
     call, token, path, settings, _ = editor
     data = _wav(tmp_path)
     call("POST", f"/{token}/api/sounds", {"filename": "Horn.wav", "data": data})
-    call("POST", f"/{token}/api/sounds", {"filename": "Gong.wav", "data": data})
+    call("POST", f"/{token}/api/sounds", {"filename": "Klaxon.wav", "data": data})
     sounds = path.parent / "sounds"
     # bundled and unknown
     for name in ["chime", "nope"]:
@@ -229,8 +229,8 @@ def test_delete_sound_endpoint(editor, tmp_path):
     assert status == 400 and "alarm rule" in json.loads(body)["error"]
     assert (sounds / "Horn.wav").exists()
     # used as the default sound
-    call("PUT", f"/{token}/api/config", {"defaults": {"sound": "Gong"}})
-    status, body = call("POST", f"/{token}/api/sounds/delete", {"name": "Gong"})
+    call("PUT", f"/{token}/api/config", {"defaults": {"sound": "Klaxon"}})
+    status, body = call("POST", f"/{token}/api/sounds/delete", {"name": "Klaxon"})
     assert status == 400 and "default" in json.loads(body)["error"]
     # unused: deleted, including the original
     call("PUT", f"/{token}/api/config", {"defaults": {"sound": "chime"}, "rules": []})
