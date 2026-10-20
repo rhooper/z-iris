@@ -39,25 +39,25 @@ def test_encode_component_matches_zulip(text, expected):
 
 def test_channel_url():
     assert narrow_url(channel()) == (
-        "zulip://chat.example.com/#narrow/stream/7-ops/topic/deploys/near/101"
+        "zulip://chat.example.com/#narrow/channel/7-ops/topic/deploys/with/101"
     )
 
 
 def test_channel_url_encodes_names():
     url = narrow_url(channel("my team", "q&a: 1.0"))
     assert url == (
-        "zulip://chat.example.com/#narrow/stream/7-my.20team"
-        "/topic/q.26a.3A.201.2E0/near/101"
+        "zulip://chat.example.com/#narrow/channel/7-my.20team"
+        "/topic/q.26a.3A.201.2E0/with/101"
     )
 
 
 def test_one_to_one_dm_url():
-    assert narrow_url(dm([9])) == "zulip://chat.example.com/#narrow/dm/9-pm/near/101"
+    assert narrow_url(dm([9])) == "zulip://chat.example.com/#narrow/dm/9-pm/with/101"
 
 
 def test_group_dm_url():
     assert narrow_url(dm([3, 12])) == (
-        "zulip://chat.example.com/#narrow/dm/3,12-group/near/101"
+        "zulip://chat.example.com/#narrow/dm/3,12-group/with/101"
     )
 
 

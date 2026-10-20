@@ -42,7 +42,7 @@ def test_mention_becomes_a_notification_with_a_url():
     assert n is not None
     assert n.reason == "mention"
     assert (
-        n.url == "zulip://chat.example.com/#narrow/stream/7-ops/topic/deploys/near/101"
+        n.url == "zulip://chat.example.com/#narrow/channel/7-ops/topic/deploys/with/101"
     )
     assert n.message.sender_name == "Ada"
 

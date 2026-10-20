@@ -17,12 +17,16 @@ def encode_component(text: str) -> str:
 
 
 def narrow_url(message: Message) -> str:
+    """The message's conversation, opened at the message. Uses the forms Zulip's
+    own message links use (Zulip 9 and later): channel/ and with/<id>. The older
+    near/<id> sent Zulip 12's web app into an endless loading loop on some
+    topics, and with/ also follows a message that was moved."""
     base = f"zulip://{message.host}/#narrow"
     if message.kind == "channel":
         channel = f"{message.channel_id}-{encode_component(message.channel_name or '')}"
         topic = encode_component(message.topic or "")
-        return f"{base}/stream/{channel}/topic/{topic}/near/{message.id}"
+        return f"{base}/channel/{channel}/topic/{topic}/with/{message.id}"
 
     ids = ",".join(str(i) for i in message.dm_user_ids)
     suffix = "group" if len(message.dm_user_ids) > 1 else "pm"
-    return f"{base}/dm/{ids}-{suffix}/near/{message.id}"
+    return f"{base}/dm/{ids}-{suffix}/with/{message.id}"
