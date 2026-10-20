@@ -150,6 +150,16 @@ one sample per kind.
 - `match`: `channel`, `topic`, `keyword`, `mention`, `wildcard`, `alert_word`, `dm` or `group_dm`. `mention` is @you only and `wildcard` is @all, @everyone, @channel or @topic;
   `alert_word` is your own Zulip alert words, which the server flags separately.
   Topic and keyword values are case-insensitive regular expressions.
+- `description`: optional text shown in the editor, logs and the dry run; without
+  one a rule is shown by what it matches ("Channel #ops, #deploys"). Older
+  configs' `name` is read as the description.
+- `channel`: one channel or a list, `channel = ["ops", "infra-.*"]`. Each entry is
+  a case-insensitive regular expression for the whole channel name, so `ops` is
+  exactly #ops and `ops-.*` matches #ops-east and #ops-west.
+- The editor keeps rules sorted by priority, then description, and shows the
+  defaults as the last rule, "Default — everything else". Volume is a rule's
+  volume (the default's when it sets none) times the master volume; a server
+  volume shared by every server is folded into the master when the editor saves.
 - `sound`: a sound name or `none`. Names are the bundled tones (chime, ping,
   bell, blip, knock, double, triple, rise, fall, alert, urgent, low, soft, mid-short
   and mid-long (200 and 350 ms of middle C), the

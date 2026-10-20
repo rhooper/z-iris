@@ -48,6 +48,10 @@
   /* 1 to 4 columns of sounds, by window width. */
   .soundgrid { display:grid; grid-template-columns:repeat(auto-fill, minmax(max(180px, calc((100% - 30px) / 4)), 1fr)); column-gap:10px; }
   .soundgrid .mine { padding:4px 0; } .soundgrid .mine button { padding:2px 8px; font-size:13px; }
+  .chips { display:flex; flex-wrap:wrap; gap:4px; align-items:center; }
+  .chip { display:inline-flex; align-items:center; gap:2px; border:1px solid var(--line); border-radius:12px; padding:0 2px 0 8px; font-size:13px; }
+  .chip .x { border:0; background:none; padding:0 5px; color:var(--muted); }
+  .chips .row { flex:1; min-width:180px; }
   .hint { text-decoration:underline dotted; text-underline-offset:2px; cursor:help; }
   /* Sections: title in a narrow left column, fields packed beside it. */
   .sect { display:grid; grid-template-columns:120px 1fr; gap:4px 10px; align-items:start; margin-top:2px; padding-top:6px; }
@@ -72,13 +76,9 @@
 
   <h2>Volume</h2>
   <div class="card">
-    <p class="explain" id="volexplain">How loud a message plays: the rule's volume (or the default rule volume when the rule sets none), times its server's volume, times the master volume. Example: rule 80%, server 50%, master 100% plays at 40%.</p>
+    <p class="explain" id="volexplain">A message plays at its rule's volume (the default rule's when it sets none) times the master volume. Example: rule 80%, master 50% plays at 40%.</p>
     <div class="grid" id="defaults"></div>
-    <div class="grid" id="servers" style="margin-top:10px"></div>
   </div>
-
-  <h2>Defaults for every rule</h2>
-  <div class="card grid" id="behaviour"></div>
 
   <h2>Focus and quiet hours</h2>
   <div class="card grid" id="focus"></div>
@@ -267,20 +267,7 @@ function behaviourSections(obj, isRule) {
 
 function renderDefaults() {
   const d = state.defaults, box = document.getElementById("defaults");
-  box.replaceChildren(
-    field("Master volume (scales everything)", slider(d.master_volume, v => d.master_volume = v)),
-    field("Default rule volume (used when a rule sets none)", slider(d.volume, v => d.volume = v)),
-  );
-  const sbox = document.getElementById("servers");
-  sbox.replaceChildren(...state.servers.map(s => field(`Server ${s.name} volume (scales only messages from ${s.name})`, slider(s.volume, v => s.volume = v))));
-  sbox.hidden = state.servers.length === 0;
-  const bbox = document.getElementById("behaviour");
-  bbox.replaceChildren(
-    field("Default sound", select(soundOptions(false, d.sound), d.sound, v => d.sound = v), "Used by rules that do not pick a sound."),
-    field("Notify for every channel message", (() => {
-      const c = el("input", {type:"checkbox", checked: !!d.notify_channel_messages});
-      c.addEventListener("change", () => d.notify_channel_messages = c.checked); return c; })(), "Normally only mentions, DMs and rules notify."),
-    ...behaviourSections(d, false));
+  box.replaceChildren(field("Master volume (scales everything)", slider(d.master_volume, v => d.master_volume = v)));
   renderFocus();
   updateReadouts();
 }
@@ -306,23 +293,15 @@ function renderFocus() {
     field("During quiet hours", select(modes.slice(1), f.quiet_mode, v => f.quiet_mode = v), "What quiet hours do: only DMs and mentions make sound, or everything is silent."));
 }
 
-// ---- "Plays at N%": rule (or default) x server x master
+// ---- "Plays at N%": the rule's volume (or the default's) x master
 let readouts = [];
-function volumeParts(rule) {
-  const base = rule.volume ?? state.defaults.volume ?? 60, master = state.defaults.master_volume ?? 100;
-  const servers = rule.server ? state.servers.filter(s => s.name === rule.server) : state.servers;
-  const vols = servers.length ? servers.map(s => s.volume) : [100];
-  return {base, master, lo: Math.min(...vols), hi: Math.max(...vols)};
-}
 function playsText(rule) {
-  const {base, master, lo, hi} = volumeParts(rule);
-  const calc = sv => Math.round(base * sv * master / 10000);
+  const base = rule.volume ?? state.defaults.volume ?? 60, master = state.defaults.master_volume ?? 100;
+  const value = Math.round(base * master / 100) + "%";
   const silent = (rule.sound || state.defaults.sound) === "none";
-  const value = lo === hi ? calc(lo) + "%" : calc(lo) + "% to " + calc(hi) + "%";
-  const serverText = lo === hi ? `server ${lo}%` : `server ${lo}% to ${hi}%`;
   return {
     text: silent ? "Silent (sound is none)" : "Plays at " + value,
-    tip: `${rule.volume == null ? "default rule volume" : "rule volume"} ${base}% x ${serverText} x master ${master}% = ${value}`,
+    tip: `${rule.volume == null ? "default volume" : "volume"} ${base}% x master ${master}% = ${value}`,
   };
 }
 function updateReadouts() {
@@ -373,11 +352,25 @@ function renderSummary() {
 }
 function renderRulesOnly() { renderRules(); }
 
+// What a rule matches, like the server's labels: "Channel #ops, #deploys".
+const KIND_LABELS = {topic:"Topic", keyword:"Keyword", mention:"Mention", wildcard:"Wildcard mention",
+  alert_word:"Alert word", channel:"Channel", group_dm:"Group DM", dm:"Direct message"};
+function channelsOf(rule) { return (rule.channel || []).filter(Boolean); }
+function matchText(rule) {
+  const kind = KIND_LABELS[rule.match] || rule.match, where = channelsOf(rule).map(c => "#" + c).join(", ");
+  if (rule.match === "channel") return kind + (where ? " " + where : "");
+  const pattern = rule.match === "topic" ? rule.topic : rule.match === "keyword" ? rule.keyword : "";
+  if (pattern) return `${kind} /${pattern}/` + (where ? " in " + where : "");
+  return kind;
+}
+function ruleLabel(rule) { return rule.description || matchText(rule); }
+// Rules sort by priority (highest first), then by label, as the file is saved.
+function sortRules() {
+  state.rules.sort((a, b) => (b.priority || 0) - (a.priority || 0) || ruleLabel(a).localeCompare(ruleLabel(b), undefined, {sensitivity:"base"}));
+}
+
 function ruleSummary(rule) {
-  const kind = (KINDS.find(k => k[0] === rule.match) || [0, rule.match])[1].replace(/ \(.*\)/, "");
-  const target = rule.match === "channel" && rule.channel ? " #" + rule.channel
-    : rule.match === "topic" ? (rule.channel ? " #" + rule.channel + " >" : "") + (rule.topic ? " /" + rule.topic + "/" : "")
-    : rule.match === "keyword" && rule.keyword ? " /" + rule.keyword + "/" : "";
+  const kind = matchText(rule), target = "";
   const sound = rule.sound || state.defaults.sound || "chime";
   const volume = rule.volume ?? state.defaults.volume;
   const sep = () => el("span", {className:"sep", textContent:"·"});
@@ -391,9 +384,44 @@ function ruleSummary(rule) {
   if (rule.min_gap > 0) extras.push("gap " + rule.min_gap + "s");
   if (rule.server) extras.push("server " + rule.server);
   if (rule.priority) extras.push("priority " + rule.priority);
-  return el("div", {className:"oneline"}, el("b", {textContent: rule.name || "(unnamed)"}), sep(), el("span", {textContent: kind + target}), sep(),
+  const head = rule.description ? [el("b", {textContent: rule.description}), sep(), el("span", {textContent: kind + target})] : [el("b", {textContent: kind + target})];
+  return el("div", {className:"oneline"}, ...head, sep(),
     el("span", {textContent: sound === "none" ? "silent" : sound + (rule.sound ? "" : " (default)") + (volume != null ? " " + volume + "%" : "")}),
     ...extras.map(tag));
+}
+
+// Several channels per rule; each is a name or a pattern for the whole name.
+function channelList(rule) {
+  const box = el("div", {className:"chips"});
+  const options = () => rule.server ? (channelLists.servers[rule.server] || []) : channelLists.all;
+  let pending = "";
+  const paint = () => {
+    const chips = channelsOf(rule).map((name, j) => {
+      const x = el("button", {type:"button", textContent:"×", title:"Remove", className:"x"});
+      x.addEventListener("click", () => { rule.channel.splice(j, 1); paint(); previewData = null; changed(); });
+      return el("span", {className:"chip"}, "#" + name, x);
+    });
+    const input = combo("", v => pending = v, options, chips.length ? "add another…" : "channel name or pattern…");
+    const add = () => {
+      const name = pending.trim();
+      if (!name) return;
+      rule.channel = [...channelsOf(rule), name]; pending = ""; paint(); previewData = null; changed();
+      box.querySelector("input").focus();
+    };
+    input.querySelector("input").addEventListener("keydown", e => { if (e.key === "Enter" && !e.defaultPrevented) { e.preventDefault(); add(); } });
+    const plus = el("button", {type:"button", textContent:"Add"});
+    plus.addEventListener("click", add);
+    box.replaceChildren(...chips, el("div", {className:"row"}, input, plus));
+  };
+  paint();
+  return box;
+}
+
+// An optional description; empty, the rule shows what it matches.
+function description(rule) {
+  const input = text(rule.description, v => { rule.description = v; if (!v) delete rule.description; }, matchText(rule) + " (add a description)");
+  input.addEventListener("change", () => { sortRules(); renderRules(); });
+  return input;
 }
 
 // A rule with a flash wears its flash colour; others get distinct hues.
@@ -409,12 +437,13 @@ function renderRules() {
   box.replaceChildren(...state.rules.map((rule, i) => {
     const needs = rule.match;
     const fields = [field("Matches", select(KINDS, rule.match, v => { rule.match = v; previewData = null; renderRules(); }))];
-    if (needs === "channel" || needs === "topic") fields.push(field(needs === "channel" ? "Channel name" : "Channel (optional)", combo(rule.channel, v => rule.channel = v, () => rule.server ? (channelLists.servers[rule.server] || []) : channelLists.all, "start typing…")));
+    if (needs === "channel" || needs === "topic") fields.push(field(needs === "channel" ? "Channels" : "Channels (optional)", channelList(rule), "Each is a channel name, or a regular expression for the whole name: ops-.* matches ops-east and ops-west."));
     if (needs === "topic") fields.push(field("Topic (regular expression)", text(rule.topic, v => rule.topic = v)));
     if (needs === "keyword") fields.push(field("Keyword (regular expression)", text(rule.keyword, v => rule.keyword = v)));
     fields.push(field("Server", select([["", "any"], ...state.servers.map(s => [s.name, s.name])], rule.server, v => { rule.server = v; renderRules(); })));
     const priority = el("input", {type:"number", value: rule.priority || 0});
     priority.addEventListener("input", () => rule.priority = parseInt(priority.value, 10) || 0);
+    priority.addEventListener("change", () => { sortRules(); renderRules(); });
     fields.push(field("Priority", priority, "Higher beats the usual most-specific order."));
 
     const sound = select(soundOptions(true, rule.sound), rule.sound || "", v => rule.sound = v);
@@ -423,11 +452,10 @@ function renderRules() {
       try { await api("POST", "api/test", {sound: rule.sound || state.defaults.sound, volume: rule.volume ?? state.defaults.volume}); setStatus(""); }
       catch (e) { setStatus(e.message, "bad"); }
     });
-    const volumeSect = sect("Sound", "Rule volume replaces the default rule volume for this rule only.",
+    const volumeSect = sect("Sound", "A rule without its own volume uses the default rule's. The master volume scales both.",
       field("Sound", el("div", {className:"row"}, sound, test)),
-      field("Rule volume", slider(rule.volume, v => rule.volume = v, true)));
+      field("Volume", slider(rule.volume, v => rule.volume = v, true)));
 
-    const move = (by) => { const j = i + by; if (j < 0 || j >= state.rules.length) return; [state.rules[i], state.rules[j]] = [state.rules[j], state.rules[i]]; previewData = null; renderRules(); saveCollapsed(); };
     const mk = (label, fn) => { const b = el("button", {type:"button", textContent:label}); b.addEventListener("click", fn); return b; };
     const del = mk("Delete", () => { discardRule(i); });
     const on = el("input", {type:"checkbox", checked: rule.enabled !== false});
@@ -441,8 +469,8 @@ function renderRules() {
     const plays = el("span", {className:"plays"});
     readouts.push({node: plays, rule});
     const head = el("div", {className:"head"},
-        el("div", {className:"row", style:"flex:1; min-width:0"}, chev, isCollapsed ? ruleSummary(rule) : text(rule.name, v => rule.name = v, "Rule name"), ...(isCollapsed ? [] : [plays])),
-        el("div", {className:"row"}, toggle, ...(isCollapsed ? [] : [mk("Up", () => { move(-1); changed(); }), mk("Down", () => { move(1); changed(); }), del])));
+        el("div", {className:"row", style:"flex:1; min-width:0"}, chev, isCollapsed ? ruleSummary(rule) : description(rule), ...(isCollapsed ? [] : [plays])),
+        el("div", {className:"row"}, toggle, ...(isCollapsed ? [] : [del])));
     // The whole header opens and closes the rule; its own controls keep their jobs.
     head.addEventListener("click", e => { if (!e.target.closest("input, button, select, label, a")) toggleOpen(); });
     const card = el("div", {className:"card" + (rule.enabled === false ? " off" : "") + (isCollapsed ? " collapsed" : ""), style:`--rule:${ruleColour(rule, i)}`},
@@ -450,11 +478,35 @@ function renderRules() {
       ...(isCollapsed ? [] : [el("div", {className:"grid"}, ...fields, volumeSect, ...behaviourSections(rule, true))]),
       ...(isCollapsed ? [] : [previewBlock(i)].filter(Boolean)));
     return card;
-  }));
+  }), defaultCard());
   updateReadouts();
 }
 
-function setAllCollapsed(flag) { expanded = flag ? new Set() : new Set(state.rules); saveCollapsed(); renderRules(); }
+// The default rule: everything no other rule matches, and the values rules
+// inherit. Always last; it cannot be deleted, turned off or moved.
+function defaultCard() {
+  const d = state.defaults, isCollapsed = !expanded.has(d);
+  const toggleOpen = () => { if (expanded.has(d)) expanded.delete(d); else expanded.add(d); renderRules(); };
+  const chev = el("span", {className:"chev", textContent: isCollapsed ? "▶" : "▼", role:"button", tabIndex:0});
+  const plays = el("span", {className:"plays"});
+  readouts.push({node: plays, rule: {}});
+  const summary = el("div", {className:"oneline"}, el("b", {textContent:"Default — everything else"}), el("span", {className:"sep", textContent:"·"}),
+    el("span", {textContent: (d.sound === "none" ? "silent" : d.sound) + " " + (d.volume ?? 60) + "%"}));
+  const head = el("div", {className:"head"}, el("div", {className:"row", style:"flex:1; min-width:0"}, chev, summary, ...(isCollapsed ? [] : [plays])));
+  head.addEventListener("click", e => { if (!e.target.closest("input, button, select, label, a")) toggleOpen(); });
+  const sound = select(soundOptions(false, d.sound), d.sound, v => d.sound = v);
+  const notifyAll = el("input", {type:"checkbox", checked: !!d.notify_channel_messages});
+  notifyAll.addEventListener("change", () => d.notify_channel_messages = notifyAll.checked);
+  const body = [
+    sect("Sound", "Rules without their own sound or volume use these.",
+      field("Sound", sound), field("Volume", slider(d.volume, v => d.volume = v)),
+      field("Every channel message", notifyAll, "Normally only mentions, DMs and rules notify; on, every unmuted channel message does.")),
+    ...behaviourSections(d, false)];
+  return el("div", {className:"card default" + (isCollapsed ? " collapsed" : ""), style:"--rule:var(--muted)"},
+    head, ...(isCollapsed ? [] : [el("div", {className:"grid"}, ...body)]));
+}
+
+function setAllCollapsed(flag) { expanded = flag ? new Set() : new Set([...state.rules, state.defaults]); saveCollapsed(); renderRules(); }
 document.getElementById("collapseall").addEventListener("click", () => setAllCollapsed(true));
 document.getElementById("expandall").addEventListener("click", () => setAllCollapsed(false));
 
@@ -475,7 +527,7 @@ function makeMore() {
   document.getElementById("morewrap").replaceChildren(button);
   return button;
 }
-document.getElementById("add").addEventListener("click", () => { const rule = {name:"New rule", match:"mention"}; state.rules.push(rule); expanded.add(rule); saveCollapsed(); clearPreview(); changed(true); });
+document.getElementById("add").addEventListener("click", () => { const rule = {match:"mention"}; state.rules.push(rule); expanded.add(rule); saveCollapsed(); clearPreview(); changed(true); });
 
 // ---- autosave: every edit applies by itself, a moment after you stop typing
 let saveTimer = null, saving = false, dirty = false;
@@ -517,7 +569,7 @@ function renderDeleted() {
     const left = Math.max(1, Math.ceil((KEEP_MS - (now - d.at)) / 60000));
     const mk = (label, fn) => { const b = el("button", {type:"button", textContent:label}); b.addEventListener("click", fn); return b; };
     return el("div", {className:"gone"},
-      el("span", {textContent: `${d.rule.name || "(unnamed)"} · ${d.rule.match} · ${left} min left`}),
+      el("span", {textContent: `${ruleLabel(d.rule)} · ${left} min left`}),
       el("span", {className:"row"},
         mk("Restore", () => { deleted = deleted.filter(x => x !== d); state.rules.splice(Math.min(d.index, state.rules.length), 0, d.rule); persistDeleted(); previewData = null; saveCollapsed(); renderSummary(); renderDeleted(); changed(true); }),
         mk("Discard", () => { deleted = deleted.filter(x => x !== d); persistDeleted(); renderDeleted(); })));
@@ -577,7 +629,8 @@ async function loadChannels() {
 async function load() {
   state = await api("GET", "api/config");
   loadCollapsed();
-  if (new URLSearchParams(location.search).has("expand")) expanded = new Set(state.rules);  // ?expand: open every rule
+  sortRules();
+  if (new URLSearchParams(location.search).has("expand")) expanded = new Set([...state.rules, state.defaults]);  // ?expand: open every rule
   renderDefaults(); renderRules(); renderSounds();
   loadDeleted(); renderDeleted();
   loadChannels();

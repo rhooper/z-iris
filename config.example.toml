@@ -30,32 +30,36 @@ player = ["play", "-q"]
 
 # Rules. The most specific matching rule wins: topic, keyword, mention (@you),
 # wildcard (@all and friends), alert_word, channel, group_dm, dm. A higher
-# "priority" (default 0) overrides that order, and ties go to file order. Only
-# name and match are always required (channel, topic and keyword rules also need
-# their own field). A silent rule still lets a personal @-mention through.
+# "priority" (default 0) overrides that order, and ties go to file order (the
+# editor saves rules sorted by priority, then description). Only match is
+# required (channel, topic and keyword rules also need their own field). A silent
+# rule still lets a personal @-mention through.
+#   description: optional; shown in the editor and logs (older configs: name)
+#   channel: a channel name or a list of them; each is a regular expression for
+#            the whole name, case-insensitive: "ops" is exactly #ops, "ops-.*" a family
 #   sound:  a sound name (see [defaults]) or "none"
-#   volume: 0 to 100, before the server and master scaling
+#   volume: 0 to 100, times the master volume
 #   banner: "full", "title" (no message text) or "off"
 #   sticky: true keeps the notification on screen until you read the message
 #           (shown by z-iris-priority.app; also settable in [defaults])
 #   server: limit the rule to one [[server]] name
 #
 # [[rule]]
-# name = "outage"
+# description = "outage"
 # match = "keyword"
 # keyword = '\b(outage|sev[12])\b'   # regular expression, case-insensitive
 # sound = "~/Sounds/klaxon.wav"
 # volume = 90
 #
 # [[rule]]
-# name = "ops deploys"
+# description = "ops deploys"
 # match = "topic"
-# channel = "ops"                       # optional
+# channel = ["ops", "infra-.*"]         # optional; names or patterns
 # topic = "^deploy"                     # regular expression
 # banner = "title"
 #
 # [[rule]]
-# name = "bots"
+# description = "bots"
 # match = "channel"
 # channel = "ci-bots"
 # sound = "none"
