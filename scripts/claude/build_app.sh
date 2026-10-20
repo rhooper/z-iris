@@ -83,8 +83,19 @@ build_bundle "$priority" ca.toybox.z-iris.priority "z-iris priority" z-iris-prio
 	z_iris.priority $'\n\t<key>NSUserNotificationAlertStyle</key><string>alert</string>'
 if [ -n "$profile" ]; then
 	cp "$profile" "$priority/Contents/embedded.provisionprofile"
+	# A restricted entitlement is only honoured with the profile's own app and
+	# team identifiers beside it; they are per team, so take them from the profile.
+	work="$(mktemp -d)"
+	trap 'rm -rf "$work"' EXIT
+	security cms -D -i "$profile" > "$work/profile.plist"
+	cp "$root/scripts/claude/priority.entitlements" "$work/entitlements.plist"
+	for key in com.apple.application-identifier com.apple.developer.team-identifier; do
+		value="$(/usr/libexec/PlistBuddy -c "Print :Entitlements:$key" "$work/profile.plist")"
+		/usr/libexec/PlistBuddy -c "Add :$key string $value" "$work/entitlements.plist"
+	done
+	# Z_IRIS_SIGN_IDENTITY may be a certificate's SHA-1, needed when two share a name.
 	codesign --force -s "$identity" -i ca.toybox.z-iris.priority \
-		--entitlements "$root/scripts/claude/priority.entitlements" "$priority"
+		--entitlements "$work/entitlements.plist" "$priority"
 else
 	# Ad hoc cannot carry the time-sensitive entitlement: macOS kills the app.
 	codesign --force -s - -i ca.toybox.z-iris.priority "$priority"
