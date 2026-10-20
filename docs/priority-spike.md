@@ -31,14 +31,19 @@ for time-sensitive and nothing breaks without it.
 
 ## 3. Time-sensitive with a free Personal Team profile
 
-Not available. In Xcode, with the free Personal Team selected, neither Time
-Sensitive Notifications nor Communication Notifications appears in the
-capabilities list; Xcode hides capabilities a free team cannot use. Signing
-mode: `adhoc`. The profile path in `build_app.sh` stays for a paid account.
+Not with the free Personal Team: Xcode hides Time Sensitive Notifications and
+Communication Notifications for it. With the user's paid team (R9MHS94TL4)
+selected, both are offered; Xcode made "Mac Team Provisioning Profile:
+ca.toybox.z-iris.priority" (expires 2027-10-20).
+
+Signed with that profile, the app launches only when the signature also
+carries the profile's `com.apple.application-identifier` and
+`com.apple.developer.team-identifier` (build_app.sh copies them from the
+profile). Then macOS reports `timeSensitiveSetting` enabled. Two identities
+share the name "Apple Development: Rose  Hooper", so sign by SHA-1.
+Signing mode: `profile`.
 
 ## Do I need to renew my Apple developer account?
 
-Not for sticky alerts: they work ad hoc. Time-sensitive alerts and sender
-faces as the notification icon (communication notifications) would need the
-paid Apple Developer Program. Meanwhile, turning off Summarize notifications
-for z-iris priority keeps its alerts out of summaries.
+No: sticky alerts work ad hoc, and time-sensitive works with the existing
+paid membership, using the paid team rather than the Personal Team.

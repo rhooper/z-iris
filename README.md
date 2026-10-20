@@ -100,7 +100,13 @@ these come from a second app, `~/Applications/z-iris-priority.app`
 - Time-sensitive alerts (through Focus and summaries) need a development profile:
   `Z_IRIS_PRIORITY_PROFILE=<profile> Z_IRIS_SIGN_IDENTITY="<identity>"
   scripts/claude/build_app.sh`. Without one, the alerts are ordinary persistent
-  alerts. A free Personal Team profile expires; z-iris warns 2 days ahead.
+  alerts. Make the profile in Xcode with a paid team (a Personal Team does not
+  offer Time Sensitive Notifications): a macOS App project with bundle id
+  `ca.toybox.z-iris.priority` and that capability; build once, and the profile
+  appears in `~/Library/Developer/Xcode/UserData/Provisioning Profiles/`. Use a
+  certificate's SHA-1 (`security find-identity -v -p codesigning`) as the
+  identity when two share a name. z-iris warns 2 days before the profile
+  expires.
 
 ## Rules and volume
 
