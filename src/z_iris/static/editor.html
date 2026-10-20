@@ -42,6 +42,21 @@
   input[type=color] { padding:1px 2px; height:32px; min-width:48px; }
   .mine { display:flex; gap:8px; align-items:center; justify-content:space-between; border-top:1px solid var(--line); padding:6px 0; }
   .snippet { color:var(--muted); overflow-wrap:anywhere; }
+  .hint { text-decoration:underline dotted; text-underline-offset:2px; cursor:help; }
+  /* Sections: title in a narrow left column, fields packed beside it. */
+  .sect { display:grid; grid-template-columns:120px 1fr; gap:4px 10px; align-items:start; margin-top:2px; padding-top:6px; }
+  .sect h3 { margin:6px 0 0; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.03em; }
+  .sect .grid { margin-top:0; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:6px 8px; }
+  @media (max-width:560px) { .sect { grid-template-columns:1fr; } }
+  /* Rule cards: one colour each (left edge and header band), tighter controls. */
+  #rules .card { border-left:5px solid var(--rule); padding:0 12px 10px; margin:14px 0; }
+  #rules .card > .head { background:color-mix(in srgb, var(--rule) 16%, transparent); margin:0 -12px 6px; padding:6px 12px; border-radius:0 7px 0 0; }
+  #rules .card input, #rules .card select, #rules .card button { padding:3px 6px; font-size:13px; }
+  #rules .card label { font-size:11px; }
+  #rules .card input[type=color] { height:26px; }
+  #rules .card .row { flex-wrap:nowrap; gap:6px; }
+  #rules .card .row > select, #rules .card .row > input:not([type=checkbox]) { flex:1; min-width:0; }
+  #rules .card .row > input[type=range] { min-width:90px; }
 </style>
 </head>
 <body>
@@ -110,8 +125,9 @@ function el(tag, props, ...kids) {
   for (const kid of kids) node.append(kid);
   return node;
 }
-function field(text, input, help) { return el("div", {}, el("label", {textContent:text}), input, ...(help ? [el("span", {className:"help", textContent:help})] : [])); }
-function sect(title, help, ...fields) { return el("div", {className:"sect"}, el("h3", {textContent:title}), el("p", {className:"help", textContent:help}), el("div", {className:"grid"}, ...fields)); }
+// Help text is a tooltip (dotted label), so expanded cards stay compact.
+function field(text, input, help) { return el("div", help ? {title:help} : {}, el("label", {textContent:text, className: help ? "hint" : ""}), input); }
+function sect(title, help, ...fields) { return el("div", {className:"sect"}, el("h3", {textContent:title, title:help, className: help ? "hint" : ""}), el("div", {className:"grid"}, ...fields)); }
 const BUILTIN = {flash:"none", flash_color:"#ff3b30", flash_seconds:0.6, repeat:0, repeat_every:30, repeat_boost:0, min_gap:0, batch_window:0, sticky:false};
 const FLASHES = [["none","none"],["screen","whole screen"],["top","top bar"],["bottom","bottom bar"],["left","left bar"],["right","right bar"]];
 function text(value, onchange, placeholder) {
@@ -226,7 +242,7 @@ function behaviourSections(obj, isRule) {
   const sticky = select(isRule ? [["", "(default: " + stickyLabel(inherit("sticky")) + ")"], ...STICKY] : STICKY, stickyValue,
     v => obj.sticky = v === "" ? null : v === "true");
   return [
-    sect("Desktop notification", "The banner on your screen. Sound and flash are separate settings.",
+    sect("Banner", "The banner on your screen. Sound and flash are separate settings.",
       field("Desktop notification", notification, "Show the whole message, only the sender and place, or no banner at all."),
       field("Keep on screen", sticky, "Stays until read: shown by z-iris priority as an alert that stays until you click it, close it, or read the message elsewhere.")),
     sect("Flash", "A coloured flash across the screen, for when you cannot hear the sound.",
@@ -234,7 +250,7 @@ function behaviourSections(obj, isRule) {
       field("Flash colour", colorRow),
       num("flash_seconds", "Flash duration (seconds)", 0.1, 10, 0.1, "How long it takes to fade out."),
       field("", testFlash)),
-    sect("Repeat and limits", "Repeat sounds until you read the message, and keep busy channels from piling up.",
+    sect("Repeat", "Repeat sounds until you read the message, and keep busy channels from piling up.",
       num("repeat", "Repeat count", 0, 20, 1, "Extra sounds after the first. 0 plays once."),
       num("repeat_every", "Repeat interval (seconds)", 1, 3600, 1, "Time between repeats."),
       num("repeat_boost", "Repeat boost (% points)", 0, 100, 1, "Each repeat is this much louder, up to 100%."),
@@ -395,7 +411,7 @@ function renderRules() {
       try { await api("POST", "api/test", {sound: rule.sound || state.defaults.sound, volume: rule.volume ?? state.defaults.volume}); setStatus(""); }
       catch (e) { setStatus(e.message, "bad"); }
     });
-    const volumeSect = sect("Sound and volume", "Rule volume replaces the default rule volume for this rule only.",
+    const volumeSect = sect("Sound", "Rule volume replaces the default rule volume for this rule only.",
       field("Sound", el("div", {className:"row"}, sound, test)),
       field("Rule volume", slider(rule.volume, v => rule.volume = v, true)));
 
@@ -410,7 +426,7 @@ function renderRules() {
     chev.className = "chev"; chev.setAttribute("aria-expanded", String(!isCollapsed));
     const plays = el("span", {className:"plays"});
     readouts.push({node: plays, rule});
-    const card = el("div", {className:"card" + (rule.enabled === false ? " off" : "")},
+    const card = el("div", {className:"card" + (rule.enabled === false ? " off" : ""), style:`--rule:hsl(${Math.round(i * 137.5) % 360} 62% 55%)`},
       el("div", {className:"head"},
         el("div", {className:"row", style:"flex:1; min-width:0"}, chev, isCollapsed ? ruleSummary(rule) : text(rule.name, v => rule.name = v, "Rule name"), ...(isCollapsed ? [] : [plays])),
         el("div", {className:"row"}, toggle, ...(isCollapsed ? [] : [mk("Up", () => { move(-1); changed(); }), mk("Down", () => { move(1); changed(); }), del]))),
