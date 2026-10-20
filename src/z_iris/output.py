@@ -311,7 +311,8 @@ class DryRunOutput:
             if _audible(notification)
             else "silent"
         )
-        banner = "no banner" if action.banner == "off" else f"banner {action.banner}"
+        sticky = "sticky " if action.sticky else ""
+        banner = "no banner" if action.banner == "off" else f"{sticky}banner {action.banner}"
         flash = "" if action.flash == "none" else f", flash {action.flash}"
         print(
             f"[dry-run] {notification.message.server} ({notification.reason}): "

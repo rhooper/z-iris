@@ -184,6 +184,12 @@ def test_dry_run_names_the_rule_and_volume(capsys):
     assert "rule default" in capsys.readouterr().out
 
 
+def test_dry_run_says_sticky(capsys):
+    action = Action("synth", 33, "full", "dms", sticky=True)
+    DryRunOutput(Settings(CONFIG)).deliver(Notification(channel(), "u", "dm", action))
+    assert "sticky banner full" in capsys.readouterr().out
+
+
 def test_output_steps_can_be_called_separately():
     calls = []
     n = Notification(channel(), "zulip://h/#narrow/x", "rule", Action("/a/b.wav", 50, "full", "r", flash="top"))

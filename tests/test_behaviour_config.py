@@ -64,3 +64,19 @@ def test_action_can_still_be_built_positionally():
 def test_equal_quiet_hours_are_rejected():
     with pytest.raises(ConfigError, match="focus.*22:00-22:00"):
         parse_config(BASE + '[focus]\nquiet_hours = ["22:00-22:00"]\n')
+
+
+def test_sticky_is_a_rule_and_default_switch():
+    config = parse_config(
+        BASE + '[[rule]]\nname = "dms"\nmatch = "dm"\nsticky = true\n'
+    )
+    assert resolve_action(config, "work", config.rules[0]).sticky is True
+    assert resolve_action(config, "work", None).sticky is False
+    everywhere = parse_config(BASE + "[defaults]\nsticky = true\n")
+    assert resolve_action(everywhere, "work", None).sticky is True
+
+
+@pytest.mark.parametrize("value", ['"yes"', "1"])
+def test_sticky_must_be_a_boolean(value):
+    with pytest.raises(ConfigError, match="sticky must be true or false"):
+        parse_config(BASE + f'[[rule]]\nname = "r"\nmatch = "dm"\nsticky = {value}\n')

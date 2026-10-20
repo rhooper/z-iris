@@ -38,6 +38,12 @@ def _choice(*choices: str):
     return check
 
 
+def _bool(value: object, label: str) -> bool:
+    if not isinstance(value, bool):
+        raise ConfigError(f"{label} must be true or false")
+    return value
+
+
 def _color(value: object, label: str) -> str:
     if not isinstance(value, str) or not re.fullmatch(r"#[0-9a-fA-F]{6}", value):
         raise ConfigError(f"{label} must be a colour like #ff3b30")
@@ -54,6 +60,7 @@ BEHAVIOUR: dict[str, tuple] = {
     "repeat_boost": (_number(0, 100, True), 0),
     "min_gap": (_number(0, 3600, True), 0),
     "batch_window": (_number(0, 300, True), 0),
+    "sticky": (_bool, False),
 }
 
 
@@ -138,6 +145,7 @@ class Action:
     repeat_boost: int = 0
     min_gap: int = 0
     batch_window: int = 0
+    sticky: bool = False
 
 
 def resolve_action(config: Config, server: str, rule: Rule | None) -> Action:
