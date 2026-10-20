@@ -15,13 +15,14 @@ macOS menubar notifier for Zulip. Design: `docs/design.md`. Plans: `docs/plan-ph
 - Sound plays through sox (`play`). Never `afplay` or macOS system sounds.
 - Never use a shell to run a command. Message text is only an argv element.
 - Never read, log or print zuliprc contents.
-- Phase 2a: rules, sounds, volume, live reload. No repetition, intervals, batching or settings window yet.
+- No settings window: rules are edited in the web editor (`edit`) or the config file.
 
 ## Gotchas
 
 - The bundle's executable is `scripts/claude/launcher.c`, compiled against Homebrew's Python.framework. It must stay the running process (no exec of another binary) and be signed `-i ca.toybox.z-iris`, never `--deep`: otherwise macOS refuses notifications without prompting and lists the menubar item under its launcher.
+- z-iris-priority.app (`ca.toybox.z-iris.priority`, module `priority`) shows sticky alerts; z-iris talks to it over stdin/stdout JSON lines (`prioritylink`). macOS only prompts it for notification permission when the bundle is in a real location (`~/Applications`), never `/tmp`. Ad hoc signing cannot carry the time-sensitive entitlement (macOS kills the app); that needs a development profile (`Z_IRIS_PRIORITY_PROFILE`). Design: `docs/superpowers/specs/2026-10-19-sticky-alerts-design.md`.
 - macOS never prompts for menubar icons: they are allowed in System Settings, Menu Bar (stored in group.com.apple.controlcenter `trackedApplications`). An app started by `uv run` is listed as `uv`. `scripts/claude/statusitem_probe.py` shows whether AppKit placed the item.
 
 ## Modules (src/z_iris)
 
-config, rules, sounds, settings, engine, editing, preview, channels, loudness, plaintext, webui, reloader, message, narrow, mutes, policy, pipeline, output, notify (desktop-notifier backend, bundle only), visual, stream, media, menubar, __main__.
+config, rules, sounds, settings, engine, editing, preview, channels, loudness, plaintext, webui, reloader, message, narrow, mutes, policy, pipeline, output, notify (desktop-notifier backend, bundle only), priority (z-iris-priority.app's alert service), prioritylink (z-iris side of the sticky handoff), visual, stream, media, menubar, __main__.

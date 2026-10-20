@@ -50,9 +50,11 @@ against a real server.
 
 macOS only lets an app bundle post native notifications, so z-iris runs as its
 own bundle, `~/Applications/z-iris.app` (id `ca.toybox.z-iris`, no Dock icon).
-`scripts/claude/build_app.sh [dest.app]` builds it: a copy of Homebrew's
-`Python.app` that runs `python -m z_iris` with this checkout's `src` and `.venv`.
-Rebuild after `brew upgrade python@3.13` or if you move the checkout. Start it with
+`scripts/claude/build_app.sh [dest.app]` builds it: a small native launcher
+(`scripts/claude/launcher.c`) that embeds Homebrew's Python and runs `-m z_iris`
+with this checkout's `src` and `.venv`. It also builds `z-iris-priority.app` next
+to it (see Sticky alerts). Rebuild after `brew upgrade python@3.13` or if you
+move the checkout. Start it with
 `~/Applications/z-iris.app/Contents/MacOS/z-iris` (same arguments as `uv run z-iris`).
 
 The first banner asks "z-iris would like to send you notifications": click Allow.
@@ -72,6 +74,32 @@ tells that host your IP address and that you are online, so it is off unless you
 set `[output] external_images = true`. Credentials are only sent to your server
 over its own scheme, host and port, and only for `/user_uploads/`,
 `/user_avatars/` and `/thumbnail` paths.
+
+## Sticky alerts
+
+A rule with `sticky = true` (or `sticky = true` in `[defaults]`) keeps its
+notification on screen until you deal with it, for messages you must not miss
+while away, such as DMs. macOS sets banners or persistent alerts once per app, so
+these come from a second app, `~/Applications/z-iris-priority.app`
+(id `ca.toybox.z-iris.priority`), built by `build_app.sh` beside z-iris.
+
+- The first sticky alert asks "z-iris priority would like to send you
+  notifications": click Allow. In System Settings, Notifications, z-iris
+  priority, the alert style should be Persistent (z-iris logs a warning if not).
+  Turn off Summarize notifications there so they are never held back.
+- Clicking an alert opens the conversation in Zulip, even after z-iris quit.
+- An alert disappears by itself when the message is read or deleted anywhere.
+  After the Mac sleeps and z-iris reconnects, it checks the server's unread list
+  and clears alerts for anything read meanwhile.
+- z-iris still plays the sound, flash and repeats; Pause and `[focus]` apply as
+  for any rule. If z-iris priority is missing, refused or stuck, the message is
+  shown as an ordinary banner instead.
+- macOS only offers the permission prompt to the app in a real location such as
+  `~/Applications`, not a temporary folder.
+- Time-sensitive alerts (through Focus and summaries) need a development profile:
+  `Z_IRIS_PRIORITY_PROFILE=<profile> Z_IRIS_SIGN_IDENTITY="<identity>"
+  scripts/claude/build_app.sh`. Without one, the alerts are ordinary persistent
+  alerts. A free Personal Team profile expires; z-iris warns 2 days ahead.
 
 ## Rules and volume
 
