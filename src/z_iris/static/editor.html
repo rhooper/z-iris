@@ -142,7 +142,8 @@ function text(value, onchange, placeholder) {
   return input;
 }
 // A text box with a suggestion list. Plain DOM, so it behaves the same in every browser.
-function combo(value, onchange, getOptions, placeholder) {
+// onpick, if given, is told when a suggestion is chosen (clicked or Enter).
+function combo(value, onchange, getOptions, placeholder, onpick) {
   const input = el("input", {type:"text", value:value ?? "", placeholder:placeholder || "", autocomplete:"off"});
   const list = el("ul", {hidden:true});
   let items = [], active = -1;
@@ -150,6 +151,7 @@ function combo(value, onchange, getOptions, placeholder) {
   const choose = (name) => {
     input.value = name; onchange(name); close();
     input.dispatchEvent(new Event("input", {bubbles:true}));
+    if (onpick) onpick(name);
   };
   const paint = () => items.forEach((li, i) => li.classList.toggle("active", i === active));
   const open = () => {
@@ -393,7 +395,9 @@ function ruleSummary(rule) {
 // Several channels per rule; each is a name or a pattern for the whole name.
 function channelList(rule) {
   const box = el("div", {className:"chips"});
-  const options = () => rule.server ? (channelLists.servers[rule.server] || []) : channelLists.all;
+  // every channel, busiest first, without the ones already on the rule
+  const options = () => (rule.server ? (channelLists.servers[rule.server] || []) : channelLists.all)
+    .filter(n => !channelsOf(rule).some(c => c.toLowerCase() === n.toLowerCase()));
   let pending = "";
   const paint = () => {
     const chips = channelsOf(rule).map((name, j) => {
@@ -401,16 +405,17 @@ function channelList(rule) {
       x.addEventListener("click", () => { rule.channel.splice(j, 1); paint(); previewData = null; changed(); });
       return el("span", {className:"chip"}, "#" + name, x);
     });
-    const input = combo("", v => pending = v, options, chips.length ? "add another…" : "channel name or pattern…");
-    const add = () => {
-      const name = pending.trim();
+    const add = (picked) => {
+      const name = (typeof picked === "string" ? picked : pending).trim();
       if (!name) return;
       rule.channel = [...channelsOf(rule), name]; pending = ""; paint(); previewData = null; changed();
       box.querySelector("input").focus();
     };
+    // Clicking a suggestion adds it; typed names and patterns need Enter or Add.
+    const input = combo("", v => pending = v, options, chips.length ? "add another…" : "channel name or pattern…", add);
     input.querySelector("input").addEventListener("keydown", e => { if (e.key === "Enter" && !e.defaultPrevented) { e.preventDefault(); add(); } });
     const plus = el("button", {type:"button", textContent:"Add"});
-    plus.addEventListener("click", add);
+    plus.addEventListener("click", () => add());
     box.replaceChildren(...chips, el("div", {className:"row"}, input, plus));
   };
   paint();

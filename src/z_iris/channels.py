@@ -1,4 +1,8 @@
-"""The channels each configured server's user is subscribed to."""
+"""Every channel on each configured server, busiest first.
+
+Busy means Zulip's stream_weekly_traffic: messages a week averaged over the
+last four weeks (None for a channel too new to have a figure).
+"""
 
 from __future__ import annotations
 
@@ -21,29 +25,37 @@ class ChannelSource:
         self.client_factory = client_factory
         self.now = now
         self.ttl = ttl
-        self._cache: dict[str, tuple[float, list[str]]] = {}
+        self._cache: dict[str, tuple[float, dict[str, int]]] = {}
         self._lock = threading.Lock()
 
-    def _names(self, server: ServerConfig) -> list[str]:
+    def _traffic(self, server: ServerConfig) -> dict[str, int]:
+        """Channel name -> weekly messages, for every channel the user can see."""
         cached = self._cache.get(server.name)
         if cached and self.now() - cached[0] < self.ttl:
             return cached[1]
-        reply = self.client_factory(server.zuliprc).get_subscriptions()
+        reply = self.client_factory(server.zuliprc).get_streams(
+            include_public=True, include_subscribed=True
+        )
         if reply.get("result") != "success":
             raise RuntimeError(reply.get("msg", "could not fetch channels"))
-        names = sorted({s["name"] for s in reply["subscriptions"]}, key=str.lower)
-        self._cache[server.name] = (self.now(), names)
-        return names
+        traffic = {s["name"]: s.get("stream_weekly_traffic") or 0 for s in reply["streams"]}
+        self._cache[server.name] = (self.now(), traffic)
+        return traffic
 
     def channels(self, servers: Sequence[ServerConfig]) -> dict:
-        entries, everything = [], set()
+        entries, everything = [], {}
         with self._lock:
             for server in servers:
                 try:
-                    names = self._names(server)
+                    traffic = self._traffic(server)
                 except Exception as error:
                     entries.append({"name": server.name, "channels": [], "error": str(error)})
                     continue
-                entries.append({"name": server.name, "channels": names})
-                everything.update(names)
-        return {"servers": entries, "all": sorted(everything, key=str.lower)}
+                entries.append({"name": server.name, "channels": _busiest(traffic)})
+                for name, count in traffic.items():  # a channel counts its busiest server
+                    everything[name] = max(count, everything.get(name, 0))
+        return {"servers": entries, "all": _busiest(everything)}
+
+
+def _busiest(traffic: dict[str, int]) -> list[str]:
+    return sorted(traffic, key=lambda name: (-traffic[name], name.lower()))

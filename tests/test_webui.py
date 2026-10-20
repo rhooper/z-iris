@@ -163,14 +163,16 @@ def test_preview_runs_the_draft_not_the_saved_rules(tmp_path):
         server.stop()
 
 
-def test_channels_endpoint_lists_subscribed_channels(tmp_path):
+def test_channels_endpoint_lists_every_channel_busiest_first(tmp_path):
     from pathlib import Path
 
     from z_iris.channels import ChannelSource
 
     class C:
-        def get_subscriptions(self):
-            return {"result": "success", "subscriptions": [{"name": "ops"}, {"name": "dev"}]}
+        def get_streams(self, **kwargs):  # dev is busier, so it comes first
+            return {"result": "success", "streams": [
+                {"name": "ops", "stream_weekly_traffic": 3},
+                {"name": "dev", "stream_weekly_traffic": 90}]}
 
     path = tmp_path / "config.toml"
     path.write_text(TEXT)
