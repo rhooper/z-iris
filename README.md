@@ -122,8 +122,9 @@ one sample per kind.
 - `sound`: a sound name or `none`. Names are the bundled tones (chime, ping,
   bell, blip, knock, double, triple, rise, fall, alert, urgent, low, soft, mid-short
   and mid-long (200 and 350 ms of middle C), the
-  Yamaha DX7-style FM tones dx-epiano, dx-piano-c, dx-bells, dx-marimba, dx-bass,
-  dx-brass; moog-a: a Minimoog-style A4 eighth note; and sos: SOS in Morse on a
+  Yamaha DX7-style FM tones `dx-*` after its factory presets: epiano, piano-c,
+  bells, marimba, bass, brass, vibe, koto, clav, harpsichord, steel-drum, flute,
+  organ, strings, orch-chime, synlead; moog-a: a Minimoog-style A4 eighth note; and sos: SOS in Morse on a
   1910s spark-gap wireless note) and
   any file in `~/.config/z-iris/sounds/` (the file name without its extension).
   Add your own in the editor, or drop a file in that folder. Older configs

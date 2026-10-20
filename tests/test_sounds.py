@@ -93,7 +93,9 @@ def test_delete_sound_refuses_bundled_unknown_and_path_tricks(tmp_path):
     assert (tmp_path / "keep.wav").exists()
 
 
-DX7_TONES = ["dx-bass", "dx-bells", "dx-brass", "dx-epiano", "dx-marimba", "dx-piano-c"]
+DX7_TONES = ["dx-bass", "dx-bells", "dx-brass", "dx-epiano", "dx-marimba", "dx-piano-c",
+             "dx-vibe", "dx-koto", "dx-clav", "dx-harpsichord", "dx-steel-drum", "dx-flute",
+             "dx-organ", "dx-strings", "dx-orch-chime", "dx-synlead"]
 
 
 def test_dx7_tones_are_bundled():
