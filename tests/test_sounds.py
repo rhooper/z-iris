@@ -91,3 +91,21 @@ def test_delete_sound_refuses_bundled_unknown_and_path_tricks(tmp_path):
         with pytest.raises(SoundError):
             delete_sound(tmp_path, name)
     assert (tmp_path / "keep.wav").exists()
+
+
+DX7_TONES = ["dx-bass", "dx-bells", "dx-brass", "dx-epiano", "dx-marimba"]
+
+
+def test_dx7_tones_are_bundled():
+    names = builtin_names()
+    assert all(name in names for name in DX7_TONES)
+
+
+def test_dx7_tones_are_short_mono_wavs():
+    import wave
+
+    for name in DX7_TONES:
+        with wave.open(str(library(None)[name]), "rb") as tone:
+            seconds = tone.getnframes() / tone.getframerate()
+            assert tone.getnchannels() == 1 and tone.getsampwidth() == 2
+            assert 0.2 < seconds <= 2.0, (name, seconds)
