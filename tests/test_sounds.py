@@ -162,3 +162,20 @@ def test_sos_marks_start_and_end_with_a_key_click():
     # And a click as the key lifts: the last 2 ms of sound are not a fade.
     end = max(i for i, s in enumerate(samples) if s > 0.05 * peak)
     assert max(samples[end - 2 * rate // 1000:end + 1]) > 0.3 * peak
+
+
+def test_moog_a_is_an_eighth_note_at_a440():
+    import wave
+
+    with wave.open(str(library(None)["moog-a"]), "rb") as tone:
+        rate, frames = tone.getframerate(), tone.readframes(tone.getnframes())
+        seconds = tone.getnframes() / rate
+    assert 0.25 <= seconds <= 0.35  # a 250 ms gate plus a short release
+    samples = [int.from_bytes(frames[i:i + 2], "little", signed=True) for i in range(0, len(frames), 2)]
+    middle = samples[int(0.08 * rate):int(0.2 * rate)]
+
+    def correlation(lag):
+        return sum(a * b for a, b in zip(middle, middle[lag:]))
+
+    lag = max(range(80, 125), key=correlation)  # 440 Hz is about 100 samples
+    assert abs(rate / lag - 440) < 10
