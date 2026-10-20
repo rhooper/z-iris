@@ -50,7 +50,7 @@ def test_page_and_config_are_served_without_secrets(editor):
     assert status == 200 and b"<title>" in page
     status, data = call("GET", f"/{token}/api/config")
     assert status == 200
-    assert json.loads(data)["rules"][0]["name"] == "old"
+    assert json.loads(data)["rules"][0]["description"] == "old"
     assert b"zuliprc-secret" not in data
 
 
@@ -65,7 +65,7 @@ def test_put_saves_validates_backs_up_and_reloads(editor):
     rules = [{"name": "bots", "match": "channel", "channel": "ci", "sound": "none"}]
     status, _ = call("PUT", f"/{token}/api/config", {"rules": rules})
     assert status == 200
-    assert settings.config.rules[0].name == "bots"
+    assert settings.config.rules[0].label == "bots"
     assert "[[rule]]" in path.read_text()
     assert (path.parent / "config.toml.bak").read_text() == TEXT
 

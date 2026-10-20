@@ -22,9 +22,9 @@ RULE = {"name": "outage", "match": "keyword", "keyword": "outage", "volume": 90,
 
 def test_read_editable_hides_zuliprc_and_lists_rules():
     data = read_editable(TEXT)
-    assert data["servers"] == [{"name": "work", "volume": 100}]
+    assert data["servers"] == [{"name": "work"}]  # volume folds into the master
     assert data["defaults"]["volume"] == 60
-    assert data["rules"][0]["name"] == "old"
+    assert data["rules"][0]["description"] == "old"
     assert "zuliprc" not in str(data)
 
 
@@ -32,7 +32,7 @@ def test_apply_edit_replaces_rules_and_keeps_comments_and_zuliprc():
     new = apply_edit(TEXT, {"rules": [RULE]})
     assert "# my config" in new and "# keep me" in new and "# base level" in new
     config = parse_config(new)
-    assert [r.name for r in config.rules] == ["outage"]
+    assert [r.label for r in config.rules] == ["outage"]
     assert config.rules[0].volume == 90 and config.rules[0].banner == "title"
     assert str(config.servers[0].zuliprc).endswith(".zuliprc")
 

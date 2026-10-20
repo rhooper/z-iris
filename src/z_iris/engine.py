@@ -63,6 +63,8 @@ def _stripped(notification: Notification) -> Notification:
 def _key(notification: Notification) -> tuple:
     """What counts as the same source: the rule, else the conversation."""
     action, message = notification.action, notification.message
+    if action.rule_index is not None:
+        return ("rule", action.rule_index)
     if action.rule:
         return ("rule", action.rule)
     if message.kind == "channel":

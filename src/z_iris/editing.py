@@ -2,14 +2,45 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import tomlkit
 
 from z_iris.config import parse_config
+from z_iris.rules import Rule
+
+
+def _shared_server_volume(servers: list) -> int | None:
+    """The one volume every server has, if they agree; folded into the master
+    so the editor shows just a rule's volume and the master."""
+    volumes = {s.get("volume", 100) for s in servers}
+    return volumes.pop() if len(volumes) == 1 else None
+
+
+def _editable_rule(raw: dict) -> dict:
+    rule = {key: raw[key] for key in RULE_FIELDS if key in raw}
+    if "description" not in rule and raw.get("name"):
+        rule["description"] = raw["name"]  # older configs named their rules
+    if "channel" in rule:
+        rule["channel"] = [rule["channel"]] if isinstance(rule["channel"], str) else list(rule["channel"])
+    return rule
+
+
+def _sort_key(raw: dict) -> tuple:
+    """Highest priority first, then alphabetically by label."""
+    source = raw.get("topic") if raw.get("match") == "topic" else raw.get("keyword")
+    try:
+        pattern = re.compile(source) if source else None
+        label = Rule(raw.get("description") or None, raw.get("match", "mention"),
+                     tuple(raw.get("channel") or ()), pattern, None, None, None, None,
+                     0, 0).label
+    except (re.error, KeyError, TypeError, ValueError):
+        label = raw.get("description") or ""
+    return (-(raw.get("priority") or 0), label.lower())
 
 RULE_FIELDS = (
-    "name", "match", "channel", "topic", "keyword", "server", "sound",
+    "description", "match", "channel", "topic", "keyword", "server", "sound",
     "volume", "banner", "priority", "enabled", "flash", "flash_color",
     "flash_seconds", "repeat", "repeat_every", "repeat_boost", "min_gap",
     "batch_window", "sticky",
@@ -25,15 +56,14 @@ DEFAULT_FIELDS = (
 def read_editable(text: str) -> dict:
     """The parts of the config the editor may show. Never includes zuliprc paths."""
     data = tomlkit.parse(text).unwrap()
+    shared = _shared_server_volume(data.get("server", []))
+    master = data.get("defaults", {}).get("master_volume", 100)
     return {
-        "servers": [
-            {"name": s["name"], "volume": s.get("volume", 100)}
-            for s in data.get("server", [])
-        ],
+        "servers": [{"name": s["name"]} for s in data.get("server", [])],
         "defaults": {
             "sound": data.get("defaults", {}).get("sound", "chime"),
             "volume": data.get("defaults", {}).get("volume", 60),
-            "master_volume": data.get("defaults", {}).get("master_volume", 100),
+            "master_volume": round(master * shared / 100) if shared is not None else master,
             "notify_channel_messages": data.get("defaults", {}).get(
                 "notify_channel_messages", False
             ),
@@ -49,10 +79,7 @@ def read_editable(text: str) -> dict:
             "quiet_hours": list(data.get("focus", {}).get("quiet_hours", [])),
             "quiet_mode": data.get("focus", {}).get("quiet_mode", "silent"),
         },
-        "rules": [
-            {key: raw[key] for key in RULE_FIELDS if key in raw}
-            for raw in data.get("rule", [])
-        ],
+        "rules": [_editable_rule(raw) for raw in data.get("rule", [])],
     }
 
 
@@ -66,6 +93,13 @@ def apply_edit(text: str, payload: dict, sounds_dir: Path | None = None) -> str:
     The result is validated by the real parser before it is returned.
     """
     doc = tomlkit.parse(text)
+
+    if "master_volume" in payload.get("defaults", {}):
+        # The editor's master already includes a shared server volume.
+        if _shared_server_volume(doc.get("server", [])) is not None:
+            for server in doc.get("server", []):
+                if "volume" in server:
+                    del server["volume"]
 
     if "defaults" in payload:
         defaults = doc.setdefault("defaults", tomlkit.table())
@@ -88,10 +122,16 @@ def apply_edit(text: str, payload: dict, sounds_dir: Path | None = None) -> str:
         if "rule" in doc:
             del doc["rule"]
         rules = tomlkit.aot()
-        for raw in payload["rules"]:
+        edited_rules = [
+            {**raw, "description": raw.get("description") or raw.get("name")} for raw in payload["rules"]
+        ]
+        for raw in sorted(edited_rules, key=_sort_key):
             table = tomlkit.table()
             for key in RULE_FIELDS:
                 value = raw.get(key)
+                if key == "channel" and isinstance(value, list):
+                    value = [c for c in value if c]
+                    value = value[0] if len(value) == 1 else (value or None)
                 if _blank(value) or (key == "priority" and value == 0) or (
                     key == "enabled" and value is True
                 ):

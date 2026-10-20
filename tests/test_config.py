@@ -101,12 +101,12 @@ def test_keyword_rule_parses_with_pattern_and_order():
         + '[[rule]]\nname = "b"\nmatch = "mention"\n'
     )
     first, second = config.rules
-    assert (first.name, first.kind, first.index) == ("a", "keyword", 0)
+    assert (first.label, first.kind, first.index) == ("a", "keyword", 0)
     assert first.pattern.search("an OUTAGE")
     assert (first.volume, first.banner, first.sound, first.priority) == (
         90, "title", "none", 2,
     )
-    assert (second.name, second.index, second.priority) == ("b", 1, 0)
+    assert (second.label, second.index, second.priority) == ("b", 1, 0)
 
 
 @pytest.mark.parametrize(
@@ -129,9 +129,9 @@ def test_bad_rules_name_the_rule(body):
         rule_config(body)
 
 
-def test_rule_without_a_name_is_rejected():
-    with pytest.raises(ConfigError, match="rule"):
-        rule_config('match = "mention"\n')
+def test_a_rule_needs_no_name():
+    (rule,) = rule_config('match = "mention"\n').rules
+    assert rule.description is None and rule.label == "Mention"
 
 
 def test_rule_sound_file_is_expanded(tmp_path):
@@ -165,7 +165,7 @@ def test_resolve_action():
         + '[[rule]]\nname = "r"\nmatch = "mention"\nvolume = 80\nsound = "none"\n'
     )
     action = resolve_action(config, "work", config.rules[0])
-    assert action == Action("none", 20, "full", "r")
+    assert action == Action("none", 20, "full", "r", rule_index=0)
 
 
 @pytest.mark.parametrize(

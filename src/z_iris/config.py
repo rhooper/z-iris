@@ -7,7 +7,7 @@ import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from z_iris.rules import KINDS, Rule
+from z_iris.rules import KINDS, Rule, compile_channel
 from z_iris.sounds import library
 
 DEFAULT_PATH = Path("~/.config/z-iris/config.toml").expanduser()
@@ -136,7 +136,7 @@ class Action:
     sound: str
     volume: int
     banner: str
-    rule: str | None
+    rule: str | None  # the rule's label, for people
     flash: str = "none"
     flash_color: str = "#ff3b30"
     flash_seconds: float = 0.6
@@ -146,6 +146,7 @@ class Action:
     min_gap: int = 0
     batch_window: int = 0
     sticky: bool = False
+    rule_index: int | None = None  # which rule, for per-rule state (labels can repeat)
 
 
 def resolve_action(config: Config, server: str, rule: Rule | None) -> Action:
@@ -161,7 +162,8 @@ def resolve_action(config: Config, server: str, rule: Rule | None) -> Action:
     merged.update(config.behaviour)
     if rule:
         merged.update(rule.behaviour)
-    return Action(sound, final, banner, rule.name if rule else None, **merged)
+    return Action(sound, final, banner, rule.label if rule else None,
+                  rule_index=rule.index if rule else None, **merged)
 
 
 def _sound(value: object, label: str, sounds: dict[str, Path]) -> str:
@@ -202,21 +204,33 @@ def _rules(
 ) -> tuple[Rule, ...]:
     rules: list[Rule] = []
     for index, raw in enumerate(_tables(data, "rule")):
-        name = raw.get("name")
-        if not isinstance(name, str) or not name:
-            raise ConfigError(f"rule number {index + 1} needs a name")
-        label = f"rule {name!r}"
+        # An optional description; older configs called it name.
+        description = raw.get("description", raw.get("name"))
+        if description is not None and not isinstance(description, str):
+            raise ConfigError(f"rule number {index + 1}: description must be text")
+        description = description or None
+        label = f"rule {description!r}" if description else f"rule number {index + 1}"
         kind = raw.get("match")
         if kind not in KINDS:
             raise ConfigError(f"{label}: match must be one of {', '.join(KINDS)}")
 
+        # One channel or a list; each a pattern for the whole channel name.
         channel = raw.get("channel")
-        if channel is not None and (not isinstance(channel, str) or not channel):
-            raise ConfigError(f"{label}: channel must be a name")
-        if channel is not None and kind not in ("channel", "topic"):
+        channels = [channel] if isinstance(channel, str) else channel
+        if channels is not None and (
+            not isinstance(channels, list) or not channels
+            or not all(isinstance(c, str) and c for c in channels)
+        ):
+            raise ConfigError(f"{label}: channel must be a channel name or a list of them")
+        if channels is not None and kind not in ("channel", "topic"):
             raise ConfigError(f"{label}: channel only applies to channel and topic rules")
-        if kind == "channel" and channel is None:
+        if kind == "channel" and channels is None:
             raise ConfigError(f"{label}: a channel rule needs channel")
+        for source in channels or ():
+            try:
+                compile_channel(source)
+            except (re.error, OverflowError, RecursionError, ValueError) as error:
+                raise ConfigError(f"{label}: bad channel pattern {source!r}: {error}") from error
 
         pattern = None
         source = {"topic": raw.get("topic"), "keyword": raw.get("keyword")}.get(kind)
@@ -253,7 +267,7 @@ def _rules(
             raise ConfigError(f"{label}: priority must be an integer")
 
         rules.append(
-            Rule(name, kind, channel, pattern, server, sound, volume, banner,
+            Rule(description, kind, tuple(channels or ()), pattern, server, sound, volume, banner,
                  priority, index, enabled, _behaviour(raw, label))
         )
     return tuple(rules)

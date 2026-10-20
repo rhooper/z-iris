@@ -125,7 +125,7 @@ class EditorServer:
         config = parse_config(text, self.sounds_dir)
         if name in user_names(self.sounds_dir):
             users = (["default sound"] if config.sound == name else []) + [
-                rule.name for rule in config.rules if rule.sound == name
+                rule.label for rule in config.rules if rule.sound == name
             ]
             if users and replacement is None:
                 raise SoundInUse(name, users)
