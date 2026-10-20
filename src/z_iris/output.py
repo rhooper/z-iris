@@ -190,7 +190,7 @@ def make_notifier(
     if in_bundle():
         from z_iris.priority import UrlStore
 
-        return DesktopNotifierBackend(fallback, urls=UrlStore(BANNER_URLS))
+        return DesktopNotifierBackend(fallback, urls=UrlStore(BANNER_URLS), eager=True)
     return fallback
 
 

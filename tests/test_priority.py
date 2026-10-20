@@ -234,7 +234,8 @@ class FakeComms:
 
 def comms_service(tmp_path, comms, notifier=None):
     return PriorityService(notifier or FakeNotifier(), UrlStore(tmp_path / "urls.json"),
-                           opener=lambda url: None, comms=comms, picture_dir=tmp_path)
+                           opener=lambda url: None, comms=comms, picture_dir=tmp_path,
+                           entitled=lambda: True)
 
 
 def test_a_sender_is_a_time_sensitive_communication_alert(tmp_path):
@@ -258,3 +259,19 @@ def test_a_malformed_sender_is_a_plain_alert(tmp_path):
     comms, notifier = FakeComms(), FakeNotifier()
     reply = handle(comms_service(tmp_path, comms, notifier), {**SHOW, "sender": {"handle": 1}})
     assert reply == {"ok": True} and comms.sent == [] and len(notifier.sent) == 1
+
+
+def test_the_url_store_keeps_only_the_newest(tmp_path):
+    store = UrlStore(tmp_path / "urls.json", limit=3)
+    for i in range(5):
+        store.put(f"g{i}", f"u{i}")
+    assert [store.pop(f"g{i}") for i in range(5)] == [None, None, "u2", "u3", "u4"]
+
+
+def test_without_the_entitlement_the_priority_app_sends_plain_alerts(tmp_path):
+    comms, notifier = FakeComms(), FakeNotifier()
+    svc = PriorityService(notifier, UrlStore(tmp_path / "u.json"), opener=lambda u: None,
+                          comms=comms, picture_dir=tmp_path, entitled=lambda: False)
+    reply = handle(svc, {**SHOW, "sender": SENDER.to_json()})
+    assert comms.sent == [] and len(notifier.sent) == 1
+    assert reply["ok"] is True and "entitlement" in reply["plain"]

@@ -121,3 +121,44 @@ def test_the_group_picture_is_drawn_once_per_group(tmp_path):
     assert group_picture(GROUP, tmp_path) == first
     other = Sender("zulip:w:9", "Ada", None, None, "w:dm:3,9", "group", (("zulip:w:3", "Bob"),))
     assert group_picture(other, tmp_path) != first
+
+
+class HangingBridge(FakeBridge):
+    def __init__(self, hang):
+        super().__init__()
+        self.hang = hang
+
+    async def donate(self, intent):
+        if self.hang == "donate":
+            await asyncio.Event().wait()
+
+    async def add(self, identifier, content):
+        self.calls.append(("add", identifier, content))
+        if self.hang == "add":
+            await asyncio.Event().wait()
+
+
+def test_a_donation_that_never_answers_does_not_stop_the_notification(monkeypatch):
+    import z_iris.comms as comms
+
+    monkeypatch.setattr(comms, "DONATE_TIMEOUT", 0.05)
+    bridge = HangingBridge("donate")
+    asyncio.run(asyncio.wait_for(send_communication(
+        identifier="i", title="t", body="b", sender=ADA, bridge=bridge), 1))
+    assert calls(bridge, "add")
+
+
+def test_an_add_that_never_answers_ends_without_error_or_duplicate(monkeypatch):
+    import z_iris.comms as comms
+
+    monkeypatch.setattr(comms, "ADD_TIMEOUT", 0.05)
+    bridge = HangingBridge("add")
+    asyncio.run(asyncio.wait_for(send_communication(
+        identifier="i", title="t", body="b", sender=ADA, bridge=bridge), 1))
+    assert len(calls(bridge, "add")) == 1
+
+
+def test_this_test_process_has_no_communication_entitlement():
+    from z_iris.comms import has_communication_entitlement
+
+    assert has_communication_entitlement() is False

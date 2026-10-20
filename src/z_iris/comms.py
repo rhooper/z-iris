@@ -13,6 +13,8 @@ the update fails and callers fall back to a plain notification.
 from __future__ import annotations
 
 import asyncio
+import ctypes
+import functools
 import hashlib
 import shutil
 import tempfile
@@ -23,12 +25,43 @@ from typing import Protocol
 from z_iris.sender import Sender
 
 LEVELS = {"passive": 0, "active": 1, "time-sensitive": 2}  # UNNotificationInterruptionLevel
+DONATE_TIMEOUT = 2.0  # seconds; a donation that never answers is skipped
+ADD_TIMEOUT = 5.0  # seconds; an add that never answers is taken as shown (no duplicate)
+ENTITLEMENT = "com.apple.developer.usernotifications.communication"
 _PALETTE = ("#e5484d", "#f76b15", "#ffc53d", "#30a46c", "#12a594", "#0090ff",
             "#6e56cf", "#d6409f")
 
 
 class CommsError(Exception):
     """A communication notification could not be made."""
+
+
+@functools.cache
+def has_communication_entitlement() -> bool:
+    """Whether this process is signed with the communication entitlement.
+    Without it macOS does not refuse: it quietly shows a plain notification
+    with no avatar, so callers must check first."""
+    try:
+        cf = ctypes.CDLL("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")
+        sec = ctypes.CDLL("/System/Library/Frameworks/Security.framework/Security")
+        cf.CFStringCreateWithCString.restype = ctypes.c_void_p
+        cf.CFStringCreateWithCString.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_uint32]
+        cf.CFRelease.argtypes = [ctypes.c_void_p]
+        sec.SecTaskCreateFromSelf.restype = ctypes.c_void_p
+        sec.SecTaskCreateFromSelf.argtypes = [ctypes.c_void_p]
+        sec.SecTaskCopyValueForEntitlement.restype = ctypes.c_void_p
+        sec.SecTaskCopyValueForEntitlement.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p]
+        task = sec.SecTaskCreateFromSelf(None)
+        if not task:
+            return False
+        name = cf.CFStringCreateWithCString(None, ENTITLEMENT.encode(), 0x08000100)  # UTF-8
+        value = sec.SecTaskCopyValueForEntitlement(task, name, None)
+        for ref in (value, name, task):
+            if ref:
+                cf.CFRelease(ref)
+        return bool(value)
+    except Exception:
+        return False
 
 
 class Bridge(Protocol):
@@ -63,7 +96,10 @@ async def send_communication(
                           for handle, name in sender.members if handle != sender.handle]
         intent = bridge.intent(person, recipients, body, sender.group_name,
                                sender.conversation, group_image)
-        await bridge.donate(intent)
+        try:
+            await asyncio.wait_for(bridge.donate(intent), DONATE_TIMEOUT)
+        except asyncio.TimeoutError:
+            pass  # the update works without the donation
         # The avatar is the icon now; the thumbnail is only the message's own picture.
         content = bridge.content(title, body, sender.conversation,
                                  LEVELS.get(urgency, 1), sender.picture)
@@ -74,7 +110,10 @@ async def send_communication(
         raise CommsError(str(error) or type(error).__name__) from error
     if updated is None:
         raise CommsError("macOS refused the sender (is the communication entitlement signed in?)")
-    error = await bridge.add(identifier, updated)
+    try:
+        error = await asyncio.wait_for(bridge.add(identifier, updated), ADD_TIMEOUT)
+    except asyncio.TimeoutError:
+        return  # probably shown; a fallback could show it twice
     if error:
         raise CommsError(error)
 

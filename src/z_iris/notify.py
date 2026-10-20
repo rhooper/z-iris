@@ -17,7 +17,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any, Protocol
 
-from z_iris.comms import CommsError, group_picture, send_communication
+from z_iris.comms import CommsError, group_picture, has_communication_entitlement, send_communication
 from z_iris.sender import Sender
 
 BUNDLE_ID = "ca.toybox.z-iris"
@@ -151,8 +151,11 @@ class DesktopNotifierBackend:
         comms: Callable[..., Any] = send_communication,
         urls: Any = None,
         picture_dir: Path = GROUP_PICTURES,
+        eager: bool = False,
+        entitled: Callable[[], bool] = has_communication_entitlement,
     ) -> None:
         self.comms = comms
+        self.entitled = entitled
         self.urls = urls if urls is not None else _MemoryUrls()
         self.picture_dir = picture_dir
         self._comms_warned = False
@@ -176,6 +179,24 @@ class DesktopNotifierBackend:
         self._sends = asyncio.Lock()  # FIFO: one banner or clear at a time, in order
         self._thread = threading.Thread(target=self._run, daemon=True, name="notify")
         self._thread.start()
+        if eager:
+            # Clicks on banners from before a restart (or a click that launched
+            # the app) reach only the app-wide handler, which must exist first.
+            self._submit(self._create())
+
+    async def _create(self) -> None:
+        async with self._lock:
+            try:
+                self._make_notifier()
+            except Exception as error:
+                self.warn(f"cannot set up notification clicks ({error})")
+
+    def _make_notifier(self) -> None:
+        if self._notifier is None:
+            self._notifier = self.factory()
+            # Sender notifications and clicks after a restart reach only the
+            # app-wide handler, which gets just the identifier.
+            self._notifier.on_clicked = self._clicked
 
     def _run(self) -> None:
         asyncio.set_event_loop(self._loop)
@@ -191,11 +212,7 @@ class DesktopNotifierBackend:
 
     async def _authorise(self) -> None:
         try:
-            if self._notifier is None:
-                self._notifier = self.factory()
-                # Sender notifications and clicks after a restart reach only the
-                # app-wide handler, which gets just the identifier.
-                self._notifier.on_clicked = self._clicked
+            self._make_notifier()
             self._authorised = bool(await self._notifier.request_authorisation())
         except Exception as error:
             self._notifier = None
@@ -258,6 +275,12 @@ class DesktopNotifierBackend:
     async def _send_from(self, sender: Sender, title, body, url, group, silent) -> bool:
         """The sender's face as the icon. False (and one warning) if macOS
         cannot: the caller then sends today's notification."""
+        if not self.entitled():
+            if not self._comms_warned:
+                self._comms_warned = True
+                self.warn("sender icons need the communication entitlement "
+                          "(build with Z_IRIS_PROFILE); plain banners")
+            return False
         try:
             group_image = (group_picture(sender, self.picture_dir)
                            if sender.group_name is not None else None)

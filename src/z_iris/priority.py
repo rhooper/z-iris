@@ -16,7 +16,7 @@ import tempfile
 from collections.abc import Callable, Iterable
 from pathlib import Path
 
-from z_iris.comms import CommsError, group_picture, send_communication
+from z_iris.comms import CommsError, group_picture, has_communication_entitlement, send_communication
 from z_iris.notify import GROUP_PICTURES, open_url
 from z_iris.sender import Sender
 
@@ -27,8 +27,9 @@ class UrlStore:
     """Each alert's click url by group id, on disk, so a click that relaunches
     this app after z-iris quit still opens the right conversation."""
 
-    def __init__(self, path: Path = DEFAULT_URLS) -> None:
+    def __init__(self, path: Path = DEFAULT_URLS, limit: int = 500) -> None:
         self.path = path
+        self.limit = limit  # most notifications are never clicked; keep the newest
 
     def _read(self) -> dict[str, str]:
         try:
@@ -49,7 +50,10 @@ class UrlStore:
 
     def put(self, group: str, url: str) -> None:
         data = self._read()
+        data.pop(group, None)
         data[group] = url
+        while len(data) > self.limit:
+            data.pop(next(iter(data)))
         self._write(data)
 
     def pop(self, group: str) -> str | None:
@@ -79,7 +83,9 @@ class PriorityService:
         opener: Callable[[str], None] = open_url,
         comms: Callable = send_communication,
         picture_dir: Path = GROUP_PICTURES,
+        entitled: Callable[[], bool] = has_communication_entitlement,
     ) -> None:
+        self.entitled = entitled
         self.notifier = notifier
         self.urls = urls
         self.opener = opener
@@ -139,7 +145,9 @@ class PriorityService:
         self.urls.put(fields["group"], fields["url"])
         plain = None
         sender = Sender.from_json(request.get("sender"))
-        if sender is not None:
+        if sender is not None and not self.entitled():
+            plain = "sender icons need the communication entitlement"
+        elif sender is not None:
             try:
                 group_image = (group_picture(sender, self.picture_dir)
                                if sender.group_name is not None else None)
@@ -149,6 +157,7 @@ class PriorityService:
                 return {"ok": True}
             except CommsError as error:
                 plain = str(error)  # z-iris warns once; the alert still goes out
+        if sender is not None:  # a plain alert shows the avatar as before
             attachment = attachment or (
                 Attachment(path=sender.avatar) if sender.avatar and sender.avatar.is_file() else None)
         # Time-sensitive needs an entitlement; without it macOS delivers the

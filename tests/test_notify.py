@@ -45,6 +45,7 @@ class Recorder:
 
 def make(center, **extra):
     fallback, warnings, opened = Recorder(), [], []
+    extra.setdefault("entitled", lambda: True)  # this test process has no entitlements
     backend = DesktopNotifierBackend(
         fallback, opener=opened.append, factory=lambda: center, warn=warnings.append,
         **extra,
@@ -270,3 +271,24 @@ def test_a_group_sender_gets_a_group_picture(tmp_path):
     settle(backend)
     image = comms.sent[0]["group_image"]
     assert image is not None and image.parent == tmp_path and image.is_file()
+
+
+def test_an_eager_backend_handles_clicks_before_any_banner(tmp_path):
+    store = UrlStore(tmp_path / "urls.json")
+    store.put("z-iris-w-1", "zulip://dm/9")
+    center = FakeCenter()
+    backend, _, _, opened = make(center, urls=store, eager=True)
+    settle(backend)
+    center.on_clicked("z-iris-w-1")
+    assert opened == ["zulip://dm/9"] and center.auth_calls == 0
+
+
+def test_without_the_entitlement_comms_is_skipped_with_one_warning():
+    center, comms = FakeCenter(), FakeComms()
+    backend, _, warnings, _ = make(center, comms=comms, entitled=lambda: False)
+    backend.show("Ada", "hi", "u", Path("/c/av.png"), "g1", sender=ADA)
+    backend.show("Ada", "again", "u", Path("/c/av.png"), "g2", sender=ADA)
+    settle(backend)
+    assert comms.sent == [] and len(center.sent) == 2
+    assert center.sent[0].attachment.path == Path("/c/av.png")
+    assert len([w for w in warnings if "entitlement" in w]) == 1
