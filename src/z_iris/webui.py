@@ -16,7 +16,7 @@ from pathlib import Path
 
 from z_iris.channels import ChannelSource
 from z_iris.config import ConfigError, parse_config
-from z_iris.editing import apply_edit, read_editable
+from z_iris.editing import apply_edit, read_editable, replace_sound
 from z_iris.preview import PreviewSource
 from z_iris.output import _spawn, sound_command
 from z_iris.settings import Settings
@@ -116,18 +116,27 @@ class EditorServer:
         self.settings.reload(force=True)
         return name
 
-    def delete_sound(self, name: object) -> None:
+    def delete_sound(self, name: object, replacement: object = None) -> None:
+        """Remove one of the user's sounds. If the default or any rule uses it,
+        a replacement is required: they switch to it first."""
         if not isinstance(name, str):
             raise ConfigError("name is required")
-        config = parse_config(self.config_path.read_text(), self.sounds_dir)
+        text = self.config_path.read_text()
+        config = parse_config(text, self.sounds_dir)
         if name in user_names(self.sounds_dir):
-            if config.sound == name:
-                raise ConfigError(f'"{name}" is the default sound; pick another default first')
-            users = [rule.name for rule in config.rules if rule.sound == name]
+            users = (["default sound"] if config.sound == name else []) + [
+                rule.name for rule in config.rules if rule.sound == name
+            ]
+            if users and replacement is None:
+                raise SoundInUse(name, users)
             if users:
-                raise ConfigError(
-                    f'"{name}" is used by: {", ".join(users)}. Change those rules first'
-                )
+                if not isinstance(replacement, str) or replacement == name or (
+                    replacement != "none" and replacement not in library(self.sounds_dir)
+                ):
+                    raise ConfigError(f"pick another sound to use instead of {name!r}")
+                new_text = replace_sound(text, name, replacement)
+                parse_config(new_text, self.sounds_dir)  # validates before writing
+                self.config_path.write_text(new_text)
         try:
             delete_sound(self.sounds_dir, name)
         except SoundError as error:
@@ -159,6 +168,14 @@ class EditorServer:
         config = self.settings.config
         final = round(volume * config.master_volume / 100)
         self.spawn(sound_command(config.player, str(sounds[sound]), final))
+
+
+class SoundInUse(ConfigError):
+    """A sound the default or some rules use; the editor asks for a replacement."""
+
+    def __init__(self, name: str, used_by: list[str]) -> None:
+        super().__init__(f'"{name}" is used by: {", ".join(used_by)}. Pick a replacement')
+        self.used_by = used_by
 
 
 def _make_handler(editor: EditorServer):
@@ -255,7 +272,8 @@ def _make_handler(editor: EditorServer):
             if route == "api/sounds/delete":
                 payload = self._body()
                 if payload is not None:
-                    self._guarded(lambda: editor.delete_sound(payload.get("name")))
+                    self._guarded(lambda: editor.delete_sound(
+                        payload.get("name"), payload.get("replacement")))
                 return
             if route == "api/flash":
                 payload = self._body()
@@ -283,6 +301,8 @@ def _make_handler(editor: EditorServer):
         def _guarded_value(self, action: Callable[[], dict]) -> None:
             try:
                 value = action()
+            except SoundInUse as error:
+                self._json(400, {"error": str(error), "used_by": error.used_by})
             except ConfigError as error:
                 self._json(400, {"error": str(error)})
             except Exception as error:  # bad shapes in the payload

@@ -116,3 +116,20 @@ def test_focus_defaults_and_bad_values():
         apply_edit(TEXT, {"focus": {"mode": "bogus"}})
     with pytest.raises(ConfigError, match="quiet"):
         apply_edit(TEXT, {"focus": {"quiet_hours": ["late"]}})
+
+
+def test_replace_sound_switches_default_and_rules_and_keeps_comments():
+    from z_iris.editing import replace_sound
+
+    text = (
+        '[[server]]\nname = "w"\nzuliprc = "/x"\n\n'
+        '[defaults]\n# my default\nsound = "Horn"\n\n'
+        '[[rule]]\nname = "a"\nmatch = "dm"\nsound = "Horn"  # loud\n\n'
+        '[[rule]]\nname = "b"\nmatch = "mention"\nsound = "bell"\n'
+    )
+    new = replace_sound(text, "Horn", "dx-bells")
+    config = parse_config(new)
+    assert config.sound == "dx-bells"
+    assert [r.sound for r in config.rules] == ["dx-bells", "bell"]
+    assert "# my default" in new and "# loud" in new
+    assert replace_sound(text, "Gong", "bell") == text

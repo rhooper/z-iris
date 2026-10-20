@@ -280,3 +280,37 @@ def test_config_includes_focus(editor):
     call, token, *_ = editor
     _, data = call("GET", f"/{token}/api/config")
     assert json.loads(data)["focus"]["mode"] == "off"
+
+
+def test_removing_a_used_sound_lists_its_users_then_replaces_it(editor, tmp_path):
+    call, token, path, settings, _ = editor
+    data = _wav(tmp_path)
+    call("POST", f"/{token}/api/sounds", {"filename": "Horn.wav", "data": data})
+    rules = [{"name": "alarm rule", "match": "mention", "sound": "Horn"},
+             {"name": "quiet", "match": "dm", "sound": "bell"}]
+    call("PUT", f"/{token}/api/config", {"rules": rules, "defaults": {"sound": "Horn"}})
+    sounds = path.parent / "sounds"
+
+    status, body = call("POST", f"/{token}/api/sounds/delete", {"name": "Horn"})
+    assert status == 400 and json.loads(body)["used_by"] == ["default sound", "alarm rule"]
+    for bad in ["nope", "Horn"]:
+        status, _ = call("POST", f"/{token}/api/sounds/delete",
+                         {"name": "Horn", "replacement": bad})
+        assert status == 400
+    assert (sounds / "Horn.wav").exists()
+
+    status, _ = call("POST", f"/{token}/api/sounds/delete",
+                     {"name": "Horn", "replacement": "dx-epiano"})
+    assert status == 200 and not (sounds / "Horn.wav").exists()
+    config = load_config(path)
+    assert config.sound == "dx-epiano"
+    assert [r.sound for r in config.rules] == ["dx-epiano", "bell"]
+    assert settings.config.sound == "dx-epiano"  # live settings reloaded
+
+
+def test_a_used_sound_can_be_replaced_by_none(editor, tmp_path):
+    call, token, path, _, _ = editor
+    call("POST", f"/{token}/api/sounds", {"filename": "Horn.wav", "data": _wav(tmp_path)})
+    call("PUT", f"/{token}/api/config", {"rules": [{"name": "r", "match": "dm", "sound": "Horn"}]})
+    status, _ = call("POST", f"/{token}/api/sounds/delete", {"name": "Horn", "replacement": "none"})
+    assert status == 200 and load_config(path).rules[0].sound == "none"

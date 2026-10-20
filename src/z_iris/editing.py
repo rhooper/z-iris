@@ -104,3 +104,19 @@ def apply_edit(text: str, payload: dict, sounds_dir: Path | None = None) -> str:
     new = tomlkit.dumps(doc)
     parse_config(new, sounds_dir)
     return new
+
+
+def replace_sound(text: str, old: str, new: str) -> str:
+    """Switch the default sound and every rule's sound from old to new, keeping
+    the file's comments and layout. Text without old comes back unchanged."""
+    doc = tomlkit.parse(text)
+    changed = False
+    defaults = doc.get("defaults")
+    if defaults is not None and defaults.get("sound") == old:
+        defaults["sound"] = new
+        changed = True
+    for rule in doc.get("rule", []):
+        if rule.get("sound") == old:
+            rule["sound"] = new
+            changed = True
+    return tomlkit.dumps(doc) if changed else text
