@@ -120,9 +120,19 @@ the thumbnail on the right; the avatar is never shown twice. A batch summary, a
 sender without a fetchable avatar, or a build without the entitlement gets the
 plain notification (z-iris logs once why).
 
-Both apps need the Communication Notifications capability from a paid team:
-build the targets in `xcode/z-iris-priority/z-iris-priority.xcodeproj` once
-(`ca.toybox.z-iris` and `ca.toybox.z-iris.priority`), then
+Both apps need the Communication Notifications capability from a paid team.
+Make (or renew) their profiles from the command line, signed into the team in
+Xcode's settings; one project serves both:
+
+    cd xcode/z-iris-priority
+    xcodebuild -project z-iris-priority.xcodeproj -scheme z-iris-priority \
+      -allowProvisioningUpdates -derivedDataPath /tmp/z-iris-xcb build
+    xcodebuild -project z-iris-priority.xcodeproj -scheme z-iris-priority \
+      -allowProvisioningUpdates -derivedDataPath /tmp/z-iris-xcb build \
+      PRODUCT_BUNDLE_IDENTIFIER=ca.toybox.z-iris \
+      CODE_SIGN_ENTITLEMENTS=z-iris-priority/z-iris.entitlements
+
+then
 
     Z_IRIS_PROFILE=<z-iris profile> Z_IRIS_PRIORITY_PROFILE=<priority profile> \
     Z_IRIS_SIGN_IDENTITY=<certificate SHA-1> scripts/claude/build_app.sh

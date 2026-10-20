@@ -7,7 +7,7 @@ macOS menubar notifier for Zulip. Design: `docs/design.md`. Plans: `docs/plan-ph
 - Install: `uv sync --python /opt/homebrew/opt/python@3.13/bin/python3.13` (the app bundle needs Homebrew's 3.13)
 - Tones: `scripts/claude/gen_tones.sh` (sox) and `scripts/claude/gen_dx7_tones.py` (FM, DX7-style `dx-*`)
 - App bundle: `scripts/claude/build_app.sh [dest.app]`; icons: `scripts/claude/make_icon.py`
-- Priority app profile: build `xcode/z-iris-priority/z-iris-priority.xcodeproj` once in Xcode (paid team) to make or renew the profile
+- Profiles: `xcodebuild -allowProvisioningUpdates` on `xcode/z-iris-priority/z-iris-priority.xcodeproj` makes or renews them (paid team R9MHS94TL4); for z-iris.app add `PRODUCT_BUNDLE_IDENTIFIER=ca.toybox.z-iris CODE_SIGN_ENTITLEMENTS=z-iris-priority/z-iris.entitlements` (README, Sender faces)
 - Zulip emoji names: `uv run python scripts/claude/make_zulip_emoji.py` (from `~/Devel/zulip-terminal`) regenerates `static/zulip_emoji.json`
 - Test: `uv run pytest -q`
 - Run: `uv run z-iris` (`--dry-run`, `--headless`, `--autoreload`, `probe`, `edit`)
