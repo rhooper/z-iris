@@ -181,3 +181,15 @@ def test_moog_a_is_an_eighth_note_at_a440():
 
     lag = max(range(80, 125), key=correlation)  # 440 Hz is about 100 samples
     assert abs(rate / lag - 440) < 10
+
+
+def test_moog_a_is_driven_hard():
+    import math
+    import wave
+
+    with wave.open(str(library(None)["moog-a"]), "rb") as tone:
+        rate, frames = tone.getframerate(), tone.readframes(tone.getnframes())
+    samples = [int.from_bytes(frames[i:i + 2], "little", signed=True) for i in range(0, len(frames), 2)]
+    body = samples[int(0.05 * rate):int(0.2 * rate)]
+    rms = math.sqrt(sum(x * x for x in body) / len(body))
+    assert max(abs(x) for x in body) / rms < 1.9  # saturated: fat, squashed peaks

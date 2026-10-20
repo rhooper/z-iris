@@ -4,8 +4,8 @@ The Minimoog is subtractive: raw oscillators through its 24 dB/octave ladder
 low-pass filter. Here two slightly detuned sawtooths and a square an octave
 down (band-limited with polyBLEP, so no aliasing whine), a four-pole ladder
 filter with some resonance whose cutoff sweeps from bright to warm, and a
-punchy amp envelope. A4 (440 Hz), gate 250 ms (an eighth note at 120 bpm),
-then a short release.
+punchy amp envelope, all driven hard into saturation. A4 (440 Hz), gate
+250 ms (an eighth note at 120 bpm), then a short release.
 
 Date: 2026-10-20
 Usage: uv run python scripts/claude/gen_moog.py   (from the repo root)
@@ -23,6 +23,7 @@ RATE = 44100
 NOTE_HZ = 440.0
 GATE = 0.25  # seconds the key is down
 RELEASE = 0.05
+DRIVE = 4.0  # into the filter; 1.0 is clean
 OUT = Path(__file__).resolve().parents[2] / "src" / "z_iris" / "sounds" / "moog-a.wav"
 
 
@@ -58,11 +59,13 @@ class Ladder:
     def __init__(self) -> None:
         self.stages = [0.0] * 4
 
-    def next(self, x: float, cutoff_hz: float, resonance: float) -> float:
+    def next(self, x: float, cutoff_hz: float, resonance: float, drive: float = 1.0) -> float:
         g = 1.0 - math.exp(-2.0 * math.pi * cutoff_hz / RATE)
-        x = math.tanh(x - 4.0 * resonance * self.stages[3])
+        # drive pushes the input into the saturating stage, as cranking the
+        # Minimoog's oscillator mixer levels overdrives its filter
+        x = math.tanh(drive * x - 4.0 * resonance * self.stages[3])
         for i in range(4):
-            self.stages[i] += g * (x - self.stages[i])
+            self.stages[i] += g * (math.tanh(x) - self.stages[i])
             x = self.stages[i]
         return x
 
@@ -90,7 +93,8 @@ def main() -> None:
         mix = sum(level * osc.next() for level, osc in zip(levels, oscillators))
         sweep = envelope(t, 0.002, 0.09, 0.25, 0.04)  # the filter envelope
         cutoff = 350.0 + 4200.0 * sweep
-        voice = ladder.next(mix, cutoff, resonance=0.35)
+        voice = ladder.next(mix, cutoff, resonance=0.35, drive=DRIVE)
+        voice = math.tanh(2.5 * voice)  # and a hot output stage
         track.append(voice * envelope(t, 0.003, 0.2, 0.8, 0.03))
     fade = int(0.01 * RATE)
     for i in range(fade):
