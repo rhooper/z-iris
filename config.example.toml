@@ -7,9 +7,11 @@ zuliprc = "~/.zuliprc"
 # volume = 100
 
 [defaults]
-# A sound name: a bundled tone (chime, ping, bell, blip, knock, double, triple,
-# rise, fall, alert, urgent, low, soft, mid-short, mid-long; DX7-style FM: dx-epiano, dx-bells, dx-vibe, dx-organ
-# and more (see the editor); moog-a: Minimoog A4; sos: Morse SOS, spark-gap), a file you added in the editor, or "none".
+# A sound name: a bundled tone, a file you added in the editor, or "none".
+# Tones: chime, ping, bell, blip, knock, double, triple, rise, fall, alert,
+# urgent, low, soft, mid-short, mid-long; DX7-style FM dx-epiano, dx-bells,
+# dx-vibe, dx-organ and more; moog-a (Minimoog A4); sos (Morse, spark-gap);
+# recordings doorbell, gong, rooster, foghorn and more. The editor lists all.
 sound = "chime"
 # Percent of the system output level, 0 to 100.
 volume = 60
