@@ -217,8 +217,9 @@ class FakeNotifier:
     def __init__(self):
         self.shown, self.cleared = [], []
 
-    def show(self, title, body, url, image=None, group=None, silent=True):
+    def show(self, title, body, url, image=None, group=None, silent=True, sender=None):
         self.shown.append((title, body, url, image, group, silent))
+        self.senders = getattr(self, "senders", []) + [sender]
 
     def clear(self, group):
         self.cleared.append(group)
@@ -394,7 +395,7 @@ class RecordingNotifier:
     def __init__(self):
         self.calls = []
 
-    def show(self, title, body, url, image=None, group=None, silent=True):
+    def show(self, title, body, url, image=None, group=None, silent=True, sender=None):
         self.calls.append(("show", title, body, group))
 
     def clear(self, group):
@@ -496,3 +497,46 @@ def test_a_bulk_read_is_one_clear_and_never_drops_banners():
     assert len(clears) == 1 and len(clears[0][1]) == 5000
     assert clears[0][1][0] == "z-iris-work-1"
     assert [c[0] for c in normal.calls] == ["show"]
+
+
+
+from pathlib import Path
+
+from z_iris.media import MessageImages
+
+AV, PIC = Path("/c/av.png"), Path("/c/pic.png")
+
+
+def with_images(action, images, notification=None):
+    fake = FakeNotifier()
+    out = RealOutput(Settings(CONFIG), spawn=lambda c: None, notifier=fake,
+                     images_for=lambda m: images)
+    out.banner(notification or Notification(channel(), "zulip://h/#narrow/x", "rule", action))
+    out.drain()
+    return fake
+
+
+def test_a_banner_carries_its_sender_with_avatar_and_picture():
+    fake = with_images(Action("none", 0, "full", "r"), MessageImages(AV, PIC))
+    (sender,) = fake.senders
+    assert sender.name == "Ada (#ops > deploys)" and sender.avatar == AV and sender.picture == PIC
+    assert fake.shown[0][3] == PIC  # today's attachment, for the plain fallback
+
+
+def test_a_title_only_banner_keeps_the_face_but_no_picture():
+    fake = with_images(Action("none", 0, "title", "r"), MessageImages(AV, PIC))
+    (sender,) = fake.senders
+    assert sender.avatar == AV and sender.picture is None and fake.shown[0][3] is None
+
+
+def test_no_avatar_means_today_s_banner():
+    fake = with_images(Action("none", 0, "full", "r"), MessageImages(None, PIC))
+    assert fake.senders == [None] and fake.shown[0][3] == PIC
+
+
+def test_a_batch_summary_has_no_sender():
+    from dataclasses import replace
+
+    n = Notification(channel(), "u", "rule", Action("none", 0, "full", "r"))
+    fake = with_images(None, MessageImages(AV, None), replace(n, summary="3 new in #ops"))
+    assert fake.senders == [None]

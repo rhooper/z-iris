@@ -556,3 +556,26 @@ def test_server_avatar_outside_media_paths_is_fetched_without_credentials(tmp_pa
     r = resolver(tmp_path, net, external_images=False)
     assert r.image_for(msg("hi", avatar_url=av)) is not None
     assert net.calls[0][1] is None
+
+
+def test_images_for_returns_avatar_and_picture_separately(tmp_path):
+    net = Net({"https://x.com/a.png": ("image/png", PNG),
+               "https://cdn.x.com/av.png": ("image/png", PNG)})
+    images = resolver(tmp_path, net).images_for(
+        msg("![p](https://x.com/a.png)", "https://cdn.x.com/av.png"))
+    assert images.picture is not None and images.avatar is not None
+    assert images.picture != images.avatar
+
+
+def test_images_for_without_a_picture_has_only_the_avatar(tmp_path):
+    net = Net({"https://cdn.x.com/av.png": ("image/png", PNG)})
+    images = resolver(tmp_path, net).images_for(msg("no image", "https://cdn.x.com/av.png"))
+    assert images.picture is None and images.avatar is not None
+
+
+def test_image_for_still_prefers_the_picture(tmp_path):
+    net = Net({"https://x.com/a.png": ("image/png", PNG),
+               "https://cdn.x.com/av.png": ("image/png", PNG)})
+    r = resolver(tmp_path, net)
+    m = msg("![p](https://x.com/a.png)", "https://cdn.x.com/av.png")
+    assert r.image_for(m) == r.images_for(m).picture

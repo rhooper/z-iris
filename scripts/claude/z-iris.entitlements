@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Entitlements for z-iris.app when signed with a development profile
+     (build_app.sh, Z_IRIS_PROFILE): the sender's face on banners. Ad hoc
+     signing cannot carry them: macOS kills the app at launch. 2026-10-20. -->
+<plist version="1.0">
+<dict>
+	<key>com.apple.developer.usernotifications.communication</key><true/>
+</dict>
+</plist>

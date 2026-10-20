@@ -81,3 +81,15 @@ def test_new_style_wildcard_flags_count_as_wildcard_mentions():
     for flag in ("wildcard_mentioned", "stream_wildcard_mentioned", "topic_wildcard_mentioned"):
         m = message_from_event("w", "h", 5, {**base, "flags": [flag]})
         assert m.is_wildcard_mention and not m.is_mention
+
+
+def test_message_carries_group_member_names():
+    m = message_from_event("w", "h", SELF, dm_event([12, SELF, 3]))
+    assert m.dm_names == ("p3", "p12")  # in dm_user_ids order
+    event = dm_event([9, SELF])
+    del event["message"]["display_recipient"][0]["full_name"]
+    assert message_from_event("w", "h", SELF, event).dm_names == ("",)
+    channel = message_from_event("w", "h", SELF, {"type": "message", "flags": [], "message": {
+        "id": 1, "type": "stream", "stream_id": 1, "display_recipient": "c",
+        "subject": "t", "sender_id": 2, "sender_full_name": "A", "content": "x"}})
+    assert channel.dm_names == ()

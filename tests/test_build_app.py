@@ -70,3 +70,27 @@ def test_the_priority_app_is_built_beside_z_iris(tmp_path):
     assert "Identifier=ca.toybox.z-iris.priority" in signature
     main = plistlib.loads((tmp_path / "z-iris.app" / "Contents" / "Info.plist").read_bytes())
     assert "NSUserNotificationAlertStyle" not in main
+
+
+
+@pytest.mark.skipif(
+    not Path("/opt/homebrew/opt/python@3.13").exists(), reason="needs Homebrew Python 3.13"
+)
+def test_both_apps_declare_the_message_intent(tmp_path):
+    import plistlib
+
+    assert run(tmp_path / "z-iris.app").returncode == 0
+    for app in ("z-iris.app", "z-iris-priority.app"):
+        info = plistlib.loads((tmp_path / app / "Contents" / "Info.plist").read_bytes())
+        assert info["NSUserActivityTypes"] == ["INSendMessageIntent"], app
+
+
+def test_a_missing_main_profile_stops_the_build(tmp_path):
+    import os
+
+    env = {**os.environ, "Z_IRIS_PROFILE": str(tmp_path / "nope.provisionprofile"),
+           "Z_IRIS_SIGN_IDENTITY": "X"}
+    result = subprocess.run(["bash", str(SCRIPT), str(tmp_path / "z-iris.app")],
+                            capture_output=True, text=True, env=env)
+    assert result.returncode != 0 and "no provisioning profile" in result.stderr
+    assert not (tmp_path / "z-iris.app").exists()

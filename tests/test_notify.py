@@ -45,6 +45,7 @@ class Recorder:
 
 def make(center, **extra):
     fallback, warnings, opened = Recorder(), [], []
+    extra.setdefault("entitled", lambda: True)  # this test process has no entitlements
     backend = DesktopNotifierBackend(
         fallback, opener=opened.append, factory=lambda: center, warn=warnings.append,
         **extra,
@@ -197,3 +198,97 @@ def test_permission_switched_off_later_is_noticed_after_a_refused_send():
     settle(backend)
     assert [s[2] for s in fallback.shown] == ["u2", "u3"]
     assert center.auth_calls == 2
+
+
+from z_iris.comms import CommsError
+from z_iris.priority import UrlStore
+from z_iris.sender import Sender
+
+ADA = Sender("zulip:w:9", "Ada", Path("/c/av.png"), None, "w:dm:9")
+
+
+class FakeComms:
+    def __init__(self, fail=None):
+        self.fail, self.sent = fail, []
+
+    async def __call__(self, **kw):
+        if self.fail:
+            raise CommsError(self.fail)
+        self.sent.append(kw)
+
+
+def test_a_sender_goes_through_comms_not_desktop_notifier():
+    center, comms = FakeCenter(), FakeComms()
+    backend, fallback, warnings, _ = make(center, comms=comms)
+    backend.show("Ada", "hi", "zulip://x", Path("/c/av.png"), "z-iris-w-1", sender=ADA)
+    settle(backend)
+    assert center.sent == [] and not fallback.shown and not warnings
+    (sent,) = comms.sent
+    assert (sent["identifier"], sent["title"], sent["body"], sent["sender"]) == (
+        "z-iris-w-1", "Ada", "hi", ADA)
+    assert sent["group_image"] is None
+
+
+def test_comms_failure_sends_today_s_banner_and_warns_once():
+    center = FakeCenter()
+    backend, fallback, warnings, _ = make(center, comms=FakeComms(fail="no entitlement"))
+    backend.show("Ada", "hi", "u", Path("/c/av.png"), "g1", sender=ADA)
+    backend.show("Ada", "again", "u", Path("/c/av.png"), "g2", sender=ADA)
+    settle(backend)
+    assert [n.message for n in center.sent] == ["hi", "again"]
+    assert center.sent[0].attachment.path == Path("/c/av.png")
+    assert len([w for w in warnings if "no entitlement" in w]) == 1
+
+
+def test_without_a_sender_nothing_changes():
+    center, comms = FakeCenter(), FakeComms()
+    backend, *_ = make(center, comms=comms)
+    backend.show("T", "B", "u", None, "g")
+    settle(backend)
+    assert comms.sent == [] and len(center.sent) == 1
+
+
+def test_a_click_after_a_restart_opens_the_stored_url(tmp_path):
+    store = tmp_path / "urls.json"
+    backend, *_ = make(FakeCenter(), comms=FakeComms(), urls=UrlStore(store))
+    backend.show("Ada", "hi", "zulip://dm/9", None, "z-iris-w-1", sender=ADA)
+    settle(backend)
+    center = FakeCenter()
+    again, _, _, opened = make(center, urls=UrlStore(store))
+    again.show("x", "y", "zulip://other", None, "z-iris-w-2")  # creates the notifier
+    settle(again)
+    center.on_clicked("z-iris-w-1")  # the app-wide click handler
+    assert opened == ["zulip://dm/9"]
+    center.on_clicked("z-iris-w-1")
+    assert opened == ["zulip://dm/9"]  # once
+
+
+def test_a_group_sender_gets_a_group_picture(tmp_path):
+    comms = FakeComms()
+    backend, *_ = make(FakeCenter(), comms=comms, picture_dir=tmp_path)
+    group = Sender("zulip:w:9", "Ada", None, None, "w:dm:3,9", "group", (("zulip:w:3", "Bob"),))
+    backend.show("Ada (group)", "hi", "u", None, "g", sender=group)
+    settle(backend)
+    image = comms.sent[0]["group_image"]
+    assert image is not None and image.parent == tmp_path and image.is_file()
+
+
+def test_an_eager_backend_handles_clicks_before_any_banner(tmp_path):
+    store = UrlStore(tmp_path / "urls.json")
+    store.put("z-iris-w-1", "zulip://dm/9")
+    center = FakeCenter()
+    backend, _, _, opened = make(center, urls=store, eager=True)
+    settle(backend)
+    center.on_clicked("z-iris-w-1")
+    assert opened == ["zulip://dm/9"] and center.auth_calls == 0
+
+
+def test_without_the_entitlement_comms_is_skipped_with_one_warning():
+    center, comms = FakeCenter(), FakeComms()
+    backend, _, warnings, _ = make(center, comms=comms, entitled=lambda: False)
+    backend.show("Ada", "hi", "u", Path("/c/av.png"), "g1", sender=ADA)
+    backend.show("Ada", "again", "u", Path("/c/av.png"), "g2", sender=ADA)
+    settle(backend)
+    assert comms.sent == [] and len(center.sent) == 2
+    assert center.sent[0].attachment.path == Path("/c/av.png")
+    assert len([w for w in warnings if "entitlement" in w]) == 1

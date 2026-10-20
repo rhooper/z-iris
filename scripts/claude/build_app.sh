@@ -7,9 +7,12 @@
 #   The priority app goes next to dest. macOS only offers notification
 #   permission to it from a real location such as ~/Applications.
 # Env: PYTHON_FRAMEWORK overrides the Python.framework version to embed.
-#   Z_IRIS_PRIORITY_PROFILE (a .provisionprofile) and Z_IRIS_SIGN_IDENTITY sign
-#   the priority app with priority.entitlements (time-sensitive alerts);
-#   without them it is signed ad hoc and its alerts are ordinary ones.
+#   Z_IRIS_PROFILE and Z_IRIS_PRIORITY_PROFILE (.provisionprofile files) with
+#   Z_IRIS_SIGN_IDENTITY (a certificate's SHA-1) sign each app with its
+#   entitlements (z-iris.entitlements, priority.entitlements): sender faces and
+#   time-sensitive alerts. Without a profile an app is signed ad hoc and its
+#   notifications are plain. A profile expiring within 7 days is refused: once
+#   it expires, macOS will not launch the app at all.
 # The project .venv must be built with that Python:
 #   uv sync --python /opt/homebrew/opt/python@3.13/bin/python3.13
 set -euo pipefail
@@ -25,17 +28,50 @@ esac
 priority="$(dirname "$dest")/z-iris-priority.app"
 framework="${PYTHON_FRAMEWORK:-/opt/homebrew/opt/python@3.13/Frameworks/Python.framework/Versions/3.13}"
 icon="$root/src/z_iris/static/z-iris.icns"
-profile="${Z_IRIS_PRIORITY_PROFILE:-}"
+main_profile="${Z_IRIS_PROFILE:-}"
+priority_profile="${Z_IRIS_PRIORITY_PROFILE:-}"
 identity="${Z_IRIS_SIGN_IDENTITY:-}"
+work="$(mktemp -d)"
+trap 'rm -rf "$work"' EXIT
 
 [ -f "$framework/Python" ] && [ -f "$framework/Headers/Python.h" ] \
 	|| { echo "no Python.framework at $framework" >&2; exit 1; }
 sites="$root/.venv/lib/python3.13/site-packages"
 [ -d "$sites" ] || { echo "no 3.13 venv: uv sync --python /opt/homebrew/opt/python@3.13/bin/python3.13" >&2; exit 1; }
-if [ -n "$profile" ]; then
-	[ -f "$profile" ] || { echo "no provisioning profile at $profile" >&2; exit 1; }
-	[ -n "$identity" ] || { echo "Z_IRIS_PRIORITY_PROFILE needs Z_IRIS_SIGN_IDENTITY" >&2; exit 1; }
-fi
+# check_profile file: exists, an identity is given, and it has 7+ days left.
+check_profile() {
+	local file="$1" name expires left
+	[ -f "$file" ] || { echo "no provisioning profile at $file" >&2; exit 1; }
+	[ -n "$identity" ] || { echo "a profile needs Z_IRIS_SIGN_IDENTITY" >&2; exit 1; }
+	name="$work/$(basename "$file").plist"
+	security cms -D -i "$file" > "$name"
+	expires="$(/usr/libexec/PlistBuddy -c "Print :ExpirationDate" "$name")"
+	expires="$(date -j -f "%a %b %d %T %Z %Y" "$expires" +%s)"
+	left=$(( (expires - $(date +%s)) / 86400 ))
+	[ "$left" -ge 7 ] || { echo "profile $file expires in $left days; renew it in Xcode first" >&2; exit 1; }
+}
+for file in "$main_profile" "$priority_profile"; do
+	[ -z "$file" ] || check_profile "$file"
+done
+
+# sign app id entitlements profile: with a profile, its own app and team
+# identifiers go beside the entitlements (macOS ignores a restricted entitlement
+# without them); otherwise ad hoc, which cannot carry them at all.
+sign() {
+	local app="$1" id="$2" entitlements="$3" file="$4" key value merged
+	if [ -z "$file" ]; then
+		codesign --force -s - -i "$id" "$app"
+		return
+	fi
+	cp "$file" "$app/Contents/embedded.provisionprofile"
+	merged="$work/$id.entitlements"
+	cp "$entitlements" "$merged"
+	for key in com.apple.application-identifier com.apple.developer.team-identifier; do
+		value="$(/usr/libexec/PlistBuddy -c "Print :Entitlements:$key" "$work/$(basename "$file").plist")"
+		/usr/libexec/PlistBuddy -c "Add :$key string $value" "$merged"
+	done
+	codesign --force -s "$identity" -i "$id" --entitlements "$merged" "$app"
+}
 
 # build_bundle app id name executable module extra-plist-keys
 build_bundle() {
@@ -58,7 +94,8 @@ build_bundle() {
 	<key>CFBundleVersion</key><string>1</string>
 	<key>CFBundleShortVersionString</key><string>0.1.0</string>
 	<key>LSUIElement</key><true/>
-	<key>NSHighResolutionCapable</key><true/>$extra
+	<key>NSHighResolutionCapable</key><true/>
+	<key>NSUserActivityTypes</key><array><string>INSendMessageIntent</string></array>$extra
 </dict>
 </plist>
 PLIST
@@ -74,30 +111,12 @@ PLIST
 		-o "$app/Contents/MacOS/$executable"
 }
 
+# No --deep anywhere: it would sign nested code under a generated id.
 build_bundle "$dest" ca.toybox.z-iris z-iris z-iris z_iris ""
-# No --deep: it would sign nested code under a generated id.
-codesign --force -s - -i ca.toybox.z-iris "$dest"
+sign "$dest" ca.toybox.z-iris "$root/scripts/claude/z-iris.entitlements" "$main_profile"
 echo "built $dest"
 
 build_bundle "$priority" ca.toybox.z-iris.priority "z-iris priority" z-iris-priority \
 	z_iris.priority $'\n\t<key>NSUserNotificationAlertStyle</key><string>alert</string>'
-if [ -n "$profile" ]; then
-	cp "$profile" "$priority/Contents/embedded.provisionprofile"
-	# A restricted entitlement is only honoured with the profile's own app and
-	# team identifiers beside it; they are per team, so take them from the profile.
-	work="$(mktemp -d)"
-	trap 'rm -rf "$work"' EXIT
-	security cms -D -i "$profile" > "$work/profile.plist"
-	cp "$root/scripts/claude/priority.entitlements" "$work/entitlements.plist"
-	for key in com.apple.application-identifier com.apple.developer.team-identifier; do
-		value="$(/usr/libexec/PlistBuddy -c "Print :Entitlements:$key" "$work/profile.plist")"
-		/usr/libexec/PlistBuddy -c "Add :$key string $value" "$work/entitlements.plist"
-	done
-	# Z_IRIS_SIGN_IDENTITY may be a certificate's SHA-1, needed when two share a name.
-	codesign --force -s "$identity" -i ca.toybox.z-iris.priority \
-		--entitlements "$work/entitlements.plist" "$priority"
-else
-	# Ad hoc cannot carry the time-sensitive entitlement: macOS kills the app.
-	codesign --force -s - -i ca.toybox.z-iris.priority "$priority"
-fi
+sign "$priority" ca.toybox.z-iris.priority "$root/scripts/claude/priority.entitlements" "$priority_profile"
 echo "built $priority"

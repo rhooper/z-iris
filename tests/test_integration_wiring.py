@@ -69,9 +69,23 @@ def test_outside_the_bundle_there_is_no_priority_notifier(monkeypatch):
     assert out.priority is None
 
 
-def test_an_expiring_profile_is_warned_at_startup(monkeypatch):
-    out, warnings = _bundle(monkeypatch, True, days=1.5)
-    assert len(warnings) == 1 and "expires in 1.5 days" in warnings[0]
+def test_expiring_profiles_are_warned_from_14_days(monkeypatch):
+    out, warnings = _bundle(monkeypatch, True, days=10)
+    assert len(warnings) == 2 and all("expires in 10.0 days" in w for w in warnings)
+    assert any(w.startswith("z-iris's ") for w in warnings)
+    assert any(w.startswith("z-iris priority's ") for w in warnings)
     out.close()
-    _, quiet = _bundle(monkeypatch, True, days=30)
+    quiet_out, quiet = _bundle(monkeypatch, True, days=30)
     assert quiet == []
+    quiet_out.close()
+
+
+def test_real_output_resolves_both_images_and_keeps_click_urls(monkeypatch):
+    from z_iris import output
+    from z_iris.priority import UrlStore
+
+    out, _ = _bundle(monkeypatch, True)
+    assert callable(out.images_for)
+    assert isinstance(out.notifier.urls, UrlStore)
+    assert out.notifier.urls.path.name == "banner-urls.json"
+    out.close()

@@ -127,6 +127,7 @@ class PriorityNotifier:
         self._style_warned = False
         self._why = "no reply"  # why the last request failed, for the warning
         self._clear_failing = False  # warn about failed clears once per run of them
+        self._plain_warned = False  # sender icons failed in the priority app
 
     def _transition(self, state: str, text: str) -> None:
         if self._state != state:
@@ -181,19 +182,26 @@ class PriorityNotifier:
         image: Path | None = None,
         group: str | None = None,
         silent: bool = True,
+        sender=None,
     ) -> None:
-        reply = self._request({
+        request = {
             "op": "show", "title": title, "body": body, "url": url,
             "group": group or "z-iris", "image": str(image) if image else None,
-        })
+        }
+        if sender is not None:
+            request["sender"] = sender.to_json()
+        reply = self._request(request)
         if reply is not None and reply.get("ok"):
+            if reply.get("plain") and not self._plain_warned:
+                self._plain_warned = True
+                self.warn(f"sender icons unavailable in z-iris priority ({reply['plain']}); plain alerts")
             if self._state not in (None, "native"):
                 self._transition("native", "z-iris priority alerts working again")
             self._state = "native"
             return
         reason = reply.get("reason") if reply else self._why
         self._transition("fallback", f"z-iris priority did not show an alert ({reason}); using a banner")
-        self.fallback.show(title, body, url, image, group, silent)
+        self.fallback.show(title, body, url, image, group, silent, sender=sender)
 
     def clear(self, group: str) -> None:
         self.clear_groups([group])
