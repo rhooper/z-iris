@@ -18,6 +18,8 @@ note "$out/ping.wav" sine 1320 0.12
 note "$out/blip.wav" square 660 0.05
 note "$out/low.wav" sine 220 0.30
 note "$out/soft.wav" triangle 523 0.25
+note "$out/mid-short.wav" sine 261.63 0.2   # middle C, 200 ms
+note "$out/mid-long.wav" sine 261.63 0.35   # middle C, 350 ms
 
 # bell: a fundamental with a decaying octave
 sox -n -r 44100 -c 1 "$out/bell.wav" synth 0.7 sine 880 synth 0.7 sine mix 1760 \

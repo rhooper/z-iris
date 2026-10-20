@@ -133,3 +133,17 @@ def test_sos_is_bundled_and_is_the_morse_prosign():
     assert 2.5 < long / short < 3.5  # a dash is three dots
     pattern = "".join("-" if m > (short + long) / 2 else "." for m in marks)
     assert pattern == "...---..." * 2
+
+
+@pytest.mark.parametrize("name, seconds", [("mid-short", 0.2), ("mid-long", 0.35)])
+def test_mid_tones_are_middle_c_sines(name, seconds):
+    import wave
+
+    with wave.open(str(library(None)[name]), "rb") as tone:
+        rate, frames = tone.getframerate(), tone.readframes(tone.getnframes())
+        assert abs(tone.getnframes() / rate - seconds) < 0.005
+    samples = [int.from_bytes(frames[i:i + 2], "little", signed=True) for i in range(0, len(frames), 2)]
+    middle = samples[len(samples) // 4: 3 * len(samples) // 4]
+    crossings = sum(1 for a, b in zip(middle, middle[1:]) if a < 0 <= b)
+    hz = crossings / (len(middle) / rate)
+    assert abs(hz - 261.63) < 6

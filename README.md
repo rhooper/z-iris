@@ -120,7 +120,8 @@ one sample per kind.
   `alert_word` is your own Zulip alert words, which the server flags separately.
   Topic and keyword values are case-insensitive regular expressions.
 - `sound`: a sound name or `none`. Names are the bundled tones (chime, ping,
-  bell, blip, knock, double, triple, rise, fall, alert, urgent, low, soft, and the
+  bell, blip, knock, double, triple, rise, fall, alert, urgent, low, soft, mid-short
+  and mid-long (200 and 350 ms of middle C), the
   Yamaha DX7-style FM tones dx-epiano, dx-piano-c, dx-bells, dx-marimba, dx-bass,
   dx-brass, and sos: SOS in Morse on a 1910s spark-gap wireless note) and
   any file in `~/.config/z-iris/sounds/` (the file name without its extension).
