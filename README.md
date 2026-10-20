@@ -110,6 +110,27 @@ these come from a second app, `~/Applications/z-iris-priority.app`
   identity when two share a name. z-iris warns 2 days before the profile
   expires.
 
+## Sender faces
+
+With a development profile, notifications show the sender's avatar as the main
+icon with a small z-iris badge, as Messages does (macOS "communication
+notifications"). Titles read as before. A group DM shows a group picture: the
+sender's avatar and the other members' initials. A picture in the message is
+the thumbnail on the right; the avatar is never shown twice. A batch summary, a
+sender without a fetchable avatar, or a build without the entitlement gets the
+plain notification (z-iris logs once why).
+
+Both apps need the Communication Notifications capability from a paid team:
+build the targets in `xcode/z-iris-priority/z-iris-priority.xcodeproj` once
+(`ca.toybox.z-iris` and `ca.toybox.z-iris.priority`), then
+
+    Z_IRIS_PROFILE=<z-iris profile> Z_IRIS_PRIORITY_PROFILE=<priority profile> \
+    Z_IRIS_SIGN_IDENTITY=<certificate SHA-1> scripts/claude/build_app.sh
+
+Profiles are in `~/Library/Developer/Xcode/UserData/Provisioning Profiles/`.
+The build refuses a profile with under 7 days left, since an expired one stops
+the app launching; z-iris warns from 14 days before.
+
 ## Rules and volume
 
 Rules live in `~/.config/z-iris/config.toml` as `[[rule]]` tables, and the file
