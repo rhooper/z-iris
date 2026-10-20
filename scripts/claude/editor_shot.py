@@ -4,7 +4,7 @@ Serves the editor on a copy of the config (so nothing is changed) and saves a
 PNG. For checking the editor's layout without clicking through it.
 
 Date: 2026-10-20
-Usage: uv run python scripts/claude/editor_shot.py OUT.png [config.toml] [width]
+Usage: uv run python scripts/claude/editor_shot.py OUT.png [config.toml] [width] [collapsed]
 """
 
 from __future__ import annotations
@@ -32,7 +32,7 @@ def main(argv: list[str]) -> int:
         if (source.parent / "sounds").is_dir():
             shutil.copytree(source.parent / "sounds", Path(work) / "sounds")
         server = EditorServer(Settings(load_config(config), config), config)
-        url = server.start() + "?expand"
+        url = server.start() + ("" if "collapsed" in argv[3:] else "?expand")
         subprocess.run(
             [CHROME, "--headless=new", f"--user-data-dir={work}/chrome", "--hide-scrollbars",
              f"--window-size={width},6000", "--virtual-time-budget=4000",

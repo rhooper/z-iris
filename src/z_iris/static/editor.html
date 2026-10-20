@@ -37,7 +37,10 @@
   .help { display:block; font-size:12px; color:var(--muted); margin-top:2px; }
   .explain { margin:0 0 10px; font-size:13px; color:var(--muted); }
   .plays { font-size:12px; border:1px solid var(--line); border-radius:10px; padding:1px 8px; color:var(--muted); white-space:nowrap; cursor:help; }
-  .chev { padding:2px 8px; } .oneline { display:flex; gap:8px; align-items:center; flex-wrap:wrap; flex:1; min-width:0; }
+  .chev { display:inline-block; width:16px; text-align:center; color:var(--muted); cursor:pointer; user-select:none; font-size:12px; }
+  #rules .card > .head { cursor:pointer; }
+  #rules .card.collapsed { padding-bottom:0; }
+  #rules .card.collapsed > .head { margin-bottom:0; border-radius:0 7px 7px 0; } .oneline { display:flex; gap:8px; align-items:center; flex-wrap:wrap; flex:1; min-width:0; }
   .oneline b { font-weight:600; } .sep { color:var(--muted); }
   input[type=color] { padding:1px 2px; height:32px; min-width:48px; }
   .mine { display:flex; gap:8px; align-items:center; justify-content:space-between; border-top:1px solid var(--line); padding:6px 0; }
@@ -390,8 +393,14 @@ function ruleSummary(rule) {
   if (rule.priority) extras.push("priority " + rule.priority);
   return el("div", {className:"oneline"}, el("b", {textContent: rule.name || "(unnamed)"}), sep(), el("span", {textContent: kind + target}), sep(),
     el("span", {textContent: sound === "none" ? "silent" : sound + (rule.sound ? "" : " (default)") + (volume != null ? " " + volume + "%" : "")}),
-    ...extras.map(tag),
-    el("span", {className: "tag" + (rule.enabled === false ? "" : " on"), textContent: rule.enabled === false ? "off" : "on"}));
+    ...extras.map(tag));
+}
+
+// A rule with a flash wears its flash colour; others get distinct hues.
+function ruleColour(rule, i) {
+  const flash = rule.flash || state.defaults.flash || BUILTIN.flash;
+  if (flash && flash !== "none") return rule.flash_color || state.defaults.flash_color || BUILTIN.flash_color;
+  return `hsl(${Math.round(i * 137.5) % 360} 62% 55%)`;
 }
 
 function renderRules() {
@@ -425,14 +434,19 @@ function renderRules() {
     on.addEventListener("change", () => { rule.enabled = on.checked; if (on.checked) delete rule.enabled; card.classList.toggle("off", !on.checked); });
     const toggle = el("label", {className:"toggle"}, on, "On");
     const isCollapsed = !expanded.has(rule);
-    const chev = mk(isCollapsed ? "Expand" : "Collapse", () => { if (expanded.has(rule)) expanded.delete(rule); else expanded.add(rule); saveCollapsed(); renderRules(); });
-    chev.className = "chev"; chev.setAttribute("aria-expanded", String(!isCollapsed));
+    const toggleOpen = () => { if (expanded.has(rule)) expanded.delete(rule); else expanded.add(rule); saveCollapsed(); renderRules(); };
+    const chev = el("span", {className:"chev", textContent: isCollapsed ? "▶" : "▼", role:"button", tabIndex:0, title: isCollapsed ? "Expand" : "Collapse"});
+    chev.setAttribute("aria-expanded", String(!isCollapsed));
+    chev.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleOpen(); } });
     const plays = el("span", {className:"plays"});
     readouts.push({node: plays, rule});
-    const card = el("div", {className:"card" + (rule.enabled === false ? " off" : ""), style:`--rule:hsl(${Math.round(i * 137.5) % 360} 62% 55%)`},
-      el("div", {className:"head"},
+    const head = el("div", {className:"head"},
         el("div", {className:"row", style:"flex:1; min-width:0"}, chev, isCollapsed ? ruleSummary(rule) : text(rule.name, v => rule.name = v, "Rule name"), ...(isCollapsed ? [] : [plays])),
-        el("div", {className:"row"}, toggle, ...(isCollapsed ? [] : [mk("Up", () => { move(-1); changed(); }), mk("Down", () => { move(1); changed(); }), del]))),
+        el("div", {className:"row"}, toggle, ...(isCollapsed ? [] : [mk("Up", () => { move(-1); changed(); }), mk("Down", () => { move(1); changed(); }), del])));
+    // The whole header opens and closes the rule; its own controls keep their jobs.
+    head.addEventListener("click", e => { if (!e.target.closest("input, button, select, label, a")) toggleOpen(); });
+    const card = el("div", {className:"card" + (rule.enabled === false ? " off" : "") + (isCollapsed ? " collapsed" : ""), style:`--rule:${ruleColour(rule, i)}`},
+      head,
       ...(isCollapsed ? [] : [el("div", {className:"grid"}, ...fields, volumeSect, ...behaviourSections(rule, true))]),
       ...(isCollapsed ? [] : [previewBlock(i)].filter(Boolean)));
     return card;
