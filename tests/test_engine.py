@@ -51,6 +51,7 @@ class FakeClock:
 class Recorder:
     def __init__(self):
         self.calls = []
+        self.clears = []  # kept apart so call counts stay about notifications
 
     def deliver(self, n):
         self.calls.append(("deliver", n))
@@ -62,10 +63,10 @@ class Recorder:
         self.calls.append(("sound", n, volume))
 
     def clear_read(self, server, ids):
-        self.calls.append(("clear_read", server, ids))
+        self.clears.append(("clear_read", server, ids))
 
     def clear_unless_unread(self, server, unread):
-        self.calls.append(("clear_unless_unread", server, unread))
+        self.clears.append(("clear_unless_unread", server, unread))
 
     def flash(self, n):
         self.calls.append(("flash", n))
@@ -618,3 +619,45 @@ def test_last_sound_is_pruned():
         engine.submit(note(channel(i, topic=f"t{i}"), min_gap=5))
         clock.advance(6)
     assert len(engine._last_sound) <= 2
+
+
+def read_event(messages=None, all_=False):
+    event = {"type": "update_message_flags", "op": "add", "flag": "read"}
+    if all_:
+        event["all"] = True
+    else:
+        event["messages"] = messages
+    return event
+
+
+def test_read_events_clear_sticky_alerts():
+    engine, out, _, _ = make()
+    engine.handle_event("work", read_event([5]))
+    engine.handle_event("work", read_event(all_=True))
+    engine.handle_event("work", {"type": "delete_message", "message_id": 5})
+    engine.handle_event("work", {"type": "update_message_flags", "op": "add",
+                                 "flag": "starred", "messages": [6]})
+    assert out.clears == [
+        ("clear_read", "work", {5}),
+        ("clear_read", "work", None),
+        ("clear_read", "work", {5}),
+    ]
+
+
+def test_reconcile_clears_and_stops_repeats_for_read_messages():
+    engine, out, clock, _ = make()
+    engine.submit(note(channel(5), repeat=3, repeat_every=10))
+    engine.submit(note(channel(6), repeat=3, repeat_every=10))
+    engine.reconcile_unread("work", {6})
+    assert out.clears == [("clear_unless_unread", "work", {6})]
+    clock.advance(10)
+    repeated = [c[1].message.id for c in out.calls if c[0] == "sound"]
+    assert repeated == [6]
+
+
+def test_clearing_happens_while_paused():
+    engine, out, _, controls = make()
+    controls.paused.set()
+    engine.handle_event("work", read_event([5]))
+    engine.reconcile_unread("work", set())
+    assert [c[0] for c in out.clears] == ["clear_read", "clear_unless_unread"]

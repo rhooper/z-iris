@@ -144,15 +144,29 @@ class Engine:
                 op = event.get("op", event.get("operation"))
                 if op != "add" or event.get("flag") != "read":
                     return
-                if event.get("all"):
-                    self._forget(server, None)
-                else:
-                    self._forget(server, set(self._ids(event.get("messages"))))
+                ids = None if event.get("all") else set(self._ids(event.get("messages")))
+                self._forget(server, ids)
+                self.output.clear_read(server, ids)
             elif kind in ("delete_message", "delete"):
                 ids = self._ids(event.get("message_ids"))
                 if event.get("message_id") is not None:
                     ids.append(event["message_id"])
                 self._forget(server, set(ids))
+                self.output.clear_read(server, set(ids))
+        except Exception as error:
+            self._report(error)
+
+    def reconcile_unread(self, server: str, unread: set[int]) -> None:
+        """After a new event queue, catch up on reads missed while the old one
+        was dead: stop repeats and clear sticky alerts for anything no longer
+        unread. Clearing makes no noise, so it happens even while paused."""
+        try:
+            with self._lock:
+                held = {n.message.id for b in self._batches.values() for n in b.held
+                        if n.message.server == server}
+                known = {i for s, i in self._repeats if s == server} | held
+            self._forget(server, known - unread)
+            self.output.clear_unless_unread(server, set(unread))
         except Exception as error:
             self._report(error)
 

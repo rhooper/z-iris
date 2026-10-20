@@ -221,3 +221,66 @@ def test_read_events_reach_the_engine_and_register_asks_for_them():
     wait_until(lambda: len(seen) >= 2)
     stream.stop()
     assert seen == [("submit", 40), ("w", "update_message_flags")]
+
+
+def test_unread_ids_from_register():
+    from z_iris.stream import unread_ids
+
+    registered = {"unread_msgs": {
+        "pms": [{"other_user_id": 9, "unread_message_ids": [1, 2]}],
+        "streams": [{"stream_id": 7, "topic": "t", "unread_message_ids": [3]}],
+        "huddles": [{"user_ids_string": "5,9,12", "unread_message_ids": [4]}],
+        "mentions": [5, 3],
+        "count": 5,
+    }}
+    assert unread_ids(registered) == {1, 2, 3, 4, 5}
+    newer = {"unread_msgs": {"direct_message": [{"unread_message_ids": [8]}],
+                             "streams": [], "huddles": [], "mentions": []}}
+    assert unread_ids(newer) == {8}
+    assert unread_ids({}) is None
+    assert unread_ids({"unread_msgs": {**registered["unread_msgs"],
+                                       "old_unreads_missing": True}}) is None
+
+
+def test_each_register_reconciles_unread():
+    class UnreadClient(FakeClient):
+        def __init__(self, scripts, unread):
+            super().__init__(scripts)
+            self.unread = list(unread)
+
+        def register(self, **kwargs):
+            reply = super().register(**kwargs)
+            unread = self.unread.pop(0) if self.unread else None
+            if unread is not None:
+                reply["unread_msgs"] = {"pms": [], "streams": [], "huddles": [],
+                                        "mentions": unread}
+            return reply
+
+    class FakeEngine:
+        def __init__(self):
+            self.reconciled = []
+
+        def submit(self, notification):
+            pass
+
+        def handle_event(self, server, event):
+            pass
+
+        def reconcile_unread(self, server, unread):
+            self.reconciled.append((server, unread))
+
+    client = UnreadClient(
+        [{"result": "error", "code": "BAD_EVENT_QUEUE_ID", "msg": "expired"},
+         {"result": "error", "code": "BAD_EVENT_QUEUE_ID", "msg": "expired"}],
+        [[1, 2], None, [3]],
+    )
+    engine = FakeEngine()
+    config = Config(servers=(ServerConfig("w", Path("/x")),))
+    stream = ServerStream(config.servers[0], Settings(config), Collect(want=1), Controls(),
+                          StatusBoard(), client_factory=lambda path: client, engine=engine)
+    stream.backoff_start = 0.01
+    stream.start()
+    wait_until(lambda: client.registered >= 3)
+    stream.stop()
+    wait_until(lambda: len(engine.reconciled) >= 2)
+    assert engine.reconciled == [("w", {1, 2}), ("w", {3})]

@@ -23,6 +23,21 @@ EVENT_TYPES = [
 ]
 
 
+def unread_ids(registered: dict) -> set[int] | None:
+    """Every unread message id in a register reply, or None when the server
+    did not send them all (old servers, or too many unreads): then nothing may
+    be judged read."""
+    unread = registered.get("unread_msgs")
+    if not isinstance(unread, dict) or unread.get("old_unreads_missing"):
+        return None
+    ids: set[int] = set()
+    for key in ("pms", "direct_message", "streams", "huddles"):
+        for entry in unread.get(key) or []:
+            ids.update(i for i in entry.get("unread_message_ids", []) if isinstance(i, int))
+    ids.update(i for i in unread.get("mentions") or [] if isinstance(i, int))
+    return ids
+
+
 def host_of(site: str) -> str:
     return urlparse(site).netloc.lower()
 
@@ -99,6 +114,10 @@ class ServerStream(threading.Thread):
         registered = client.register(event_types=EVENT_TYPES, apply_markdown=False)
         if registered.get("result") != "success":
             raise RuntimeError(registered.get("msg", "register failed"))
+        unread = unread_ids(registered)
+        if unread is not None:
+            # Reads that happened while the old queue was dead never arrive.
+            self.engine.reconcile_unread(self.server.name, unread)
 
         profile = client.get_profile()
         if profile.get("result") != "success":
