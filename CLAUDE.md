@@ -7,6 +7,7 @@ macOS menubar notifier for Zulip. Design: `docs/design.md`. Plans: `docs/plan-ph
 - Install: `uv sync --python /opt/homebrew/opt/python@3.13/bin/python3.13` (the app bundle needs Homebrew's 3.13)
 - Tones: `scripts/claude/gen_tones.sh` (sox), `scripts/claude/gen_dx7_tones.py` (FM, DX7-style `dx-*`) `scripts/claude/gen_morse.py` (`sos`) and `scripts/claude/gen_moog.py` (`moog-a`)
 - App bundle: `scripts/claude/build_app.sh [dest.app]`; icons: `scripts/claude/make_icon.py`
+- Release: `scripts/claude/build_release.sh [out]` builds self-contained apps (uv's standalone Python 3.13 inside) into `dist/` and zips them; `Z_IRIS_SIGN_IDENTITY` (Developer ID), `Z_IRIS_PROFILE`/`Z_IRIS_PRIORITY_PROFILE` (Developer ID profiles), `Z_IRIS_NOTARY_PROFILE` (notarytool). Published on GitHub as rhooper/z-iris (public, MIT); release zips go to GitHub Releases, never into git
 - Profiles: `xcodebuild -allowProvisioningUpdates` on `xcode/z-iris-priority/z-iris-priority.xcodeproj` makes or renews them (paid team R9MHS94TL4); for z-iris.app add `PRODUCT_BUNDLE_IDENTIFIER=ca.toybox.z-iris CODE_SIGN_ENTITLEMENTS=z-iris-priority/z-iris.entitlements` (README, Sender faces)
 - Zulip emoji names: `uv run python scripts/claude/make_zulip_emoji.py` (from `~/Devel/zulip-terminal`) regenerates `static/zulip_emoji.json`
 - Test: `uv run pytest -q`
