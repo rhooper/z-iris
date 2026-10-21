@@ -18,6 +18,7 @@
 set -euo pipefail
 
 root="$(CDPATH= cd "$(dirname "$0")/../.." && pwd)"
+. "$root/scripts/claude/bundle_lib.sh"
 dest="${1:-$HOME/Applications/z-iris.app}"
 dest="${dest%/}"
 # rm -rf below: only ever remove something that is named like an app bundle.
@@ -80,25 +81,7 @@ build_bundle() {
 	mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources"
 	[ -f "$icon" ] && cp "$icon" "$app/Contents/Resources/z-iris.icns"
 
-	cat > "$app/Contents/Info.plist" <<PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>CFBundleIdentifier</key><string>$id</string>
-	<key>CFBundleName</key><string>$name</string>
-	<key>CFBundleDisplayName</key><string>$name</string>
-	<key>CFBundleExecutable</key><string>$executable</string>
-	<key>CFBundleIconFile</key><string>z-iris</string>
-	<key>CFBundlePackageType</key><string>APPL</string>
-	<key>CFBundleVersion</key><string>1</string>
-	<key>CFBundleShortVersionString</key><string>0.1.0</string>
-	<key>LSUIElement</key><true/>
-	<key>NSHighResolutionCapable</key><true/>
-	<key>NSUserActivityTypes</key><array><string>INSendMessageIntent</string></array>$extra
-</dict>
-</plist>
-PLIST
+	write_info_plist "$app" "$id" "$name" "$executable" "$extra"
 
 	# The process must be the bundle's own CFBundleExecutable: when it was a
 	# copied Python exec'd from a script, macOS listed the menubar item under
