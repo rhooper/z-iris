@@ -2,7 +2,20 @@
 name = "z-iris"
 version = "0.1.0"
 description = "Menubar notifier for Zulip with custom sounds"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Rose Hooper" }]
 requires-python = ">=3.11"
+classifiers = [
+    "Operating System :: MacOS",
+    "Environment :: MacOS X",
+    "Topic :: Communications :: Chat",
+]
+
+[project.urls]
+Homepage = "https://github.com/rhooper/z-iris"
+Issues = "https://github.com/rhooper/z-iris/issues"
 dependencies = [
     "zulip>=0.9.0",
     "rumps>=0.4.0",

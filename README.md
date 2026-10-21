@@ -1,25 +1,54 @@
 # z-iris
 
-A macOS menubar app that streams your Zulip messages and notifies you with
-custom sounds. Named after Iris, the Greek messenger of the gods.
+A macOS menubar app that streams your Zulip messages and tells you about the
+ones that matter, with your own sounds. Named after Iris, the Greek messenger
+of the gods.
 
-Phase 1 and 2a (this version): streams one or more servers, shows a banner and plays
-a sound for DMs and mentions, and opens the right chat in Zulip Desktop when
-you click the banner. Rules set sound, volume and banner per channel, topic,
-keyword, mention, DM or group DM. See `docs/design.md` for the roadmap.
+- **Rules** pick the sound, volume, banner and screen flash per channel (names
+  or patterns), topic, keyword, mention, DM or group DM, edited in a local web
+  editor that keeps your config file's comments.
+- **Notifications show the sender's face**, can stay on screen for a set time or
+  until read, and disappear when you read the message elsewhere.
+- **Sounds**: built-in tones, Yamaha DX7- and Minimoog-style synth voices, Morse
+  SOS, public-domain recordings (see `src/z_iris/sounds/SOURCES.md`), or your own.
+- **Repeats, batching, focus and quiet hours** keep busy channels in check.
+- Clicking a notification opens the conversation in Zulip Desktop.
 
-## Setup
+macOS on Apple silicon. MIT licensed.
+
+## Install
+
+1. Download `z-iris-<version>-macos-arm64.zip` from the
+   [releases](https://github.com/rhooper/z-iris/releases) and move both apps,
+   `z-iris.app` and `z-iris-priority.app`, to `~/Applications` (or
+   `/Applications`). Keep them side by side; z-iris priority shows the alerts
+   that stay on screen.
+2. Install sox, which plays the sounds: `brew install sox`.
+3. Create `~/.config/z-iris/config.toml` from
+   [`config.example.toml`](config.example.toml), pointing `zuliprc` at a
+   zuliprc file for your Zulip account (Zulip: Settings, Account & privacy, API
+   key, download zuliprc).
+4. Open z-iris. Allow its notifications when macOS asks, and allow z-iris
+   priority's the first time a sticky alert appears. In System Settings,
+   Notifications, z-iris priority, choose Persistent.
+5. Turn off Zulip's own desktop notifications and sounds so nothing is doubled.
+
+Clicking a notification opens a `zulip://` link, which needs a Zulip Desktop
+build with `zulip://` support (not yet in an official release).
+
+## Build from source
 
 ```sh
-brew install sox python@3.13 terminal-notifier
+brew install sox
 uv sync --python /opt/homebrew/opt/python@3.13/bin/python3.13
-scripts/claude/build_app.sh     # builds ~/Applications/z-iris.app (native banners)
-mkdir -p ~/.config/z-iris && cp config.example.toml ~/.config/z-iris/config.toml
+uv run pytest -q
+scripts/claude/build_app.sh       # development apps in ~/Applications, using this checkout
+scripts/claude/build_release.sh   # self-contained, signable apps in ./dist
 ```
 
-Edit the config to point at your zuliprc. Turn off desktop notifications and
-sounds in Zulip's own settings so nothing is doubled. Clicking a banner needs
-Zulip Desktop with `zulip://` link support.
+`build_release.sh` signs ad hoc unless `Z_IRIS_SIGN_IDENTITY` names a Developer
+ID certificate; see the script's header for notarization and the provisioning
+profiles that enable sender faces and time-sensitive alerts.
 
 ## Use
 
@@ -30,7 +59,7 @@ uv run z-iris --headless   # stream without the menubar
 uv run z-iris probe        # check the server connection and response shape
 ```
 
-## What phase 1 notifies for
+## What notifies by default
 
 - Direct messages and group DMs.
 - Personal @-mentions, wildcard mentions and your alert words.
