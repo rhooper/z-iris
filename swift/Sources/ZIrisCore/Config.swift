@@ -268,9 +268,10 @@ public func resolveAction(_ config: Config, server: String, rule: Rule?) -> Acti
     return action
 }
 
-/// Path(value).expanduser() as text: ~ expanded, empty and "." parts dropped.
-func pythonPath(_ value: String) -> String {
-    let expanded = (value as NSString).expandingTildeInPath
+/// Path(value) as text, empty and "." parts dropped; with expandUser,
+/// Path(value).expanduser().
+func pythonPath(_ value: String, expandUser: Bool = true) -> String {
+    let expanded = expandUser ? (value as NSString).expandingTildeInPath : value
     let absolute = expanded.hasPrefix("/")
     let parts = expanded.split(separator: "/").filter { $0 != "." }
     let joined = parts.joined(separator: "/")

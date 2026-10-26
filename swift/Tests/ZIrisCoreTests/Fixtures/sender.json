@@ -1,0 +1,460 @@
+[
+ {
+  "expected": {
+   "avatar": "/c/av.png",
+   "conversation": "work:dm:9",
+   "group_name": null,
+   "handle": "zulip:work:9",
+   "members": [],
+   "name": "Ada",
+   "picture": "/c/pic.png"
+  },
+  "input": {
+   "avatar": "/c/av.png",
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "x",
+    "dm_names": [
+     "Ada"
+    ],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 101,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": null
+   },
+   "picture": "/c/pic.png",
+   "title": "Ada"
+  },
+  "name": "for dm"
+ },
+ {
+  "expected": null,
+  "input": {
+   "avatar": null,
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "x",
+    "dm_names": [
+     "Ada"
+    ],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 101,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": null
+   },
+   "picture": null,
+   "title": "Ada"
+  },
+  "name": "for dm_no_avatar"
+ },
+ {
+  "expected": {
+   "avatar": "/c/av.png",
+   "conversation": "work:channel:7:deploys",
+   "group_name": null,
+   "handle": "zulip:work:9",
+   "members": [],
+   "name": "Ada (#ops > deploys)",
+   "picture": null
+  },
+  "input": {
+   "avatar": "/c/av.png",
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 101,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": "deploys"
+   },
+   "picture": null,
+   "title": "Ada (#ops > deploys)"
+  },
+  "name": "for channel"
+ },
+ {
+  "expected": null,
+  "input": {
+   "avatar": null,
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 101,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": "deploys"
+   },
+   "picture": null,
+   "title": "Ada (#ops > deploys)"
+  },
+  "name": "for channel_no_avatar"
+ },
+ {
+  "expected": {
+   "avatar": "/c/av.png",
+   "conversation": "work:dm:3,9,12",
+   "group_name": "group",
+   "handle": "zulip:work:9",
+   "members": [
+    [
+     "zulip:work:3",
+     "Bob"
+    ],
+    [
+     "zulip:work:9",
+     "Ada"
+    ],
+    [
+     "zulip:work:12",
+     "Cy"
+    ]
+   ],
+   "name": "Ada",
+   "picture": null
+  },
+  "input": {
+   "avatar": "/c/av.png",
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "x",
+    "dm_names": [
+     "Bob",
+     "Ada",
+     "Cy"
+    ],
+    "dm_user_ids": [
+     3,
+     9,
+     12
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 101,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": null
+   },
+   "picture": null,
+   "title": "Ada (group)"
+  },
+  "name": "for group"
+ },
+ {
+  "expected": {
+   "avatar": null,
+   "conversation": "work:dm:3,9",
+   "group_name": "group",
+   "handle": "zulip:work:9",
+   "members": [
+    [
+     "zulip:work:3",
+     ""
+    ],
+    [
+     "zulip:work:9",
+     ""
+    ]
+   ],
+   "name": "Ada",
+   "picture": null
+  },
+  "input": {
+   "avatar": null,
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [
+     3,
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 101,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": null
+   },
+   "picture": null,
+   "title": "Ada (group)"
+  },
+  "name": "for group_no_names"
+ },
+ {
+  "expected": {
+   "avatar": null,
+   "conversation": "work:dm:3,9,12",
+   "group_name": "group",
+   "handle": "zulip:work:9",
+   "members": [
+    [
+     "zulip:work:3",
+     "Bob"
+    ]
+   ],
+   "name": "Ada",
+   "picture": null
+  },
+  "input": {
+   "avatar": null,
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "x",
+    "dm_names": [
+     "Bob"
+    ],
+    "dm_user_ids": [
+     3,
+     9,
+     12
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 101,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": null
+   },
+   "picture": null,
+   "title": "Ada (group)"
+  },
+  "name": "for group_short_names"
+ },
+ {
+  "expected": {
+   "avatar": null,
+   "conversation": "w:dm:9",
+   "group_name": null,
+   "handle": "zulip:w:9",
+   "members": [],
+   "name": "Ada",
+   "picture": null
+  },
+  "input": {
+   "json": {
+    "conversation": "w:dm:9",
+    "handle": "zulip:w:9",
+    "name": "Ada"
+   }
+  },
+  "name": "json minimal"
+ },
+ {
+  "expected": {
+   "avatar": "/a/b/c.png",
+   "conversation": "w:dm:9",
+   "group_name": "group",
+   "handle": "zulip:w:9",
+   "members": [
+    [
+     "zulip:w:3",
+     "Bob"
+    ]
+   ],
+   "name": "Ada",
+   "picture": null
+  },
+  "input": {
+   "json": {
+    "avatar": "/a//b/./c.png",
+    "conversation": "w:dm:9",
+    "group_name": "group",
+    "handle": "zulip:w:9",
+    "members": [
+     [
+      "zulip:w:3",
+      "Bob"
+     ]
+    ],
+    "name": "Ada",
+    "picture": ""
+   }
+  },
+  "name": "json full"
+ },
+ {
+  "expected": null,
+  "input": {
+   "json": [
+    "x"
+   ]
+  },
+  "name": "json not_dict"
+ },
+ {
+  "expected": null,
+  "input": {
+   "json": {
+    "conversation": "c",
+    "handle": "h"
+   }
+  },
+  "name": "json name_missing"
+ },
+ {
+  "expected": null,
+  "input": {
+   "json": {
+    "conversation": "w:dm:9",
+    "handle": "zulip:w:9",
+    "name": 3
+   }
+  },
+  "name": "json name_number"
+ },
+ {
+  "expected": null,
+  "input": {
+   "json": {
+    "conversation": "w:dm:9",
+    "handle": "zulip:w:9",
+    "members": "x",
+    "name": "Ada"
+   }
+  },
+  "name": "json members_not_list"
+ },
+ {
+  "expected": {
+   "avatar": null,
+   "conversation": "w:dm:9",
+   "group_name": null,
+   "handle": "zulip:w:9",
+   "members": [],
+   "name": "Ada",
+   "picture": null
+  },
+  "input": {
+   "json": {
+    "conversation": "w:dm:9",
+    "handle": "zulip:w:9",
+    "members": 0,
+    "name": "Ada"
+   }
+  },
+  "name": "json members_falsy"
+ },
+ {
+  "expected": null,
+  "input": {
+   "json": {
+    "conversation": "w:dm:9",
+    "handle": "zulip:w:9",
+    "members": [
+     [
+      "a"
+     ]
+    ],
+    "name": "Ada"
+   }
+  },
+  "name": "json members_bad_pair"
+ },
+ {
+  "expected": null,
+  "input": {
+   "json": {
+    "conversation": "w:dm:9",
+    "handle": "zulip:w:9",
+    "members": [
+     [
+      "a",
+      1
+     ]
+    ],
+    "name": "Ada"
+   }
+  },
+  "name": "json members_numbers"
+ },
+ {
+  "expected": null,
+  "input": {
+   "json": {
+    "avatar": 5,
+    "conversation": "w:dm:9",
+    "handle": "zulip:w:9",
+    "name": "Ada"
+   }
+  },
+  "name": "json avatar_number"
+ },
+ {
+  "expected": null,
+  "input": {
+   "json": {
+    "conversation": "w:dm:9",
+    "group_name": 1,
+    "handle": "zulip:w:9",
+    "name": "Ada"
+   }
+  },
+  "name": "json group_number"
+ },
+ {
+  "expected": {
+   "avatar": "x/../y.png",
+   "conversation": "w:dm:9",
+   "group_name": null,
+   "handle": "zulip:w:9",
+   "members": [],
+   "name": "Ada",
+   "picture": null
+  },
+  "input": {
+   "json": {
+    "avatar": "./x/../y.png",
+    "conversation": "w:dm:9",
+    "handle": "zulip:w:9",
+    "name": "Ada"
+   }
+  },
+  "name": "json relative_avatar"
+ }
+]

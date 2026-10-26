@@ -15,12 +15,14 @@ import json
 from pathlib import Path
 
 from z_iris.config import Config, ConfigError, parse_config, resolve_action
+from z_iris.media import MessageImages
 from z_iris.message import Message, message_from_event
 from z_iris.mutes import MuteState
 from z_iris.narrow import encode_component, narrow_url
 from z_iris.plaintext import plain_text
 from z_iris.policy import decide
 from z_iris.rules import Rule, pick_rule
+from z_iris.sender import Sender, sender_for
 from z_iris.sounds import builtin_names
 
 OUT = Path(__file__).resolve().parents[2] / "swift/Tests/ZIrisCoreTests/Fixtures"
@@ -659,7 +661,58 @@ def plain_cases() -> list[dict]:
     return [run(f"plain {t[:40]!r}", {"text": t}, lambda t=t: plain_text(t)) for t in PLAIN_SAMPLES]
 
 
+def sender_cases() -> list[dict]:
+    def dm(ids=(9,), names=("Ada",)):
+        return Message("work", "h", 101, "dm", 9, "Ada", "x", frozenset(), None, None, None,
+                       tuple(ids), dm_names=tuple(names))
+    channel = Message("work", "h", 101, "channel", 9, "Ada", "x", frozenset(), 7, "ops",
+                      "deploys", ())
+    both, avatar_only, none = (MessageImages(Path("/c/av.png"), Path("/c/pic.png")),
+                               MessageImages(Path("/c/av.png"), None), MessageImages())
+    situations = {
+        "dm": (dm(), "Ada", both),
+        "dm_no_avatar": (dm(), "Ada", none),
+        "channel": (channel, "Ada (#ops > deploys)", avatar_only),
+        "channel_no_avatar": (channel, "Ada (#ops > deploys)", none),
+        "group": (dm((3, 9, 12), ("Bob", "Ada", "Cy")), "Ada (group)", avatar_only),
+        "group_no_names": (dm((3, 9), ()), "Ada (group)", none),
+        "group_short_names": (dm((3, 9, 12), ("Bob",)), "Ada (group)", none),
+    }
+    cases = []
+    for name, (message, title, images) in situations.items():
+        def build(message=message, title=title, images=images):
+            sender = sender_for(message, title, images)
+            return None if sender is None else sender.to_json()
+        cases.append(run(f"for {name}", {"message": message_dict(message), "title": title,
+                                         "avatar": str(images.avatar) if images.avatar else None,
+                                         "picture": str(images.picture) if images.picture else None},
+                         build))
+    good = {"handle": "zulip:w:9", "name": "Ada", "conversation": "w:dm:9"}
+    payloads = {
+        "minimal": good,
+        "full": {**good, "avatar": "/a//b/./c.png", "picture": "", "group_name": "group",
+                 "members": [["zulip:w:3", "Bob"]]},
+        "not_dict": ["x"],
+        "name_missing": {"handle": "h", "conversation": "c"},
+        "name_number": {**good, "name": 3},
+        "members_not_list": {**good, "members": "x"},
+        "members_falsy": {**good, "members": 0},
+        "members_bad_pair": {**good, "members": [["a"]]},
+        "members_numbers": {**good, "members": [["a", 1]]},
+        "avatar_number": {**good, "avatar": 5},
+        "group_number": {**good, "group_name": 1},
+        "relative_avatar": {**good, "avatar": "./x/../y.png"},
+    }
+    for name, payload in payloads.items():
+        def parse_json(payload=payload):
+            sender = Sender.from_json(payload)
+            return None if sender is None else sender.to_json()
+        cases.append(run(f"json {name}", {"json": payload}, parse_json))
+    return cases
+
+
 FIXTURES = {
+    "sender": sender_cases,
     "plain": plain_cases,
     "config": config_cases,
     "action": action_cases,
