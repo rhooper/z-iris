@@ -228,6 +228,14 @@ public struct Action: Sendable, Equatable {
     public var stay = 0
     /// Which rule, for per-rule state (labels can repeat).
     public var ruleIndex: Int?
+
+    public init(sound: String, volume: Int, banner: String, rule: String?, ruleIndex: Int? = nil) {
+        self.sound = sound
+        self.volume = volume
+        self.banner = banner
+        self.rule = rule
+        self.ruleIndex = ruleIndex
+    }
 }
 
 /// Combine a rule with the defaults. Volume is rule x server x master.
