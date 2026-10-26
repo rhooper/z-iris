@@ -4,9 +4,11 @@
 # with their own identifiers (ca.toybox.z-iris.spike and .spike.helper, apart
 # from the real apps). The helper asks for the Alerts style.
 # Usage: build_helper_identity.sh [--remove]
+#   SPIKE_ID (default spike) names the identifiers, for fresh permission prompts.
 set -euo pipefail
 here="$(CDPATH= cd "$(dirname "$0")" && pwd)"
 dest="$HOME/Applications/z-iris-spike.app"
+id="ca.toybox.z-iris.${SPIKE_ID:-spike}"
 
 # rm -rf below: only ever the spike bundle.
 if [ "${1:-}" = "--remove" ]; then
@@ -39,10 +41,10 @@ bundle() { # bundle <app> <id> <name> <extra plist>
 
 rm -rf "$dest"
 helper="$dest/Contents/Helpers/z-iris-spike-helper.app"
-bundle "$dest" ca.toybox.z-iris.spike "z-iris spike" ""
-bundle "$helper" ca.toybox.z-iris.spike.helper "z-iris spike helper" \
+bundle "$dest" "$id" "z-iris spike" ""
+bundle "$helper" "$id.helper" "z-iris spike helper" \
 	$'\n\t\t<key>NSUserNotificationAlertStyle</key><string>alert</string>'
-codesign --force -s - -i ca.toybox.z-iris.spike.helper "$helper"
-codesign --force -s - -i ca.toybox.z-iris.spike "$dest"
+codesign --force -s - -i "$id.helper" "$helper"
+codesign --force -s - -i "$id" "$dest"
 codesign --verify --strict "$dest"
 echo "built $dest"
