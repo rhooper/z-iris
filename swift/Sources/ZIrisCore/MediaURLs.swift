@@ -5,17 +5,17 @@ import Foundation
 // does not match (params, port 0, unencoded text), so those are ported too.
 
 /// urllib.parse.urlparse's parts.
-struct PyURL {
-    var scheme = ""
-    var netloc = ""
-    var path = ""
-    var params = ""
-    var query = ""
-    var fragment = ""
+public struct PyURL {
+    public var scheme = ""
+    public var netloc = ""
+    public var path = ""
+    public var params = ""
+    public var query = ""
+    public var fragment = ""
 
     private static let schemeCharacters = Set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+-.")
 
-    init(_ text: String, defaultScheme: String = "") {
+    public init(_ text: String, defaultScheme: String = "") {
         // urlsplit drops leading C0 controls and spaces, and every tab and newline.
         var url = String(text.unicodeScalars.drop { $0.value <= 0x20 }.filter { $0 != "\t" && $0 != "\r" && $0 != "\n" }
             .map(Character.init))
