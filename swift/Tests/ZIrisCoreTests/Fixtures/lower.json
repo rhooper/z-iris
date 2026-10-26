@@ -1,0 +1,107 @@
+[
+ {
+  "expected": "lunch",
+  "input": {
+   "text": "LUNCH"
+  },
+  "name": "lower 'LUNCH'"
+ },
+ {
+  "expected": "οδος",
+  "input": {
+   "text": "ΟΔΟΣ"
+  },
+  "name": "lower 'ΟΔΟΣ'"
+ },
+ {
+  "expected": "οδος και",
+  "input": {
+   "text": "ΟΔΟΣ ΚΑΙ"
+  },
+  "name": "lower 'ΟΔΟΣ ΚΑΙ'"
+ },
+ {
+  "expected": "σ",
+  "input": {
+   "text": "Σ"
+  },
+  "name": "lower 'Σ'"
+ },
+ {
+  "expected": "ας.",
+  "input": {
+   "text": "ΑΣ."
+  },
+  "name": "lower 'ΑΣ.'"
+ },
+ {
+  "expected": "ασ'β",
+  "input": {
+   "text": "ΑΣ'Β"
+  },
+  "name": "lower \"ΑΣ'Β\""
+ },
+ {
+  "expected": "ασα",
+  "input": {
+   "text": "ΑΣΑ"
+  },
+  "name": "lower 'ΑΣΑ'"
+ },
+ {
+  "expected": "i̇stanbul",
+  "input": {
+   "text": "İstanbul"
+  },
+  "name": "lower 'İstanbul'"
+ },
+ {
+  "expected": "ß",
+  "input": {
+   "text": "ẞ"
+  },
+  "name": "lower 'ẞ'"
+ },
+ {
+  "expected": "ǆ",
+  "input": {
+   "text": "Ǆ"
+  },
+  "name": "lower 'Ǆ'"
+ },
+ {
+  "expected": "ας́",
+  "input": {
+   "text": "ΑΣ́"
+  },
+  "name": "lower 'ΑΣ́'"
+ },
+ {
+  "expected": "ﬃ",
+  "input": {
+   "text": "ﬃ"
+  },
+  "name": "lower 'ﬃ'"
+ },
+ {
+  "expected": "ω",
+  "input": {
+   "text": "Ω"
+  },
+  "name": "lower 'Ω'"
+ },
+ {
+  "expected": "mixed café 🚀",
+  "input": {
+   "text": "MiXeD café 🚀"
+  },
+  "name": "lower 'MiXeD café 🚀'"
+ },
+ {
+  "expected": "",
+  "input": {
+   "text": ""
+  },
+  "name": "lower ''"
+ }
+]

@@ -15,7 +15,9 @@ import json
 from pathlib import Path
 
 from z_iris.message import Message, message_from_event
+from z_iris.mutes import MuteState
 from z_iris.narrow import encode_component, narrow_url
+from z_iris.policy import decide
 
 OUT = Path(__file__).resolve().parents[2] / "swift/Tests/ZIrisCoreTests/Fixtures"
 
@@ -114,9 +116,119 @@ def narrow_cases() -> list[dict]:
     return cases
 
 
+MUTE_REGISTER = {
+    "subscriptions": [
+        {"stream_id": 7, "name": "ops", "is_muted": False},
+        {"stream_id": 8, "name": "noise", "is_muted": True},
+        {"stream_id": 9, "name": "Ελληνικά"},
+    ],
+    "user_topics": [
+        {"stream_id": 7, "topic_name": "Lunch", "visibility_policy": 1},
+        {"stream_id": 8, "topic_name": "Releases", "visibility_policy": 2},
+        {"stream_id": 8, "topic_name": "followed", "visibility_policy": 3},
+    ],
+    "muted_topics": [["ops", "Legacy", 1700000000], ["gone", "x", 1], ["Ελληνικά", "ΟΔΟΣ", 2]],
+}
+
+MUTE_QUERIES = [
+    [7, "deploys"], [7, "lunch"], [7, "LUNCH"], [7, "legacy"], [8, "anything"],
+    [8, "releases"], [8, "Followed"], [9, "οδος"], [9, "οδοσ"], [9, "ΟΔΟΣ"], [9, "x"],
+    [99, "x"], [7, "İstanbul"], [7, "i̇stanbul"],
+]
+
+
+def mute_cases() -> list[dict]:
+    scenarios = {
+        "register_only": (MUTE_REGISTER, []),
+        "empty_register": ({}, []),
+        "events": (MUTE_REGISTER, [
+            {"type": "subscription", "op": "update", "stream_id": 7, "property": "is_muted",
+             "value": True},
+            {"type": "user_topic", "stream_id": 7, "topic_name": "DEPLOYS", "visibility_policy": 2},
+            {"type": "user_topic", "stream_id": 7, "topic_name": "lunch", "visibility_policy": 0},
+            {"type": "subscription", "op": "update", "stream_id": 8, "property": "is_muted",
+             "value": False},
+            {"type": "subscription", "op": "update", "stream_id": 8, "property": "color",
+             "value": "#fff"},
+            {"type": "subscription", "op": "remove", "subscriptions": [{"stream_id": 7}]},
+            {"type": "subscription", "op": "add",
+             "subscriptions": [{"stream_id": 12, "name": "new", "is_muted": True}]},
+            {"type": "message", "message": {}},
+        ]),
+        "legacy_replaced": (MUTE_REGISTER, [
+            {"type": "user_topic", "stream_id": 7, "topic_name": "legacy", "visibility_policy": 1},
+            {"type": "muted_topics", "muted_topics": [["ops", "deploys", 3]]},
+            {"type": "muted_topics", "muted_topics": []},
+            {"type": "muted_topics"},
+        ]),
+        "legacy_then_user_topic_unmute": (MUTE_REGISTER, [
+            {"type": "user_topic", "stream_id": 7, "topic_name": "Legacy", "visibility_policy": 2},
+            {"type": "muted_topics", "muted_topics": []},
+        ]),
+    }
+    cases = []
+    for name, (register, events) in scenarios.items():
+        def build(register=register, events=events):
+            state = MuteState.from_register(register)
+            answers = [[state.is_muted(c, t) for c, t in MUTE_QUERIES]]
+            for event in events:
+                state.apply(event)
+                answers.append([state.is_muted(c, t) for c, t in MUTE_QUERIES])
+            return answers
+        cases.append(run(name, {"register": register, "events": events,
+                                "queries": MUTE_QUERIES}, build))
+    cases.append(run("malformed_user_topic", {"register": {"user_topics": [{"stream_id": 1}]},
+                                              "events": [], "queries": []},
+                     lambda: MuteState.from_register({"user_topics": [{"stream_id": 1}]})))
+    return cases
+
+
+def policy_cases() -> list[dict]:
+    def msg(kind="channel", sender=9, flags=(), channel=7, topic="deploys"):
+        if kind == "dm":
+            return Message("w", "h", 1, "dm", sender, "Ada", "x", frozenset(flags), None, None,
+                           None, (sender,))
+        return Message("w", "h", 1, "channel", sender, "Ada", "x", frozenset(flags), channel,
+                       "ops", topic, ())
+    messages = {
+        "own_channel": msg(sender=5, flags=["mentioned"]),
+        "own_dm": msg("dm", sender=5),
+        "dm": msg("dm"),
+        "dm_ignores_mutes": msg("dm", flags=[]),
+        "mention": msg(flags=["mentioned"]),
+        "muted_mention": msg(channel=8, flags=["mentioned"]),
+        "muted_wildcard": msg(channel=8, flags=["wildcard_mentioned"]),
+        "muted_topic": msg(topic="LUNCH"),
+        "wildcard": msg(flags=["topic_wildcard_mentioned"]),
+        "alert_word": msg(flags=["has_alert_word"]),
+        "plain": msg(),
+        "followed_topic_in_muted_channel": msg(channel=8, topic="followed"),
+    }
+    state = MuteState.from_register(MUTE_REGISTER)
+    cases = []
+    for name, message in messages.items():
+        for enabled in (False, True):
+            def build(message=message, enabled=enabled):
+                decision = decide(message, state, 5, enabled)
+                return {"notify": decision.notify, "reason": decision.reason}
+            cases.append(run(f"{name} channel={enabled}",
+                             {"register": MUTE_REGISTER, "message": message_dict(message),
+                              "self_id": 5, "notify_channel_messages": enabled}, build))
+    return cases
+
+
+def lower_cases() -> list[dict]:
+    texts = ["LUNCH", "ΟΔΟΣ", "ΟΔΟΣ ΚΑΙ", "Σ", "ΑΣ.", "ΑΣ'Β", "ΑΣΑ", "İstanbul", "ẞ", "Ǆ",
+             "ΑΣ\u0301", "ﬃ", "Ω", "MiXeD café 🚀", ""]
+    return [run(f"lower {t!r}", {"text": t}, lambda t=t: t.lower()) for t in texts]
+
+
 FIXTURES = {
+    "lower": lower_cases,
     "message": message_cases,
     "narrow": narrow_cases,
+    "mutes": mute_cases,
+    "policy": policy_cases,
 }
 
 

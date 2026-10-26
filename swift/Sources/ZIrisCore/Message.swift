@@ -75,20 +75,20 @@ extension Message {
         case let list as [String]: flags = Set(list)
         default: throw MalformedEvent(reason: "flags")
         }
-        let id = try Self.int(raw, "id")
-        let senderID = try Self.int(raw, "sender_id")
-        let senderName = try Self.string(raw, "sender_full_name")
-        let content = try Self.string(raw, "content")
+        let id = try raw.int("id")
+        let senderID = try raw.int("sender_id")
+        let senderName = try raw.string("sender_full_name")
+        let content = try raw.string("content")
         let avatarURL = raw["avatar_url"] as? String
-        let type = try Self.string(raw, "type")
+        let type = try raw.string("type")
 
         if type == "stream" {
-            let topic = try raw["subject"] != nil ? Self.string(raw, "subject") : Self.string(raw, "topic")
+            let topic = try raw.string(raw["subject"] != nil ? "subject" : "topic")
             self.init(
                 server: server, host: host, id: id, kind: .channel, senderID: senderID,
                 senderName: senderName, content: content, flags: flags,
-                channelID: try Self.int(raw, "stream_id"),
-                channelName: try Self.string(raw, "display_recipient"),
+                channelID: try raw.int("stream_id"),
+                channelName: try raw.string("display_recipient"),
                 topic: topic, dmUserIDs: [], avatarURL: avatarURL
             )
             return
@@ -99,7 +99,7 @@ extension Message {
         }
         var names: [Int: String] = [:]
         for person in people {
-            names[try Self.int(person, "id")] = person["full_name"] as? String ?? ""
+            names[try person.int("id")] = person["full_name"] as? String ?? ""
         }
         let others = names.keys.filter { $0 != selfID }.sorted()
         let ids = others.isEmpty ? [selfID] : others
@@ -109,17 +109,5 @@ extension Message {
             channelID: nil, channelName: nil, topic: nil, dmUserIDs: ids,
             avatarURL: avatarURL, dmNames: ids.map { names[$0] ?? "" }
         )
-    }
-
-    private static func int(_ dict: [String: Any], _ key: String) throws -> Int {
-        // JSONSerialization gives NSNumber; a Bool also bridges to Int, so refuse it.
-        guard let number = dict[key] as? NSNumber, CFGetTypeID(number) != CFBooleanGetTypeID()
-        else { throw MalformedEvent(reason: key) }
-        return number.intValue
-    }
-
-    private static func string(_ dict: [String: Any], _ key: String) throws -> String {
-        guard let value = dict[key] as? String else { throw MalformedEvent(reason: key) }
-        return value
     }
 }

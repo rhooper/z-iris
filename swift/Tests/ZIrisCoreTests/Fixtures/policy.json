@@ -1,0 +1,1934 @@
+[
+ {
+  "expected": {
+   "notify": false,
+   "reason": "own message"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [
+     "mentioned"
+    ],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 5,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": "deploys"
+   },
+   "notify_channel_messages": false,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "own_channel channel=False"
+ },
+ {
+  "expected": {
+   "notify": false,
+   "reason": "own message"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [
+     "mentioned"
+    ],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 5,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": "deploys"
+   },
+   "notify_channel_messages": true,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "own_channel channel=True"
+ },
+ {
+  "expected": {
+   "notify": false,
+   "reason": "own message"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [
+     5
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "dm",
+    "sender_id": 5,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": null
+   },
+   "notify_channel_messages": false,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "own_dm channel=False"
+ },
+ {
+  "expected": {
+   "notify": false,
+   "reason": "own message"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [
+     5
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "dm",
+    "sender_id": 5,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": null
+   },
+   "notify_channel_messages": true,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "own_dm channel=True"
+ },
+ {
+  "expected": {
+   "notify": true,
+   "reason": "dm"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": null
+   },
+   "notify_channel_messages": false,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "dm channel=False"
+ },
+ {
+  "expected": {
+   "notify": true,
+   "reason": "dm"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": null
+   },
+   "notify_channel_messages": true,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "dm channel=True"
+ },
+ {
+  "expected": {
+   "notify": true,
+   "reason": "dm"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": null
+   },
+   "notify_channel_messages": false,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "dm_ignores_mutes channel=False"
+ },
+ {
+  "expected": {
+   "notify": true,
+   "reason": "dm"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": null
+   },
+   "notify_channel_messages": true,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "dm_ignores_mutes channel=True"
+ },
+ {
+  "expected": {
+   "notify": true,
+   "reason": "mention"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [
+     "mentioned"
+    ],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": "deploys"
+   },
+   "notify_channel_messages": false,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "mention channel=False"
+ },
+ {
+  "expected": {
+   "notify": true,
+   "reason": "mention"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [
+     "mentioned"
+    ],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": "deploys"
+   },
+   "notify_channel_messages": true,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "mention channel=True"
+ },
+ {
+  "expected": {
+   "notify": true,
+   "reason": "mention"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 8,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [
+     "mentioned"
+    ],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": "deploys"
+   },
+   "notify_channel_messages": false,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "muted_mention channel=False"
+ },
+ {
+  "expected": {
+   "notify": true,
+   "reason": "mention"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 8,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [
+     "mentioned"
+    ],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": "deploys"
+   },
+   "notify_channel_messages": true,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "muted_mention channel=True"
+ },
+ {
+  "expected": {
+   "notify": false,
+   "reason": "muted"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 8,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [
+     "wildcard_mentioned"
+    ],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": "deploys"
+   },
+   "notify_channel_messages": false,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "muted_wildcard channel=False"
+ },
+ {
+  "expected": {
+   "notify": false,
+   "reason": "muted"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 8,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [
+     "wildcard_mentioned"
+    ],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": "deploys"
+   },
+   "notify_channel_messages": true,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "muted_wildcard channel=True"
+ },
+ {
+  "expected": {
+   "notify": false,
+   "reason": "muted"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": "LUNCH"
+   },
+   "notify_channel_messages": false,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "muted_topic channel=False"
+ },
+ {
+  "expected": {
+   "notify": false,
+   "reason": "muted"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": "LUNCH"
+   },
+   "notify_channel_messages": true,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "muted_topic channel=True"
+ },
+ {
+  "expected": {
+   "notify": true,
+   "reason": "wildcard mention"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [
+     "topic_wildcard_mentioned"
+    ],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": "deploys"
+   },
+   "notify_channel_messages": false,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "wildcard channel=False"
+ },
+ {
+  "expected": {
+   "notify": true,
+   "reason": "wildcard mention"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [
+     "topic_wildcard_mentioned"
+    ],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": "deploys"
+   },
+   "notify_channel_messages": true,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "wildcard channel=True"
+ },
+ {
+  "expected": {
+   "notify": true,
+   "reason": "alert word"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [
+     "has_alert_word"
+    ],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": "deploys"
+   },
+   "notify_channel_messages": false,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "alert_word channel=False"
+ },
+ {
+  "expected": {
+   "notify": true,
+   "reason": "alert word"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [
+     "has_alert_word"
+    ],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": "deploys"
+   },
+   "notify_channel_messages": true,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "alert_word channel=True"
+ },
+ {
+  "expected": {
+   "notify": false,
+   "reason": "channel messages not enabled"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": "deploys"
+   },
+   "notify_channel_messages": false,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "plain channel=False"
+ },
+ {
+  "expected": {
+   "notify": true,
+   "reason": "channel"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": "deploys"
+   },
+   "notify_channel_messages": true,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "plain channel=True"
+ },
+ {
+  "expected": {
+   "notify": false,
+   "reason": "channel messages not enabled"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 8,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": "followed"
+   },
+   "notify_channel_messages": false,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "followed_topic_in_muted_channel channel=False"
+ },
+ {
+  "expected": {
+   "notify": true,
+   "reason": "channel"
+  },
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 8,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": "followed"
+   },
+   "notify_channel_messages": true,
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   },
+   "self_id": 5
+  },
+  "name": "followed_topic_in_muted_channel channel=True"
+ }
+]

@@ -1,0 +1,953 @@
+[
+ {
+  "expected": [
+   [
+    false,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    true,
+    false,
+    true,
+    false,
+    false,
+    false,
+    false
+   ]
+  ],
+  "input": {
+   "events": [],
+   "queries": [
+    [
+     7,
+     "deploys"
+    ],
+    [
+     7,
+     "lunch"
+    ],
+    [
+     7,
+     "LUNCH"
+    ],
+    [
+     7,
+     "legacy"
+    ],
+    [
+     8,
+     "anything"
+    ],
+    [
+     8,
+     "releases"
+    ],
+    [
+     8,
+     "Followed"
+    ],
+    [
+     9,
+     "οδος"
+    ],
+    [
+     9,
+     "οδοσ"
+    ],
+    [
+     9,
+     "ΟΔΟΣ"
+    ],
+    [
+     9,
+     "x"
+    ],
+    [
+     99,
+     "x"
+    ],
+    [
+     7,
+     "İstanbul"
+    ],
+    [
+     7,
+     "i̇stanbul"
+    ]
+   ],
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   }
+  },
+  "name": "register_only"
+ },
+ {
+  "expected": [
+   [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  ],
+  "input": {
+   "events": [],
+   "queries": [
+    [
+     7,
+     "deploys"
+    ],
+    [
+     7,
+     "lunch"
+    ],
+    [
+     7,
+     "LUNCH"
+    ],
+    [
+     7,
+     "legacy"
+    ],
+    [
+     8,
+     "anything"
+    ],
+    [
+     8,
+     "releases"
+    ],
+    [
+     8,
+     "Followed"
+    ],
+    [
+     9,
+     "οδος"
+    ],
+    [
+     9,
+     "οδοσ"
+    ],
+    [
+     9,
+     "ΟΔΟΣ"
+    ],
+    [
+     9,
+     "x"
+    ],
+    [
+     99,
+     "x"
+    ],
+    [
+     7,
+     "İstanbul"
+    ],
+    [
+     7,
+     "i̇stanbul"
+    ]
+   ],
+   "register": {}
+  },
+  "name": "empty_register"
+ },
+ {
+  "expected": [
+   [
+    false,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    true,
+    false,
+    true,
+    false,
+    false,
+    false,
+    false
+   ],
+   [
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    true,
+    false,
+    true,
+    false,
+    false,
+    true,
+    true
+   ],
+   [
+    false,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    true,
+    false,
+    true,
+    false,
+    false,
+    true,
+    true
+   ],
+   [
+    false,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    true,
+    false,
+    true,
+    false,
+    false,
+    true,
+    true
+   ],
+   [
+    false,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    true,
+    false,
+    true,
+    false,
+    false,
+    true,
+    true
+   ],
+   [
+    false,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    true,
+    false,
+    true,
+    false,
+    false,
+    true,
+    true
+   ],
+   [
+    false,
+    false,
+    false,
+    true,
+    false,
+    false,
+    false,
+    true,
+    false,
+    true,
+    false,
+    false,
+    false,
+    false
+   ],
+   [
+    false,
+    false,
+    false,
+    true,
+    false,
+    false,
+    false,
+    true,
+    false,
+    true,
+    false,
+    false,
+    false,
+    false
+   ],
+   [
+    false,
+    false,
+    false,
+    true,
+    false,
+    false,
+    false,
+    true,
+    false,
+    true,
+    false,
+    false,
+    false,
+    false
+   ]
+  ],
+  "input": {
+   "events": [
+    {
+     "op": "update",
+     "property": "is_muted",
+     "stream_id": 7,
+     "type": "subscription",
+     "value": true
+    },
+    {
+     "stream_id": 7,
+     "topic_name": "DEPLOYS",
+     "type": "user_topic",
+     "visibility_policy": 2
+    },
+    {
+     "stream_id": 7,
+     "topic_name": "lunch",
+     "type": "user_topic",
+     "visibility_policy": 0
+    },
+    {
+     "op": "update",
+     "property": "is_muted",
+     "stream_id": 8,
+     "type": "subscription",
+     "value": false
+    },
+    {
+     "op": "update",
+     "property": "color",
+     "stream_id": 8,
+     "type": "subscription",
+     "value": "#fff"
+    },
+    {
+     "op": "remove",
+     "subscriptions": [
+      {
+       "stream_id": 7
+      }
+     ],
+     "type": "subscription"
+    },
+    {
+     "op": "add",
+     "subscriptions": [
+      {
+       "is_muted": true,
+       "name": "new",
+       "stream_id": 12
+      }
+     ],
+     "type": "subscription"
+    },
+    {
+     "message": {},
+     "type": "message"
+    }
+   ],
+   "queries": [
+    [
+     7,
+     "deploys"
+    ],
+    [
+     7,
+     "lunch"
+    ],
+    [
+     7,
+     "LUNCH"
+    ],
+    [
+     7,
+     "legacy"
+    ],
+    [
+     8,
+     "anything"
+    ],
+    [
+     8,
+     "releases"
+    ],
+    [
+     8,
+     "Followed"
+    ],
+    [
+     9,
+     "οδος"
+    ],
+    [
+     9,
+     "οδοσ"
+    ],
+    [
+     9,
+     "ΟΔΟΣ"
+    ],
+    [
+     9,
+     "x"
+    ],
+    [
+     99,
+     "x"
+    ],
+    [
+     7,
+     "İstanbul"
+    ],
+    [
+     7,
+     "i̇stanbul"
+    ]
+   ],
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   }
+  },
+  "name": "events"
+ },
+ {
+  "expected": [
+   [
+    false,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    true,
+    false,
+    true,
+    false,
+    false,
+    false,
+    false
+   ],
+   [
+    false,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    true,
+    false,
+    true,
+    false,
+    false,
+    false,
+    false
+   ],
+   [
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   [
+    false,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   [
+    false,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  ],
+  "input": {
+   "events": [
+    {
+     "stream_id": 7,
+     "topic_name": "legacy",
+     "type": "user_topic",
+     "visibility_policy": 1
+    },
+    {
+     "muted_topics": [
+      [
+       "ops",
+       "deploys",
+       3
+      ]
+     ],
+     "type": "muted_topics"
+    },
+    {
+     "muted_topics": [],
+     "type": "muted_topics"
+    },
+    {
+     "type": "muted_topics"
+    }
+   ],
+   "queries": [
+    [
+     7,
+     "deploys"
+    ],
+    [
+     7,
+     "lunch"
+    ],
+    [
+     7,
+     "LUNCH"
+    ],
+    [
+     7,
+     "legacy"
+    ],
+    [
+     8,
+     "anything"
+    ],
+    [
+     8,
+     "releases"
+    ],
+    [
+     8,
+     "Followed"
+    ],
+    [
+     9,
+     "οδος"
+    ],
+    [
+     9,
+     "οδοσ"
+    ],
+    [
+     9,
+     "ΟΔΟΣ"
+    ],
+    [
+     9,
+     "x"
+    ],
+    [
+     99,
+     "x"
+    ],
+    [
+     7,
+     "İstanbul"
+    ],
+    [
+     7,
+     "i̇stanbul"
+    ]
+   ],
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   }
+  },
+  "name": "legacy_replaced"
+ },
+ {
+  "expected": [
+   [
+    false,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    true,
+    false,
+    true,
+    false,
+    false,
+    false,
+    false
+   ],
+   [
+    false,
+    true,
+    true,
+    false,
+    true,
+    false,
+    false,
+    true,
+    false,
+    true,
+    false,
+    false,
+    false,
+    false
+   ],
+   [
+    false,
+    true,
+    true,
+    false,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  ],
+  "input": {
+   "events": [
+    {
+     "stream_id": 7,
+     "topic_name": "Legacy",
+     "type": "user_topic",
+     "visibility_policy": 2
+    },
+    {
+     "muted_topics": [],
+     "type": "muted_topics"
+    }
+   ],
+   "queries": [
+    [
+     7,
+     "deploys"
+    ],
+    [
+     7,
+     "lunch"
+    ],
+    [
+     7,
+     "LUNCH"
+    ],
+    [
+     7,
+     "legacy"
+    ],
+    [
+     8,
+     "anything"
+    ],
+    [
+     8,
+     "releases"
+    ],
+    [
+     8,
+     "Followed"
+    ],
+    [
+     9,
+     "οδος"
+    ],
+    [
+     9,
+     "οδοσ"
+    ],
+    [
+     9,
+     "ΟΔΟΣ"
+    ],
+    [
+     9,
+     "x"
+    ],
+    [
+     99,
+     "x"
+    ],
+    [
+     7,
+     "İstanbul"
+    ],
+    [
+     7,
+     "i̇stanbul"
+    ]
+   ],
+   "register": {
+    "muted_topics": [
+     [
+      "ops",
+      "Legacy",
+      1700000000
+     ],
+     [
+      "gone",
+      "x",
+      1
+     ],
+     [
+      "Ελληνικά",
+      "ΟΔΟΣ",
+      2
+     ]
+    ],
+    "subscriptions": [
+     {
+      "is_muted": false,
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "noise",
+      "stream_id": 8
+     },
+     {
+      "name": "Ελληνικά",
+      "stream_id": 9
+     }
+    ],
+    "user_topics": [
+     {
+      "stream_id": 7,
+      "topic_name": "Lunch",
+      "visibility_policy": 1
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "Releases",
+      "visibility_policy": 2
+     },
+     {
+      "stream_id": 8,
+      "topic_name": "followed",
+      "visibility_policy": 3
+     }
+    ]
+   }
+  },
+  "name": "legacy_then_user_topic_unmute"
+ },
+ {
+  "error": "KeyError",
+  "input": {
+   "events": [],
+   "queries": [],
+   "register": {
+    "user_topics": [
+     {
+      "stream_id": 1
+     }
+    ]
+   }
+  },
+  "name": "malformed_user_topic"
+ }
+]
