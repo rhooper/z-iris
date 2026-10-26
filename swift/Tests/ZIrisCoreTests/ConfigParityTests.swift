@@ -3,7 +3,7 @@ import Testing
 @testable import ZIrisCore
 
 /// The bundled sound names at the fixed paths gen_fixtures.py uses.
-private let fixtureSounds: [String: String] = {
+let fixtureSounds: [String: String] = {
     let config = Fixture.load("config").first { $0.name == "sound_unknown" }!
     let message = config.message!
     let names = message[message.range(of: "one of ")!.upperBound...].components(separatedBy: ", ")

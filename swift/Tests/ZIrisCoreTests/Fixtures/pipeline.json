@@ -1,0 +1,358 @@
+[
+ {
+  "expected": [
+   null,
+   {
+    "action": {
+     "banner": "full",
+     "batch_window": 0,
+     "flash": "none",
+     "flash_color": "#ff3b30",
+     "flash_seconds": 0.6,
+     "min_gap": 0,
+     "repeat": 0,
+     "repeat_boost": 0,
+     "repeat_every": 30,
+     "rule": "Keyword /deploy/",
+     "rule_index": 2,
+     "sound": "/sounds/chime.wav",
+     "stay": 0,
+     "sticky": false,
+     "volume": 54
+    },
+    "id": 2,
+    "reason": "rule",
+    "url": "zulip://chat.example.com/#narrow/channel/7-ops/topic/t/with/2"
+   },
+   null,
+   {
+    "action": {
+     "banner": "full",
+     "batch_window": 0,
+     "flash": "none",
+     "flash_color": "#ff3b30",
+     "flash_seconds": 0.6,
+     "min_gap": 0,
+     "repeat": 0,
+     "repeat_boost": 0,
+     "repeat_every": 30,
+     "rule": null,
+     "rule_index": null,
+     "sound": "/sounds/chime.wav",
+     "stay": 0,
+     "sticky": false,
+     "volume": 54
+    },
+    "id": 4,
+    "reason": "mention",
+    "url": "zulip://chat.example.com/#narrow/channel/7-noise/topic/t/with/4"
+   },
+   {
+    "action": {
+     "banner": "full",
+     "batch_window": 0,
+     "flash": "none",
+     "flash_color": "#ff3b30",
+     "flash_seconds": 0.6,
+     "min_gap": 0,
+     "repeat": 0,
+     "repeat_boost": 0,
+     "repeat_every": 30,
+     "rule": "Channel #quiet-banner",
+     "rule_index": 1,
+     "sound": "/sounds/chime.wav",
+     "stay": 0,
+     "sticky": false,
+     "volume": 0
+    },
+    "id": 5,
+    "reason": "rule",
+    "url": "zulip://chat.example.com/#narrow/channel/7-quiet-banner/topic/t/with/5"
+   },
+   null,
+   null,
+   {
+    "action": {
+     "banner": "full",
+     "batch_window": 0,
+     "flash": "none",
+     "flash_color": "#ff3b30",
+     "flash_seconds": 0.6,
+     "min_gap": 0,
+     "repeat": 0,
+     "repeat_boost": 0,
+     "repeat_every": 30,
+     "rule": "Keyword /deploy/",
+     "rule_index": 2,
+     "sound": "/sounds/chime.wav",
+     "stay": 0,
+     "sticky": false,
+     "volume": 54
+    },
+    "id": 7,
+    "reason": "rule",
+    "url": "zulip://chat.example.com/#narrow/channel/8-muted/topic/t/with/7"
+   },
+   null,
+   null,
+   {
+    "action": {
+     "banner": "full",
+     "batch_window": 0,
+     "flash": "none",
+     "flash_color": "#ff3b30",
+     "flash_seconds": 0.6,
+     "min_gap": 0,
+     "repeat": 0,
+     "repeat_boost": 0,
+     "repeat_every": 30,
+     "rule": null,
+     "rule_index": null,
+     "sound": "/sounds/chime.wav",
+     "stay": 0,
+     "sticky": false,
+     "volume": 54
+    },
+    "id": 9,
+    "reason": "mention",
+    "url": "zulip://chat.example.com/#narrow/channel/7-ops/topic/t/with/9"
+   },
+   {
+    "action": {
+     "banner": "full",
+     "batch_window": 0,
+     "flash": "none",
+     "flash_color": "#ff3b30",
+     "flash_seconds": 0.6,
+     "min_gap": 0,
+     "repeat": 0,
+     "repeat_boost": 0,
+     "repeat_every": 30,
+     "rule": null,
+     "rule_index": null,
+     "sound": "/sounds/chime.wav",
+     "stay": 0,
+     "sticky": false,
+     "volume": 54
+    },
+    "id": 10,
+    "reason": "dm",
+    "url": "zulip://chat.example.com/#narrow/dm/9-pm/with/10"
+   },
+   null,
+   null,
+   null,
+   null
+  ],
+  "input": {
+   "events": [
+    {
+     "flags": [],
+     "message": {
+      "content": "hi",
+      "display_recipient": "ops",
+      "id": 1,
+      "sender_full_name": "Ada",
+      "sender_id": 9,
+      "stream_id": 7,
+      "subject": "t",
+      "type": "stream"
+     },
+     "type": "message"
+    },
+    {
+     "flags": [],
+     "message": {
+      "content": "deploy now",
+      "display_recipient": "ops",
+      "id": 2,
+      "sender_full_name": "Ada",
+      "sender_id": 9,
+      "stream_id": 7,
+      "subject": "t",
+      "type": "stream"
+     },
+     "type": "message"
+    },
+    {
+     "flags": [],
+     "message": {
+      "content": "hi",
+      "display_recipient": "noise",
+      "id": 3,
+      "sender_full_name": "Ada",
+      "sender_id": 9,
+      "stream_id": 7,
+      "subject": "t",
+      "type": "stream"
+     },
+     "type": "message"
+    },
+    {
+     "flags": [
+      "mentioned"
+     ],
+     "message": {
+      "content": "hi",
+      "display_recipient": "noise",
+      "id": 4,
+      "sender_full_name": "Ada",
+      "sender_id": 9,
+      "stream_id": 7,
+      "subject": "t",
+      "type": "stream"
+     },
+     "type": "message"
+    },
+    {
+     "flags": [],
+     "message": {
+      "content": "hi",
+      "display_recipient": "quiet-banner",
+      "id": 5,
+      "sender_full_name": "Ada",
+      "sender_id": 9,
+      "stream_id": 7,
+      "subject": "t",
+      "type": "stream"
+     },
+     "type": "message"
+    },
+    {
+     "flags": [],
+     "message": {
+      "content": "deploy",
+      "display_recipient": "muted",
+      "id": 6,
+      "sender_full_name": "Ada",
+      "sender_id": 9,
+      "stream_id": 8,
+      "subject": "t",
+      "type": "stream"
+     },
+     "type": "message"
+    },
+    {
+     "op": "update",
+     "property": "is_muted",
+     "stream_id": 8,
+     "type": "subscription",
+     "value": false
+    },
+    {
+     "flags": [],
+     "message": {
+      "content": "deploy",
+      "display_recipient": "muted",
+      "id": 7,
+      "sender_full_name": "Ada",
+      "sender_id": 9,
+      "stream_id": 8,
+      "subject": "t",
+      "type": "stream"
+     },
+     "type": "message"
+    },
+    {
+     "stream_id": 7,
+     "topic_name": "T",
+     "type": "user_topic",
+     "visibility_policy": 1
+    },
+    {
+     "flags": [],
+     "message": {
+      "content": "deploy",
+      "display_recipient": "ops",
+      "id": 8,
+      "sender_full_name": "Ada",
+      "sender_id": 9,
+      "stream_id": 7,
+      "subject": "t",
+      "type": "stream"
+     },
+     "type": "message"
+    },
+    {
+     "flags": [
+      "mentioned"
+     ],
+     "message": {
+      "content": "hi",
+      "display_recipient": "ops",
+      "id": 9,
+      "sender_full_name": "Ada",
+      "sender_id": 9,
+      "stream_id": 7,
+      "subject": "t",
+      "type": "stream"
+     },
+     "type": "message"
+    },
+    {
+     "flags": [],
+     "message": {
+      "content": "hi",
+      "display_recipient": [
+       {
+        "full_name": "Me",
+        "id": 5
+       },
+       {
+        "full_name": "Ada",
+        "id": 9
+       }
+      ],
+      "id": 10,
+      "sender_full_name": "Ada",
+      "sender_id": 9,
+      "type": "private"
+     },
+     "type": "message"
+    },
+    {
+     "flags": [],
+     "message": {
+      "content": "hi",
+      "display_recipient": "ops",
+      "id": 11,
+      "sender_full_name": "Ada",
+      "sender_id": 5,
+      "stream_id": 7,
+      "subject": "t",
+      "type": "stream"
+     },
+     "type": "message"
+    },
+    {
+     "message": {
+      "id": 12
+     },
+     "type": "message"
+    },
+    {
+     "stream_id": 7,
+     "type": "user_topic"
+    },
+    {
+     "type": "heartbeat"
+    }
+   ],
+   "register": {
+    "subscriptions": [
+     {
+      "name": "ops",
+      "stream_id": 7
+     },
+     {
+      "is_muted": true,
+      "name": "muted",
+      "stream_id": 8
+     }
+    ]
+   },
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n\n[[rule]]\nmatch = \"channel\"\nchannel = \"noise\"\nsound = \"none\"\nbanner = \"off\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = \"quiet-banner\"\nvolume = 0\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"deploy\"\n"
+  },
+  "name": "pipeline"
+ }
+]

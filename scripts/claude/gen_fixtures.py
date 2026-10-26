@@ -14,16 +14,20 @@ import dataclasses
 import json
 from pathlib import Path
 
-from z_iris.config import Config, ConfigError, parse_config, resolve_action
+from z_iris.config import Action, Config, ConfigError, parse_config, resolve_action
+from z_iris.engine import Engine
 from z_iris.media import MessageImages
 from z_iris.message import Message, message_from_event
 from z_iris.mutes import MuteState
 from z_iris.narrow import encode_component, narrow_url
+from z_iris.pipeline import Notification
 from z_iris.plaintext import plain_text
 from z_iris.policy import decide
 from z_iris.rules import Rule, pick_rule
 from z_iris.sender import Sender, sender_for
+from z_iris.settings import Settings
 from z_iris.sounds import builtin_names
+from z_iris.stream import Controls
 
 OUT = Path(__file__).resolve().parents[2] / "swift/Tests/ZIrisCoreTests/Fixtures"
 
@@ -711,7 +715,300 @@ def sender_cases() -> list[dict]:
     return cases
 
 
+class FakeClock:
+    """tests/test_engine.py's clock: due timers run in (due, sequence) order."""
+
+    def __init__(self):
+        self.now = 1000.0
+        self.timers = []
+        self.seq = 0
+
+    def __call__(self):
+        return self.now
+
+    def schedule(self, delay, fn):
+        self.seq += 1
+        timer = [self.now + delay, self.seq, fn, False]
+        self.timers.append(timer)
+
+        class Handle:
+            def cancel(self_inner):
+                timer[3] = True
+        return Handle()
+
+    def advance(self, seconds):
+        end = self.now + seconds
+        while True:
+            due = sorted((t for t in self.timers if not t[3] and t[0] <= end),
+                         key=lambda t: (t[0], t[1]))
+            if not due:
+                break
+            timer = due[0]
+            timer[3] = True
+            self.now = max(self.now, timer[0])
+            timer[2]()
+        self.now = end
+
+
+class TraceOutput:
+    def __init__(self, clock, trace):
+        self.clock, self.trace = clock, trace
+
+    def _note(self, call, n, **extra):
+        a = n.action
+        self.trace.append({"t": self.clock(), "call": call, "server": n.message.server,
+                           "id": n.message.id, "sound": unhome(a.sound), "flash": a.flash,
+                           "volume": a.volume, "summary": n.summary, **extra})
+
+    def deliver(self, n):
+        self._note("deliver", n)
+
+    def banner(self, n):
+        self._note("banner", n)
+
+    def sound(self, n, volume=None):
+        self._note("sound", n, at=volume)
+
+    def clear_read(self, server, ids):
+        self.trace.append({"t": self.clock(), "call": "clear_read", "server": server,
+                           "ids": None if ids is None else sorted(ids)})
+
+    def clear_unless_unread(self, server, unread):
+        self.trace.append({"t": self.clock(), "call": "clear_unless_unread", "server": server,
+                           "ids": sorted(unread)})
+
+
+ENGINE_CONFIG = S + '''
+[[server]]
+name = "home"
+zuliprc = "/x"
+volume = 80
+[defaults]
+master_volume = 90
+'''
+
+
+def engine_note(mid=1, kind="channel", channel_id=7, name="ops", topic="deploys", flags=(),
+                ids=(9,), server="work", **action) -> dict:
+    """A notification step: the message plus the Action fields that differ."""
+    if kind == "dm":
+        message = Message(server, "h", mid, "dm", 9, "Ada", "x", frozenset(flags), None, None,
+                          None, tuple(ids))
+    else:
+        message = Message(server, "h", mid, "channel", 9, "Ada", "x", frozenset(flags),
+                          channel_id, name, topic, ())
+    fields = {"sound": "/s/ping.wav", "volume": 60, "banner": "full", "rule": None, **action}
+    return {"op": "submit", "message": message_dict(message),
+            "action": dataclasses.asdict(Action(**fields)), "reason": "rule"}
+
+
+def read(*ids, server="work", **extra):
+    return {"op": "event", "server": server,
+            "event": {"type": "update_message_flags", "op": "add", "flag": "read",
+                      "messages": list(ids), **extra}}
+
+
+def advance(seconds):
+    return {"op": "advance", "seconds": seconds}
+
+
+ENGINE_SCENARIOS = {
+    "deliver": [engine_note(), engine_note(2, kind="dm")],
+    "min_gap": [engine_note(1, min_gap=10), advance(5), engine_note(2, min_gap=10),
+                advance(5), engine_note(3, min_gap=10), engine_note(4, topic="other", min_gap=10)],
+    "min_gap_by_rule": [engine_note(1, rule="R", rule_index=0, min_gap=30),
+                        engine_note(2, topic="t2", rule="R", rule_index=0, min_gap=30),
+                        engine_note(3, rule="Label", min_gap=30),
+                        engine_note(4, topic="t3", rule="Label", min_gap=30)],
+    "min_gap_silent_first": [engine_note(1, sound="none", min_gap=10), engine_note(2, min_gap=10)],
+    "batch_one_conversation": [engine_note(1, batch_window=10), advance(2),
+                               engine_note(2, batch_window=10), engine_note(3, batch_window=10),
+                               advance(10), engine_note(4, batch_window=10), advance(20)],
+    "batch_many_conversations": [
+        engine_note(1, rule="R", batch_window=5), engine_note(2, channel_id=8, name="dev",
+                                                              rule="R", batch_window=5),
+        engine_note(3, kind="dm", ids=(3, 9), rule="R", batch_window=5), advance(6)],
+    "batch_dm_summaries": [engine_note(1, kind="dm", batch_window=5),
+                           engine_note(2, kind="dm", batch_window=5), advance(6),
+                           engine_note(3, kind="dm", ids=(3, 9), batch_window=5),
+                           engine_note(4, kind="dm", ids=(3, 9), batch_window=5), advance(6)],
+    "batch_alone_no_summary": [engine_note(1, batch_window=5), advance(6)],
+    "batch_banner_off": [engine_note(1, banner="off", batch_window=5),
+                         engine_note(2, banner="off", batch_window=5), advance(6)],
+    "batch_read_drops_held": [engine_note(1, batch_window=5), engine_note(2, batch_window=5),
+                              read(2), advance(6)],
+    "batch_paused_at_flush": [engine_note(1, batch_window=5), engine_note(2, batch_window=5),
+                              {"op": "pause"}, advance(6), {"op": "resume"}, advance(1)],
+    "repeat": [engine_note(1, repeat=3, repeat_every=10, repeat_boost=20), advance(35)],
+    "repeat_ceiling": [engine_note(1, server="home", volume=70, repeat=4, repeat_every=5,
+                                   repeat_boost=50), advance(30)],
+    "repeat_read_stops": [engine_note(1, repeat=5, repeat_every=10), advance(15), read(1),
+                          advance(60)],
+    "repeat_read_all": [engine_note(1, repeat=5, repeat_every=10),
+                        engine_note(2, topic="t", repeat=5, repeat_every=10), advance(11),
+                        read(all=True), advance(60)],
+    "repeat_other_server_read": [engine_note(1, repeat=2, repeat_every=10), read(1, server="home"),
+                                 advance(25)],
+    "repeat_old_operation_key": [engine_note(1, repeat=2, repeat_every=10),
+                                 {"op": "event", "server": "work",
+                                  "event": {"type": "update_message_flags", "operation": "add",
+                                            "flag": "read", "messages": [1]}}, advance(25)],
+    "repeat_other_flag_ignored": [engine_note(1, repeat=2, repeat_every=10),
+                                  {"op": "event", "server": "work",
+                                   "event": {"type": "update_message_flags", "op": "add",
+                                             "flag": "starred", "messages": [1]}},
+                                  {"op": "event", "server": "work",
+                                   "event": {"type": "update_message_flags", "op": "remove",
+                                             "flag": "read", "messages": [1]}}, advance(25)],
+    "repeat_deleted": [engine_note(1, repeat=3, repeat_every=10), engine_note(2, topic="t",
+                                                                             repeat=3,
+                                                                             repeat_every=10),
+                       {"op": "event", "server": "work",
+                        "event": {"type": "delete_message", "message_id": 1}},
+                       {"op": "event", "server": "work",
+                        "event": {"type": "delete_message", "message_ids": [2, "x"]}},
+                       advance(40)],
+    "repeat_paused": [engine_note(1, repeat=3, repeat_every=10), {"op": "pause"}, advance(15),
+                      {"op": "resume"}, advance(40)],
+    "repeat_silent_never": [engine_note(1, sound="none", repeat=3, repeat_every=10),
+                            engine_note(2, topic="t", volume=0, repeat=3, repeat_every=10),
+                            advance(40)],
+    "repeat_resubmitted": [engine_note(1, repeat=2, repeat_every=10), advance(5),
+                           engine_note(1, repeat=2, repeat_every=10), advance(40)],
+    "focus_mentions_and_dms": [
+        {"op": "config", "toml": ENGINE_CONFIG + '[focus]\nmode = "mentions_and_dms"\n'},
+        engine_note(1), engine_note(2, flags=["mentioned"]), engine_note(3, kind="dm"),
+        engine_note(4, flags=["stream_wildcard_mentioned"])],
+    "focus_silent": [
+        {"op": "config", "toml": ENGINE_CONFIG + '[focus]\nmode = "silent"\n'},
+        engine_note(1, flash="screen", repeat=2, repeat_every=5), advance(20)],
+    "quiet_hours": [
+        {"op": "config", "toml": ENGINE_CONFIG + '[focus]\nquiet_hours = ["22:00-07:00"]\n'},
+        {"op": "minutes", "value": 23 * 60}, engine_note(1, repeat=1, repeat_every=5),
+        {"op": "minutes", "value": 7 * 60}, engine_note(2, topic="t"),
+        {"op": "minutes", "value": 6 * 60 + 59}, engine_note(3, topic="u", kind="dm")],
+    "quiet_hours_mentions": [
+        {"op": "config", "toml": ENGINE_CONFIG
+         + '[focus]\nquiet_hours = ["9:00-17:00"]\nquiet_mode = "mentions_and_dms"\n'},
+        {"op": "minutes", "value": 12 * 60}, engine_note(1), engine_note(2, kind="dm")],
+    "focus_turns_on_during_repeat": [
+        engine_note(1, repeat=3, repeat_every=10), advance(11),
+        {"op": "config", "toml": ENGINE_CONFIG + '[focus]\nmode = "silent"\n'}, advance(30)],
+    "paused_submit": [{"op": "pause"}, engine_note(1), {"op": "resume"}, engine_note(2)],
+    "stop": [engine_note(1, repeat=3, repeat_every=10), engine_note(2, topic="t", batch_window=5),
+             engine_note(3, topic="t", batch_window=5), {"op": "stop"}, advance(60),
+             engine_note(4)],
+    "reconcile": [engine_note(1, repeat=3, repeat_every=10),
+                  engine_note(2, topic="t", repeat=3, repeat_every=10),
+                  engine_note(3, topic="b", batch_window=10),
+                  engine_note(4, topic="b", batch_window=10),
+                  engine_note(5, topic="b", batch_window=10),
+                  {"op": "reconcile", "server": "work", "unread": [2, 5, 99]}, advance(40)],
+    "reconcile_other_server": [engine_note(1, repeat=1, repeat_every=10),
+                               {"op": "reconcile", "server": "home", "unread": []}, advance(15)],
+}
+
+
+def engine_cases() -> list[dict]:
+    cases = []
+    for name, steps in ENGINE_SCENARIOS.items():
+        def build(steps=steps):
+            clock, trace = FakeClock(), []
+            minutes = [12 * 60]
+            settings = Settings(parse(ENGINE_CONFIG))
+            controls = Controls()
+            engine = Engine(TraceOutput(clock, trace), settings, controls, clock=clock,
+                            scheduler=clock.schedule, local_minutes=lambda: minutes[0],
+                            log=lambda text: trace.append({"t": clock(), "log": text}))
+            for step in steps:
+                op = step["op"]
+                if op == "submit":
+                    message = Message(**{**step["message"],
+                                         "flags": frozenset(step["message"]["flags"]),
+                                         "dm_user_ids": tuple(step["message"]["dm_user_ids"]),
+                                         "dm_names": tuple(step["message"]["dm_names"])})
+                    engine.submit(Notification(message, narrow_url(message), step["reason"],
+                                               Action(**step["action"])))
+                elif op == "event":
+                    engine.handle_event(step["server"], step["event"])
+                elif op == "advance":
+                    clock.advance(step["seconds"])
+                elif op == "pause":
+                    controls.paused.set()
+                elif op == "resume":
+                    controls.paused.clear()
+                elif op == "reconcile":
+                    engine.reconcile_unread(step["server"], set(step["unread"]))
+                elif op == "stop":
+                    engine.stop()
+                elif op == "minutes":
+                    minutes[0] = step["value"]
+                elif op == "config":
+                    settings._config = parse(step["toml"])
+            return trace
+        cases.append(run(name, {"toml": ENGINE_CONFIG, "steps": steps}, build))
+    return cases
+
+
+def pipeline_cases() -> list[dict]:
+    toml = ENGINE_CONFIG + '''
+[[rule]]
+match = "channel"
+channel = "noise"
+sound = "none"
+banner = "off"
+
+[[rule]]
+match = "channel"
+channel = "quiet-banner"
+volume = 0
+
+[[rule]]
+match = "keyword"
+keyword = "deploy"
+'''
+    register = {"subscriptions": [{"stream_id": 7, "name": "ops"},
+                                  {"stream_id": 8, "name": "muted", "is_muted": True}]}
+
+    def event(mid, stream="ops", stream_id=7, content="hi", flags=(), sender=9, kind="stream"):
+        message = {"id": mid, "type": kind, "sender_id": sender, "sender_full_name": "Ada",
+                   "content": content}
+        if kind == "stream":
+            message.update(stream_id=stream_id, display_recipient=stream, subject="t")
+        else:
+            message["display_recipient"] = [{"id": 5, "full_name": "Me"},
+                                            {"id": sender, "full_name": "Ada"}]
+        return {"type": "message", "message": message, "flags": list(flags)}
+    events = [
+        event(1), event(2, content="deploy now"), event(3, stream="noise"),
+        event(4, stream="noise", flags=["mentioned"]), event(5, stream="quiet-banner"),
+        event(6, stream="muted", stream_id=8, content="deploy"),
+        {"type": "subscription", "op": "update", "stream_id": 8, "property": "is_muted",
+         "value": False},
+        event(7, stream="muted", stream_id=8, content="deploy"),
+        {"type": "user_topic", "stream_id": 7, "topic_name": "T", "visibility_policy": 1},
+        event(8, content="deploy"), event(9, flags=["mentioned"]), event(10, kind="private"),
+        event(11, sender=5), {"type": "message", "message": {"id": 12}},
+        {"type": "user_topic", "stream_id": 7}, {"type": "heartbeat"},
+    ]
+
+    def build():
+        from z_iris.pipeline import Pipeline
+        pipeline = Pipeline("work", "chat.example.com", 5, MuteState.from_register(register),
+                            Settings(parse(toml)))
+        out = []
+        for e in events:
+            n = pipeline.handle(e)
+            out.append(None if n is None else {
+                "id": n.message.id, "url": n.url, "reason": n.reason,
+                "action": {**dataclasses.asdict(n.action), "sound": unhome(n.action.sound)}})
+        return out
+    return [run("pipeline", {"toml": toml, "register": register, "events": events}, build)]
+
+
 FIXTURES = {
+    "engine": engine_cases,
+    "pipeline": pipeline_cases,
     "sender": sender_cases,
     "plain": plain_cases,
     "config": config_cases,

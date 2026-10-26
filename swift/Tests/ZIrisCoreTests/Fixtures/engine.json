@@ -1,0 +1,4269 @@
+[
+ {
+  "expected": [
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 2,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": null,
+      "channel_name": null,
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [
+       9
+      ],
+      "flags": [],
+      "host": "h",
+      "id": 2,
+      "kind": "dm",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": null
+     },
+     "op": "submit",
+     "reason": "rule"
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "deliver"
+ },
+ {
+  "expected": [
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "log": "work #2: min_gap 10s: banner only",
+    "t": 1005.0
+   },
+   {
+    "call": "banner",
+    "flash": "none",
+    "id": 2,
+    "server": "work",
+    "sound": "none",
+    "summary": null,
+    "t": 1005.0,
+    "volume": 60
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 3,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1010.0,
+    "volume": 60
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 4,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1010.0,
+    "volume": 60
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 10,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "advance",
+     "seconds": 5
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 10,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 2,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "advance",
+     "seconds": 5
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 10,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 3,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 10,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 4,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "other"
+     },
+     "op": "submit",
+     "reason": "rule"
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "min_gap"
+ },
+ {
+  "expected": [
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "log": "work #2: min_gap 30s: banner only",
+    "t": 1000.0
+   },
+   {
+    "call": "banner",
+    "flash": "none",
+    "id": 2,
+    "server": "work",
+    "sound": "none",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 3,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "log": "work #4: min_gap 30s: banner only",
+    "t": 1000.0
+   },
+   {
+    "call": "banner",
+    "flash": "none",
+    "id": 4,
+    "server": "work",
+    "sound": "none",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 30,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": "R",
+      "rule_index": 0,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 30,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": "R",
+      "rule_index": 0,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 2,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "t2"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 30,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": "Label",
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 3,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 30,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": "Label",
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 4,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "t3"
+     },
+     "op": "submit",
+     "reason": "rule"
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "min_gap_by_rule"
+ },
+ {
+  "expected": [
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "none",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 2,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 10,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "none",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 10,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 2,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "min_gap_silent_first"
+ },
+ {
+  "expected": [
+   {
+    "log": "work #1: batch: window 10s",
+    "t": 1000.0
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "log": "work #2: batch: held",
+    "t": 1002.0
+   },
+   {
+    "log": "work #3: batch: held",
+    "t": 1002.0
+   },
+   {
+    "log": "work #3: batch: summary '2 new in #ops'",
+    "t": 1010.0
+   },
+   {
+    "call": "banner",
+    "flash": "none",
+    "id": 3,
+    "server": "work",
+    "sound": "none",
+    "summary": "2 new in #ops",
+    "t": 1010.0,
+    "volume": 60
+   },
+   {
+    "log": "work #4: batch: window 10s",
+    "t": 1012.0
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 4,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1012.0,
+    "volume": 60
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 10,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "advance",
+     "seconds": 2
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 10,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 2,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 10,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 3,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "advance",
+     "seconds": 10
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 10,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 4,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "advance",
+     "seconds": 20
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "batch_one_conversation"
+ },
+ {
+  "expected": [
+   {
+    "log": "work #1: batch: window 5s",
+    "t": 1000.0
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "log": "work #2: batch: held",
+    "t": 1000.0
+   },
+   {
+    "log": "work #3: batch: held",
+    "t": 1000.0
+   },
+   {
+    "log": "work #3: batch: summary '2 new in 2 conversations'",
+    "t": 1005.0
+   },
+   {
+    "call": "banner",
+    "flash": "none",
+    "id": 3,
+    "server": "work",
+    "sound": "none",
+    "summary": "2 new in 2 conversations",
+    "t": 1005.0,
+    "volume": 60
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 5,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": "R",
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 5,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": "R",
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 8,
+      "channel_name": "dev",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 2,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 5,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": "R",
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": null,
+      "channel_name": null,
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [
+       3,
+       9
+      ],
+      "flags": [],
+      "host": "h",
+      "id": 3,
+      "kind": "dm",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": null
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "advance",
+     "seconds": 6
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "batch_many_conversations"
+ },
+ {
+  "expected": [
+   {
+    "log": "work #1: batch: window 5s",
+    "t": 1000.0
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "log": "work #2: batch: held",
+    "t": 1000.0
+   },
+   {
+    "log": "work #2: batch: summary '1 new from Ada'",
+    "t": 1005.0
+   },
+   {
+    "call": "banner",
+    "flash": "none",
+    "id": 2,
+    "server": "work",
+    "sound": "none",
+    "summary": "1 new from Ada",
+    "t": 1005.0,
+    "volume": 60
+   },
+   {
+    "log": "work #3: batch: window 5s",
+    "t": 1006.0
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 3,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1006.0,
+    "volume": 60
+   },
+   {
+    "log": "work #4: batch: held",
+    "t": 1006.0
+   },
+   {
+    "log": "work #4: batch: summary '1 new in a group chat'",
+    "t": 1011.0
+   },
+   {
+    "call": "banner",
+    "flash": "none",
+    "id": 4,
+    "server": "work",
+    "sound": "none",
+    "summary": "1 new in a group chat",
+    "t": 1011.0,
+    "volume": 60
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 5,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": null,
+      "channel_name": null,
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [
+       9
+      ],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "dm",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": null
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 5,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": null,
+      "channel_name": null,
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [
+       9
+      ],
+      "flags": [],
+      "host": "h",
+      "id": 2,
+      "kind": "dm",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": null
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "advance",
+     "seconds": 6
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 5,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": null,
+      "channel_name": null,
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [
+       3,
+       9
+      ],
+      "flags": [],
+      "host": "h",
+      "id": 3,
+      "kind": "dm",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": null
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 5,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": null,
+      "channel_name": null,
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [
+       3,
+       9
+      ],
+      "flags": [],
+      "host": "h",
+      "id": 4,
+      "kind": "dm",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": null
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "advance",
+     "seconds": 6
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "batch_dm_summaries"
+ },
+ {
+  "expected": [
+   {
+    "log": "work #1: batch: window 5s",
+    "t": 1000.0
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 5,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "advance",
+     "seconds": 6
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "batch_alone_no_summary"
+ },
+ {
+  "expected": [
+   {
+    "log": "work #1: batch: window 5s",
+    "t": 1000.0
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "log": "work #2: batch: held",
+    "t": 1000.0
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "off",
+      "batch_window": 5,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "off",
+      "batch_window": 5,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 2,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "advance",
+     "seconds": 6
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "batch_banner_off"
+ },
+ {
+  "expected": [
+   {
+    "log": "work #1: batch: window 5s",
+    "t": 1000.0
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "log": "work #2: batch: held",
+    "t": 1000.0
+   },
+   {
+    "call": "clear_read",
+    "ids": [
+     2
+    ],
+    "server": "work",
+    "t": 1000.0
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 5,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 5,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 2,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "event": {
+      "flag": "read",
+      "messages": [
+       2
+      ],
+      "op": "add",
+      "type": "update_message_flags"
+     },
+     "op": "event",
+     "server": "work"
+    },
+    {
+     "op": "advance",
+     "seconds": 6
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "batch_read_drops_held"
+ },
+ {
+  "expected": [
+   {
+    "log": "work #1: batch: window 5s",
+    "t": 1000.0
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "log": "work #2: batch: held",
+    "t": 1000.0
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 5,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 5,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 2,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "pause"
+    },
+    {
+     "op": "advance",
+     "seconds": 6
+    },
+    {
+     "op": "resume"
+    },
+    {
+     "op": "advance",
+     "seconds": 1
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "batch_paused_at_flush"
+ },
+ {
+  "expected": [
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "log": "work #1: repeat 1/3 at 78%",
+    "t": 1010.0
+   },
+   {
+    "at": 78,
+    "call": "sound",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1010.0,
+    "volume": 60
+   },
+   {
+    "log": "work #1: repeat 2/3 at 90%",
+    "t": 1020.0
+   },
+   {
+    "at": 90,
+    "call": "sound",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1020.0,
+    "volume": 60
+   },
+   {
+    "log": "work #1: repeat 3/3 at 90%",
+    "t": 1030.0
+   },
+   {
+    "at": 90,
+    "call": "sound",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1030.0,
+    "volume": 60
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 3,
+      "repeat_boost": 20,
+      "repeat_every": 10,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "advance",
+     "seconds": 35
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "repeat"
+ },
+ {
+  "expected": [
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "home",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 70
+   },
+   {
+    "log": "home #1: repeat 1/4 at 72%",
+    "t": 1005.0
+   },
+   {
+    "at": 72,
+    "call": "sound",
+    "flash": "none",
+    "id": 1,
+    "server": "home",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1005.0,
+    "volume": 70
+   },
+   {
+    "log": "home #1: repeat 2/4 at 72%",
+    "t": 1010.0
+   },
+   {
+    "at": 72,
+    "call": "sound",
+    "flash": "none",
+    "id": 1,
+    "server": "home",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1010.0,
+    "volume": 70
+   },
+   {
+    "log": "home #1: repeat 3/4 at 72%",
+    "t": 1015.0
+   },
+   {
+    "at": 72,
+    "call": "sound",
+    "flash": "none",
+    "id": 1,
+    "server": "home",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1015.0,
+    "volume": 70
+   },
+   {
+    "log": "home #1: repeat 4/4 at 72%",
+    "t": 1020.0
+   },
+   {
+    "at": 72,
+    "call": "sound",
+    "flash": "none",
+    "id": 1,
+    "server": "home",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1020.0,
+    "volume": 70
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 4,
+      "repeat_boost": 50,
+      "repeat_every": 5,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 70
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "home",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "advance",
+     "seconds": 30
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "repeat_ceiling"
+ },
+ {
+  "expected": [
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "log": "work #1: repeat 1/5 at 60%",
+    "t": 1010.0
+   },
+   {
+    "at": 60,
+    "call": "sound",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1010.0,
+    "volume": 60
+   },
+   {
+    "call": "clear_read",
+    "ids": [
+     1
+    ],
+    "server": "work",
+    "t": 1015.0
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 5,
+      "repeat_boost": 0,
+      "repeat_every": 10,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "advance",
+     "seconds": 15
+    },
+    {
+     "event": {
+      "flag": "read",
+      "messages": [
+       1
+      ],
+      "op": "add",
+      "type": "update_message_flags"
+     },
+     "op": "event",
+     "server": "work"
+    },
+    {
+     "op": "advance",
+     "seconds": 60
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "repeat_read_stops"
+ },
+ {
+  "expected": [
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 2,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "log": "work #1: repeat 1/5 at 60%",
+    "t": 1010.0
+   },
+   {
+    "at": 60,
+    "call": "sound",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1010.0,
+    "volume": 60
+   },
+   {
+    "log": "work #2: repeat 1/5 at 60%",
+    "t": 1010.0
+   },
+   {
+    "at": 60,
+    "call": "sound",
+    "flash": "none",
+    "id": 2,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1010.0,
+    "volume": 60
+   },
+   {
+    "call": "clear_read",
+    "ids": null,
+    "server": "work",
+    "t": 1011.0
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 5,
+      "repeat_boost": 0,
+      "repeat_every": 10,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 5,
+      "repeat_boost": 0,
+      "repeat_every": 10,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 2,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "t"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "advance",
+     "seconds": 11
+    },
+    {
+     "event": {
+      "all": true,
+      "flag": "read",
+      "messages": [],
+      "op": "add",
+      "type": "update_message_flags"
+     },
+     "op": "event",
+     "server": "work"
+    },
+    {
+     "op": "advance",
+     "seconds": 60
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "repeat_read_all"
+ },
+ {
+  "expected": [
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "call": "clear_read",
+    "ids": [
+     1
+    ],
+    "server": "home",
+    "t": 1000.0
+   },
+   {
+    "log": "work #1: repeat 1/2 at 60%",
+    "t": 1010.0
+   },
+   {
+    "at": 60,
+    "call": "sound",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1010.0,
+    "volume": 60
+   },
+   {
+    "log": "work #1: repeat 2/2 at 60%",
+    "t": 1020.0
+   },
+   {
+    "at": 60,
+    "call": "sound",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1020.0,
+    "volume": 60
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 2,
+      "repeat_boost": 0,
+      "repeat_every": 10,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "event": {
+      "flag": "read",
+      "messages": [
+       1
+      ],
+      "op": "add",
+      "type": "update_message_flags"
+     },
+     "op": "event",
+     "server": "home"
+    },
+    {
+     "op": "advance",
+     "seconds": 25
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "repeat_other_server_read"
+ },
+ {
+  "expected": [
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "call": "clear_read",
+    "ids": [
+     1
+    ],
+    "server": "work",
+    "t": 1000.0
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 2,
+      "repeat_boost": 0,
+      "repeat_every": 10,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "event": {
+      "flag": "read",
+      "messages": [
+       1
+      ],
+      "operation": "add",
+      "type": "update_message_flags"
+     },
+     "op": "event",
+     "server": "work"
+    },
+    {
+     "op": "advance",
+     "seconds": 25
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "repeat_old_operation_key"
+ },
+ {
+  "expected": [
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "log": "work #1: repeat 1/2 at 60%",
+    "t": 1010.0
+   },
+   {
+    "at": 60,
+    "call": "sound",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1010.0,
+    "volume": 60
+   },
+   {
+    "log": "work #1: repeat 2/2 at 60%",
+    "t": 1020.0
+   },
+   {
+    "at": 60,
+    "call": "sound",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1020.0,
+    "volume": 60
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 2,
+      "repeat_boost": 0,
+      "repeat_every": 10,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "event": {
+      "flag": "starred",
+      "messages": [
+       1
+      ],
+      "op": "add",
+      "type": "update_message_flags"
+     },
+     "op": "event",
+     "server": "work"
+    },
+    {
+     "event": {
+      "flag": "read",
+      "messages": [
+       1
+      ],
+      "op": "remove",
+      "type": "update_message_flags"
+     },
+     "op": "event",
+     "server": "work"
+    },
+    {
+     "op": "advance",
+     "seconds": 25
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "repeat_other_flag_ignored"
+ },
+ {
+  "expected": [
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 2,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "call": "clear_read",
+    "ids": [
+     1
+    ],
+    "server": "work",
+    "t": 1000.0
+   },
+   {
+    "call": "clear_read",
+    "ids": [
+     2
+    ],
+    "server": "work",
+    "t": 1000.0
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 3,
+      "repeat_boost": 0,
+      "repeat_every": 10,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 3,
+      "repeat_boost": 0,
+      "repeat_every": 10,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 2,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "t"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "event": {
+      "message_id": 1,
+      "type": "delete_message"
+     },
+     "op": "event",
+     "server": "work"
+    },
+    {
+     "event": {
+      "message_ids": [
+       2,
+       "x"
+      ],
+      "type": "delete_message"
+     },
+     "op": "event",
+     "server": "work"
+    },
+    {
+     "op": "advance",
+     "seconds": 40
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "repeat_deleted"
+ },
+ {
+  "expected": [
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "log": "work #1: repeat: stopped",
+    "t": 1010.0
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 3,
+      "repeat_boost": 0,
+      "repeat_every": 10,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "pause"
+    },
+    {
+     "op": "advance",
+     "seconds": 15
+    },
+    {
+     "op": "resume"
+    },
+    {
+     "op": "advance",
+     "seconds": 40
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "repeat_paused"
+ },
+ {
+  "expected": [
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "none",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 2,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 0
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 3,
+      "repeat_boost": 0,
+      "repeat_every": 10,
+      "rule": null,
+      "rule_index": null,
+      "sound": "none",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 3,
+      "repeat_boost": 0,
+      "repeat_every": 10,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 0
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 2,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "t"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "advance",
+     "seconds": 40
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "repeat_silent_never"
+ },
+ {
+  "expected": [
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1005.0,
+    "volume": 60
+   },
+   {
+    "log": "work #1: repeat 1/2 at 60%",
+    "t": 1015.0
+   },
+   {
+    "at": 60,
+    "call": "sound",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1015.0,
+    "volume": 60
+   },
+   {
+    "log": "work #1: repeat 2/2 at 60%",
+    "t": 1025.0
+   },
+   {
+    "at": 60,
+    "call": "sound",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1025.0,
+    "volume": 60
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 2,
+      "repeat_boost": 0,
+      "repeat_every": 10,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "advance",
+     "seconds": 5
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 2,
+      "repeat_boost": 0,
+      "repeat_every": 10,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "advance",
+     "seconds": 40
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "repeat_resubmitted"
+ },
+ {
+  "expected": [
+   {
+    "log": "work #1: focus: dropped",
+    "t": 1000.0
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 2,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 3,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 4,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "op": "config",
+     "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n[focus]\nmode = \"mentions_and_dms\"\n"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [
+       "mentioned"
+      ],
+      "host": "h",
+      "id": 2,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": null,
+      "channel_name": null,
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [
+       9
+      ],
+      "flags": [],
+      "host": "h",
+      "id": 3,
+      "kind": "dm",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": null
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [
+       "stream_wildcard_mentioned"
+      ],
+      "host": "h",
+      "id": 4,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "focus_mentions_and_dms"
+ },
+ {
+  "expected": [
+   {
+    "log": "work #1: focus silent: banner only",
+    "t": 1000.0
+   },
+   {
+    "call": "banner",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "none",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "op": "config",
+     "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n[focus]\nmode = \"silent\"\n"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "screen",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 2,
+      "repeat_boost": 0,
+      "repeat_every": 5,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "advance",
+     "seconds": 20
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "focus_silent"
+ },
+ {
+  "expected": [
+   {
+    "log": "work #1: focus silent: banner only",
+    "t": 1000.0
+   },
+   {
+    "call": "banner",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "none",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 2,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "log": "work #3: focus silent: banner only",
+    "t": 1000.0
+   },
+   {
+    "call": "banner",
+    "flash": "none",
+    "id": 3,
+    "server": "work",
+    "sound": "none",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "op": "config",
+     "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n[focus]\nquiet_hours = [\"22:00-07:00\"]\n"
+    },
+    {
+     "op": "minutes",
+     "value": 1380
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 1,
+      "repeat_boost": 0,
+      "repeat_every": 5,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "minutes",
+     "value": 420
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 2,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "t"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "minutes",
+     "value": 419
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": null,
+      "channel_name": null,
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [
+       9
+      ],
+      "flags": [],
+      "host": "h",
+      "id": 3,
+      "kind": "dm",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": null
+     },
+     "op": "submit",
+     "reason": "rule"
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "quiet_hours"
+ },
+ {
+  "expected": [
+   {
+    "log": "work #1: focus: dropped",
+    "t": 1000.0
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 2,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "op": "config",
+     "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n[focus]\nquiet_hours = [\"9:00-17:00\"]\nquiet_mode = \"mentions_and_dms\"\n"
+    },
+    {
+     "op": "minutes",
+     "value": 720
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": null,
+      "channel_name": null,
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [
+       9
+      ],
+      "flags": [],
+      "host": "h",
+      "id": 2,
+      "kind": "dm",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": null
+     },
+     "op": "submit",
+     "reason": "rule"
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "quiet_hours_mentions"
+ },
+ {
+  "expected": [
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "log": "work #1: repeat 1/3 at 60%",
+    "t": 1010.0
+   },
+   {
+    "at": 60,
+    "call": "sound",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1010.0,
+    "volume": 60
+   },
+   {
+    "log": "work #1: repeat: stopped",
+    "t": 1020.0
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 3,
+      "repeat_boost": 0,
+      "repeat_every": 10,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "advance",
+     "seconds": 11
+    },
+    {
+     "op": "config",
+     "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n[focus]\nmode = \"silent\"\n"
+    },
+    {
+     "op": "advance",
+     "seconds": 30
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "focus_turns_on_during_repeat"
+ },
+ {
+  "expected": [
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 2,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "op": "pause"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "resume"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 2,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "paused_submit"
+ },
+ {
+  "expected": [
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "log": "work #2: batch: window 5s",
+    "t": 1000.0
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 2,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "log": "work #3: batch: held",
+    "t": 1000.0
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 3,
+      "repeat_boost": 0,
+      "repeat_every": 10,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 5,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 2,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "t"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 5,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 3,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "t"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "stop"
+    },
+    {
+     "op": "advance",
+     "seconds": 60
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 4,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "stop"
+ },
+ {
+  "expected": [
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 2,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "log": "work #3: batch: window 10s",
+    "t": 1000.0
+   },
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 3,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "log": "work #4: batch: held",
+    "t": 1000.0
+   },
+   {
+    "log": "work #5: batch: held",
+    "t": 1000.0
+   },
+   {
+    "call": "clear_unless_unread",
+    "ids": [
+     2,
+     5,
+     99
+    ],
+    "server": "work",
+    "t": 1000.0
+   },
+   {
+    "log": "work #2: repeat 1/3 at 60%",
+    "t": 1010.0
+   },
+   {
+    "at": 60,
+    "call": "sound",
+    "flash": "none",
+    "id": 2,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1010.0,
+    "volume": 60
+   },
+   {
+    "log": "work #5: batch: summary '1 new in #ops'",
+    "t": 1010.0
+   },
+   {
+    "call": "banner",
+    "flash": "none",
+    "id": 5,
+    "server": "work",
+    "sound": "none",
+    "summary": "1 new in #ops",
+    "t": 1010.0,
+    "volume": 60
+   },
+   {
+    "log": "work #2: repeat 2/3 at 60%",
+    "t": 1020.0
+   },
+   {
+    "at": 60,
+    "call": "sound",
+    "flash": "none",
+    "id": 2,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1020.0,
+    "volume": 60
+   },
+   {
+    "log": "work #2: repeat 3/3 at 60%",
+    "t": 1030.0
+   },
+   {
+    "at": 60,
+    "call": "sound",
+    "flash": "none",
+    "id": 2,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1030.0,
+    "volume": 60
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 3,
+      "repeat_boost": 0,
+      "repeat_every": 10,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 3,
+      "repeat_boost": 0,
+      "repeat_every": 10,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 2,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "t"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 10,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 3,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "b"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 10,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 4,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "b"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 10,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 0,
+      "repeat_boost": 0,
+      "repeat_every": 30,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 5,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "b"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "reconcile",
+     "server": "work",
+     "unread": [
+      2,
+      5,
+      99
+     ]
+    },
+    {
+     "op": "advance",
+     "seconds": 40
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "reconcile"
+ },
+ {
+  "expected": [
+   {
+    "call": "deliver",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1000.0,
+    "volume": 60
+   },
+   {
+    "call": "clear_unless_unread",
+    "ids": [],
+    "server": "home",
+    "t": 1000.0
+   },
+   {
+    "log": "work #1: repeat 1/1 at 60%",
+    "t": 1010.0
+   },
+   {
+    "at": 60,
+    "call": "sound",
+    "flash": "none",
+    "id": 1,
+    "server": "work",
+    "sound": "/s/ping.wav",
+    "summary": null,
+    "t": 1010.0,
+    "volume": 60
+   }
+  ],
+  "input": {
+   "steps": [
+    {
+     "action": {
+      "banner": "full",
+      "batch_window": 0,
+      "flash": "none",
+      "flash_color": "#ff3b30",
+      "flash_seconds": 0.6,
+      "min_gap": 0,
+      "repeat": 1,
+      "repeat_boost": 0,
+      "repeat_every": 10,
+      "rule": null,
+      "rule_index": null,
+      "sound": "/s/ping.wav",
+      "stay": 0,
+      "sticky": false,
+      "volume": 60
+     },
+     "message": {
+      "avatar_url": null,
+      "channel_id": 7,
+      "channel_name": "ops",
+      "content": "x",
+      "dm_names": [],
+      "dm_user_ids": [],
+      "flags": [],
+      "host": "h",
+      "id": 1,
+      "kind": "channel",
+      "sender_id": 9,
+      "sender_name": "Ada",
+      "server": "work",
+      "topic": "deploys"
+     },
+     "op": "submit",
+     "reason": "rule"
+    },
+    {
+     "op": "reconcile",
+     "server": "home",
+     "unread": []
+    },
+    {
+     "op": "advance",
+     "seconds": 15
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n"
+  },
+  "name": "reconcile_other_server"
+ }
+]
