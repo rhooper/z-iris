@@ -7,7 +7,7 @@ let package = Package(
     products: [
         .library(name: "ZIrisCore", targets: ["ZIrisCore"]),
         .library(name: "ZulipKit", targets: ["ZulipKit"]),
-        .executable(name: "z-iris-cli", targets: ["ZIrisCLI"]),
+        .executable(name: "z-iris", targets: ["ZIrisApp"]),
     ],
     dependencies: [
         .package(url: "https://github.com/dduan/TOMLDecoder.git", exact: "0.4.5"),
@@ -20,7 +20,7 @@ let package = Package(
         ),
         .target(name: "ZulipKit", dependencies: ["ZIrisCore"]),
         .target(name: "ZIrisMac", dependencies: ["ZIrisCore", "ZulipKit"]),
-        .executableTarget(name: "ZIrisCLI", dependencies: ["ZIrisCore", "ZulipKit", "ZIrisMac"]),
+        .executableTarget(name: "ZIrisApp", dependencies: ["ZIrisCore", "ZulipKit", "ZIrisMac"]),
         .testTarget(name: "ZIrisMacTests", dependencies: ["ZIrisMac", "ZIrisCore"]),
         .testTarget(
             name: "ZulipKitTests",
