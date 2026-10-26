@@ -7,6 +7,7 @@ let package = Package(
     products: [
         .library(name: "ZIrisCore", targets: ["ZIrisCore"]),
         .library(name: "ZulipKit", targets: ["ZulipKit"]),
+        .executable(name: "z-iris-cli", targets: ["ZIrisCLI"]),
     ],
     dependencies: [
         .package(url: "https://github.com/dduan/TOMLDecoder.git", exact: "0.4.5"),
@@ -18,6 +19,7 @@ let package = Package(
             resources: [.copy("Resources/emoji.json")]
         ),
         .target(name: "ZulipKit", dependencies: ["ZIrisCore"]),
+        .executableTarget(name: "ZIrisCLI", dependencies: ["ZIrisCore", "ZulipKit"]),
         .testTarget(
             name: "ZulipKitTests",
             dependencies: ["ZulipKit", "ZIrisCore"]

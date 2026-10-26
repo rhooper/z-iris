@@ -297,7 +297,7 @@ private func sound(_ value: Any?, _ label: String, _ sounds: [String: String]) t
 }
 
 /// Python sorts strings by code point; Swift's < compares grapheme clusters.
-func pythonOrder(_ a: String, _ b: String) -> Bool {
+public func pythonOrder(_ a: String, _ b: String) -> Bool {
     a.unicodeScalars.lexicographicallyPrecedes(b.unicodeScalars)
 }
 
