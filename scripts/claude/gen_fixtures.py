@@ -12,7 +12,13 @@ from __future__ import annotations
 
 import dataclasses
 import json
+import sys
 from pathlib import Path
+
+# The app runs on 3.13, and re's behaviour moves between versions (3.14
+# changed \B on ""): fixtures from another Python describe another program.
+if sys.version_info[:2] != (3, 13):
+    sys.exit("gen_fixtures.py needs Python 3.13: uv sync --python /opt/homebrew/opt/python@3.13/bin/python3.13")
 
 from z_iris.config import Action, Config, ConfigError, parse_config, resolve_action
 from z_iris.engine import Engine
@@ -1250,7 +1256,58 @@ def media_cases() -> list[dict]:
     return cases
 
 
+def banner_cases() -> list[dict]:
+    from z_iris.output import DryRunOutput, banner_body, banner_group, notification_title, plain_body
+    import contextlib
+    import io
+
+    def channel(content, name="ops", topic="deploys :tada:", sender="Ada :smile:"):
+        return Message("work", "h", 7, "channel", 9, sender, content, frozenset(), 3, name, topic, ())
+
+    def dm(content, ids=(9,)):
+        return Message("home", "h", 8, "dm", 9, "Bob", content, frozenset(), None, None, None, ids)
+    messages = {
+        "channel": channel("**hi** there"),
+        "dm": dm("a :+1: b"),
+        "group": dm("yo", (3, 9)),
+        "empty": dm("   "),
+        "markup_only": dm("``` ```"),
+        "long": dm("word " * 80),
+        "long_unicode": dm("é" * 250),
+        "risky_dash": dm("- list item"),
+        "risky_quote": dm('"quoted"'),
+        "risky_after_strip": channel("  [link](u) rest"),
+    }
+    actions = {
+        "plain": {},
+        "title": {"banner": "title", "rule": "R", "flash": "screen"},
+        "off_silent": {"banner": "off", "sound": "none"},
+        "sticky": {"sticky": True, "volume": 0},
+        "stay": {"stay": 30, "rule": ""},
+    }
+    cases = []
+    for message_name, message in messages.items():
+        for action_name, extra in actions.items():
+            for summary in (None, "3 new in #ops :fire:"):
+                fields = {"sound": "/s/ping.wav", "volume": 55, "banner": "full", "rule": None, **extra}
+                note = Notification(message, narrow_url(message), "mention", Action(**fields), summary)
+
+                def build(note=note):
+                    printed = io.StringIO()
+                    with contextlib.redirect_stdout(printed):
+                        DryRunOutput(Settings(parse(S))).deliver(note)
+                    return {"title": notification_title(note), "plain_body": plain_body(note.message),
+                            "banner_body_80": banner_body(note.message, 80),
+                            "group": banner_group(note.message), "dry_run": printed.getvalue()}
+                cases.append(run(f"{message_name} {action_name} {bool(summary)}",
+                                 {"message": message_dict(message), "url": note.url,
+                                  "reason": note.reason, "action": dataclasses.asdict(note.action),
+                                  "summary": summary}, build))
+    return cases
+
+
 FIXTURES = {
+    "banner": banner_cases,
     "media": media_cases,
     "preview": preview_cases,
     "editing": editing_cases,

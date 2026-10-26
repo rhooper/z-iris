@@ -1,0 +1,4972 @@
+[
+ {
+  "expected": {
+   "banner_body_80": "hi there",
+   "dry_run": "[dry-run] work (mention): Ada 🙂 (#ops > deploys 🎉)\n          hi there\n          open zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7\n          rule default, banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-work-7",
+   "plain_body": "hi there",
+   "title": "Ada 🙂 (#ops > deploys 🎉)"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": 3,
+    "channel_name": "ops",
+    "content": "**hi** there",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 7,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada :smile:",
+    "server": "work",
+    "topic": "deploys :tada:"
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7"
+  },
+  "name": "channel plain False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "hi there",
+   "dry_run": "[dry-run] work (mention): 3 new in #ops 🔥\n          hi there\n          open zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7\n          rule default, banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-work-7",
+   "plain_body": "hi there",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": 3,
+    "channel_name": "ops",
+    "content": "**hi** there",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 7,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada :smile:",
+    "server": "work",
+    "topic": "deploys :tada:"
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7"
+  },
+  "name": "channel plain True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "hi there",
+   "dry_run": "[dry-run] work (mention): Ada 🙂 (#ops > deploys 🎉)\n          hi there\n          open zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7\n          rule R, banner title, sound play -q /s/ping.wav vol 0.55, flash screen\n",
+   "group": "z-iris-work-7",
+   "plain_body": "hi there",
+   "title": "Ada 🙂 (#ops > deploys 🎉)"
+  },
+  "input": {
+   "action": {
+    "banner": "title",
+    "batch_window": 0,
+    "flash": "screen",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "R",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": 3,
+    "channel_name": "ops",
+    "content": "**hi** there",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 7,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada :smile:",
+    "server": "work",
+    "topic": "deploys :tada:"
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7"
+  },
+  "name": "channel title False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "hi there",
+   "dry_run": "[dry-run] work (mention): 3 new in #ops 🔥\n          hi there\n          open zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7\n          rule R, banner title, sound play -q /s/ping.wav vol 0.55, flash screen\n",
+   "group": "z-iris-work-7",
+   "plain_body": "hi there",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "title",
+    "batch_window": 0,
+    "flash": "screen",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "R",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": 3,
+    "channel_name": "ops",
+    "content": "**hi** there",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 7,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada :smile:",
+    "server": "work",
+    "topic": "deploys :tada:"
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7"
+  },
+  "name": "channel title True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "hi there",
+   "dry_run": "[dry-run] work (mention): Ada 🙂 (#ops > deploys 🎉)\n          hi there\n          open zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7\n          rule default, no banner, sound silent\n",
+   "group": "z-iris-work-7",
+   "plain_body": "hi there",
+   "title": "Ada 🙂 (#ops > deploys 🎉)"
+  },
+  "input": {
+   "action": {
+    "banner": "off",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "none",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": 3,
+    "channel_name": "ops",
+    "content": "**hi** there",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 7,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada :smile:",
+    "server": "work",
+    "topic": "deploys :tada:"
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7"
+  },
+  "name": "channel off_silent False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "hi there",
+   "dry_run": "[dry-run] work (mention): 3 new in #ops 🔥\n          hi there\n          open zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7\n          rule default, no banner, sound silent\n",
+   "group": "z-iris-work-7",
+   "plain_body": "hi there",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "off",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "none",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": 3,
+    "channel_name": "ops",
+    "content": "**hi** there",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 7,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada :smile:",
+    "server": "work",
+    "topic": "deploys :tada:"
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7"
+  },
+  "name": "channel off_silent True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "hi there",
+   "dry_run": "[dry-run] work (mention): Ada 🙂 (#ops > deploys 🎉)\n          hi there\n          open zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7\n          rule default, sticky banner full, sound silent\n",
+   "group": "z-iris-work-7",
+   "plain_body": "hi there",
+   "title": "Ada 🙂 (#ops > deploys 🎉)"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": true,
+    "volume": 0
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": 3,
+    "channel_name": "ops",
+    "content": "**hi** there",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 7,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada :smile:",
+    "server": "work",
+    "topic": "deploys :tada:"
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7"
+  },
+  "name": "channel sticky False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "hi there",
+   "dry_run": "[dry-run] work (mention): 3 new in #ops 🔥\n          hi there\n          open zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7\n          rule default, sticky banner full, sound silent\n",
+   "group": "z-iris-work-7",
+   "plain_body": "hi there",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": true,
+    "volume": 0
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": 3,
+    "channel_name": "ops",
+    "content": "**hi** there",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 7,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada :smile:",
+    "server": "work",
+    "topic": "deploys :tada:"
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7"
+  },
+  "name": "channel sticky True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "hi there",
+   "dry_run": "[dry-run] work (mention): Ada 🙂 (#ops > deploys 🎉)\n          hi there\n          open zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7\n          rule default, stays 30s banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-work-7",
+   "plain_body": "hi there",
+   "title": "Ada 🙂 (#ops > deploys 🎉)"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 30,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": 3,
+    "channel_name": "ops",
+    "content": "**hi** there",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 7,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada :smile:",
+    "server": "work",
+    "topic": "deploys :tada:"
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7"
+  },
+  "name": "channel stay False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "hi there",
+   "dry_run": "[dry-run] work (mention): 3 new in #ops 🔥\n          hi there\n          open zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7\n          rule default, stays 30s banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-work-7",
+   "plain_body": "hi there",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 30,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": 3,
+    "channel_name": "ops",
+    "content": "**hi** there",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 7,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada :smile:",
+    "server": "work",
+    "topic": "deploys :tada:"
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7"
+  },
+  "name": "channel stay True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "a 👍 b",
+   "dry_run": "[dry-run] home (mention): Bob\n          a 👍 b\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "a 👍 b",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "a :+1: b",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "dm plain False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "a 👍 b",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          a 👍 b\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "a 👍 b",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "a :+1: b",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "dm plain True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "a 👍 b",
+   "dry_run": "[dry-run] home (mention): Bob\n          a 👍 b\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule R, banner title, sound play -q /s/ping.wav vol 0.55, flash screen\n",
+   "group": "z-iris-home-8",
+   "plain_body": "a 👍 b",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "title",
+    "batch_window": 0,
+    "flash": "screen",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "R",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "a :+1: b",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "dm title False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "a 👍 b",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          a 👍 b\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule R, banner title, sound play -q /s/ping.wav vol 0.55, flash screen\n",
+   "group": "z-iris-home-8",
+   "plain_body": "a 👍 b",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "title",
+    "batch_window": 0,
+    "flash": "screen",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "R",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "a :+1: b",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "dm title True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "a 👍 b",
+   "dry_run": "[dry-run] home (mention): Bob\n          a 👍 b\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, no banner, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "a 👍 b",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "off",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "none",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "a :+1: b",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "dm off_silent False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "a 👍 b",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          a 👍 b\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, no banner, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "a 👍 b",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "off",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "none",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "a :+1: b",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "dm off_silent True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "a 👍 b",
+   "dry_run": "[dry-run] home (mention): Bob\n          a 👍 b\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, sticky banner full, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "a 👍 b",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": true,
+    "volume": 0
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "a :+1: b",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "dm sticky False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "a 👍 b",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          a 👍 b\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, sticky banner full, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "a 👍 b",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": true,
+    "volume": 0
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "a :+1: b",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "dm sticky True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "a 👍 b",
+   "dry_run": "[dry-run] home (mention): Bob\n          a 👍 b\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, stays 30s banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "a 👍 b",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 30,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "a :+1: b",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "dm stay False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "a 👍 b",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          a 👍 b\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, stays 30s banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "a 👍 b",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 30,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "a :+1: b",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "dm stay True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "yo",
+   "dry_run": "[dry-run] home (mention): Bob (group)\n          yo\n          open zulip://h/#narrow/dm/3,9-group/with/8\n          rule default, banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "yo",
+   "title": "Bob (group)"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "yo",
+    "dm_names": [],
+    "dm_user_ids": [
+     3,
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/3,9-group/with/8"
+  },
+  "name": "group plain False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "yo",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          yo\n          open zulip://h/#narrow/dm/3,9-group/with/8\n          rule default, banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "yo",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "yo",
+    "dm_names": [],
+    "dm_user_ids": [
+     3,
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/3,9-group/with/8"
+  },
+  "name": "group plain True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "yo",
+   "dry_run": "[dry-run] home (mention): Bob (group)\n          yo\n          open zulip://h/#narrow/dm/3,9-group/with/8\n          rule R, banner title, sound play -q /s/ping.wav vol 0.55, flash screen\n",
+   "group": "z-iris-home-8",
+   "plain_body": "yo",
+   "title": "Bob (group)"
+  },
+  "input": {
+   "action": {
+    "banner": "title",
+    "batch_window": 0,
+    "flash": "screen",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "R",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "yo",
+    "dm_names": [],
+    "dm_user_ids": [
+     3,
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/3,9-group/with/8"
+  },
+  "name": "group title False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "yo",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          yo\n          open zulip://h/#narrow/dm/3,9-group/with/8\n          rule R, banner title, sound play -q /s/ping.wav vol 0.55, flash screen\n",
+   "group": "z-iris-home-8",
+   "plain_body": "yo",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "title",
+    "batch_window": 0,
+    "flash": "screen",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "R",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "yo",
+    "dm_names": [],
+    "dm_user_ids": [
+     3,
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/3,9-group/with/8"
+  },
+  "name": "group title True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "yo",
+   "dry_run": "[dry-run] home (mention): Bob (group)\n          yo\n          open zulip://h/#narrow/dm/3,9-group/with/8\n          rule default, no banner, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "yo",
+   "title": "Bob (group)"
+  },
+  "input": {
+   "action": {
+    "banner": "off",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "none",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "yo",
+    "dm_names": [],
+    "dm_user_ids": [
+     3,
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/3,9-group/with/8"
+  },
+  "name": "group off_silent False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "yo",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          yo\n          open zulip://h/#narrow/dm/3,9-group/with/8\n          rule default, no banner, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "yo",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "off",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "none",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "yo",
+    "dm_names": [],
+    "dm_user_ids": [
+     3,
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/3,9-group/with/8"
+  },
+  "name": "group off_silent True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "yo",
+   "dry_run": "[dry-run] home (mention): Bob (group)\n          yo\n          open zulip://h/#narrow/dm/3,9-group/with/8\n          rule default, sticky banner full, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "yo",
+   "title": "Bob (group)"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": true,
+    "volume": 0
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "yo",
+    "dm_names": [],
+    "dm_user_ids": [
+     3,
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/3,9-group/with/8"
+  },
+  "name": "group sticky False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "yo",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          yo\n          open zulip://h/#narrow/dm/3,9-group/with/8\n          rule default, sticky banner full, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "yo",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": true,
+    "volume": 0
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "yo",
+    "dm_names": [],
+    "dm_user_ids": [
+     3,
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/3,9-group/with/8"
+  },
+  "name": "group sticky True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "yo",
+   "dry_run": "[dry-run] home (mention): Bob (group)\n          yo\n          open zulip://h/#narrow/dm/3,9-group/with/8\n          rule default, stays 30s banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "yo",
+   "title": "Bob (group)"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 30,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "yo",
+    "dm_names": [],
+    "dm_user_ids": [
+     3,
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/3,9-group/with/8"
+  },
+  "name": "group stay False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "yo",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          yo\n          open zulip://h/#narrow/dm/3,9-group/with/8\n          rule default, stays 30s banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "yo",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 30,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "yo",
+    "dm_names": [],
+    "dm_user_ids": [
+     3,
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/3,9-group/with/8"
+  },
+  "name": "group stay True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "(no text)",
+   "dry_run": "[dry-run] home (mention): Bob\n          (no text)\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "(no text)",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "   ",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "empty plain False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "(no text)",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          (no text)\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "(no text)",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "   ",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "empty plain True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "(no text)",
+   "dry_run": "[dry-run] home (mention): Bob\n          (no text)\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule R, banner title, sound play -q /s/ping.wav vol 0.55, flash screen\n",
+   "group": "z-iris-home-8",
+   "plain_body": "(no text)",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "title",
+    "batch_window": 0,
+    "flash": "screen",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "R",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "   ",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "empty title False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "(no text)",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          (no text)\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule R, banner title, sound play -q /s/ping.wav vol 0.55, flash screen\n",
+   "group": "z-iris-home-8",
+   "plain_body": "(no text)",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "title",
+    "batch_window": 0,
+    "flash": "screen",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "R",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "   ",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "empty title True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "(no text)",
+   "dry_run": "[dry-run] home (mention): Bob\n          (no text)\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, no banner, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "(no text)",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "off",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "none",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "   ",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "empty off_silent False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "(no text)",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          (no text)\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, no banner, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "(no text)",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "off",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "none",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "   ",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "empty off_silent True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "(no text)",
+   "dry_run": "[dry-run] home (mention): Bob\n          (no text)\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, sticky banner full, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "(no text)",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": true,
+    "volume": 0
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "   ",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "empty sticky False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "(no text)",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          (no text)\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, sticky banner full, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "(no text)",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": true,
+    "volume": 0
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "   ",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "empty sticky True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "(no text)",
+   "dry_run": "[dry-run] home (mention): Bob\n          (no text)\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, stays 30s banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "(no text)",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 30,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "   ",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "empty stay False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "(no text)",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          (no text)\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, stays 30s banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "(no text)",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 30,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "   ",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "empty stay True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "​(no text)",
+   "dry_run": "[dry-run] home (mention): Bob\n          ​(no text)\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "(no text)",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "``` ```",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "markup_only plain False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "​(no text)",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          ​(no text)\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "(no text)",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "``` ```",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "markup_only plain True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "​(no text)",
+   "dry_run": "[dry-run] home (mention): Bob\n          ​(no text)\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule R, banner title, sound play -q /s/ping.wav vol 0.55, flash screen\n",
+   "group": "z-iris-home-8",
+   "plain_body": "(no text)",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "title",
+    "batch_window": 0,
+    "flash": "screen",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "R",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "``` ```",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "markup_only title False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "​(no text)",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          ​(no text)\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule R, banner title, sound play -q /s/ping.wav vol 0.55, flash screen\n",
+   "group": "z-iris-home-8",
+   "plain_body": "(no text)",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "title",
+    "batch_window": 0,
+    "flash": "screen",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "R",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "``` ```",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "markup_only title True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "​(no text)",
+   "dry_run": "[dry-run] home (mention): Bob\n          ​(no text)\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, no banner, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "(no text)",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "off",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "none",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "``` ```",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "markup_only off_silent False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "​(no text)",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          ​(no text)\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, no banner, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "(no text)",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "off",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "none",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "``` ```",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "markup_only off_silent True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "​(no text)",
+   "dry_run": "[dry-run] home (mention): Bob\n          ​(no text)\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, sticky banner full, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "(no text)",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": true,
+    "volume": 0
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "``` ```",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "markup_only sticky False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "​(no text)",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          ​(no text)\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, sticky banner full, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "(no text)",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": true,
+    "volume": 0
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "``` ```",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "markup_only sticky True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "​(no text)",
+   "dry_run": "[dry-run] home (mention): Bob\n          ​(no text)\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, stays 30s banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "(no text)",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 30,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "``` ```",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "markup_only stay False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "​(no text)",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          ​(no text)\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, stays 30s banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "(no text)",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 30,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "``` ```",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "markup_only stay True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "word word word word word word word word word word word word word word word word…",
+   "dry_run": "[dry-run] home (mention): Bob\n          word word word word word word word word word word word word word word word word…\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word…",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word ",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "long plain False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "word word word word word word word word word word word word word word word word…",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          word word word word word word word word word word word word word word word word…\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word…",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word ",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "long plain True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "word word word word word word word word word word word word word word word word…",
+   "dry_run": "[dry-run] home (mention): Bob\n          word word word word word word word word word word word word word word word word…\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule R, banner title, sound play -q /s/ping.wav vol 0.55, flash screen\n",
+   "group": "z-iris-home-8",
+   "plain_body": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word…",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "title",
+    "batch_window": 0,
+    "flash": "screen",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "R",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word ",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "long title False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "word word word word word word word word word word word word word word word word…",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          word word word word word word word word word word word word word word word word…\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule R, banner title, sound play -q /s/ping.wav vol 0.55, flash screen\n",
+   "group": "z-iris-home-8",
+   "plain_body": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word…",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "title",
+    "batch_window": 0,
+    "flash": "screen",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "R",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word ",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "long title True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "word word word word word word word word word word word word word word word word…",
+   "dry_run": "[dry-run] home (mention): Bob\n          word word word word word word word word word word word word word word word word…\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, no banner, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word…",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "off",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "none",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word ",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "long off_silent False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "word word word word word word word word word word word word word word word word…",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          word word word word word word word word word word word word word word word word…\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, no banner, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word…",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "off",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "none",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word ",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "long off_silent True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "word word word word word word word word word word word word word word word word…",
+   "dry_run": "[dry-run] home (mention): Bob\n          word word word word word word word word word word word word word word word word…\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, sticky banner full, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word…",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": true,
+    "volume": 0
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word ",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "long sticky False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "word word word word word word word word word word word word word word word word…",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          word word word word word word word word word word word word word word word word…\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, sticky banner full, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word…",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": true,
+    "volume": 0
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word ",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "long sticky True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "word word word word word word word word word word word word word word word word…",
+   "dry_run": "[dry-run] home (mention): Bob\n          word word word word word word word word word word word word word word word word…\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, stays 30s banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word…",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 30,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word ",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "long stay False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "word word word word word word word word word word word word word word word word…",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          word word word word word word word word word word word word word word word word…\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, stays 30s banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word…",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 30,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word ",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "long stay True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…",
+   "dry_run": "[dry-run] home (mention): Bob\n          ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "long_unicode plain False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "long_unicode plain True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…",
+   "dry_run": "[dry-run] home (mention): Bob\n          ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule R, banner title, sound play -q /s/ping.wav vol 0.55, flash screen\n",
+   "group": "z-iris-home-8",
+   "plain_body": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "title",
+    "batch_window": 0,
+    "flash": "screen",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "R",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "long_unicode title False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule R, banner title, sound play -q /s/ping.wav vol 0.55, flash screen\n",
+   "group": "z-iris-home-8",
+   "plain_body": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "title",
+    "batch_window": 0,
+    "flash": "screen",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "R",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "long_unicode title True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…",
+   "dry_run": "[dry-run] home (mention): Bob\n          ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, no banner, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "off",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "none",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "long_unicode off_silent False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, no banner, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "off",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "none",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "long_unicode off_silent True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…",
+   "dry_run": "[dry-run] home (mention): Bob\n          ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, sticky banner full, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": true,
+    "volume": 0
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "long_unicode sticky False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, sticky banner full, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": true,
+    "volume": 0
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "long_unicode sticky True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…",
+   "dry_run": "[dry-run] home (mention): Bob\n          ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, stays 30s banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 30,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "long_unicode stay False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, stays 30s banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé…",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 30,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "long_unicode stay True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "• list item",
+   "dry_run": "[dry-run] home (mention): Bob\n          • list item\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "• list item",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "- list item",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "risky_dash plain False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "• list item",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          • list item\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "• list item",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "- list item",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "risky_dash plain True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "• list item",
+   "dry_run": "[dry-run] home (mention): Bob\n          • list item\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule R, banner title, sound play -q /s/ping.wav vol 0.55, flash screen\n",
+   "group": "z-iris-home-8",
+   "plain_body": "• list item",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "title",
+    "batch_window": 0,
+    "flash": "screen",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "R",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "- list item",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "risky_dash title False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "• list item",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          • list item\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule R, banner title, sound play -q /s/ping.wav vol 0.55, flash screen\n",
+   "group": "z-iris-home-8",
+   "plain_body": "• list item",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "title",
+    "batch_window": 0,
+    "flash": "screen",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "R",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "- list item",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "risky_dash title True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "• list item",
+   "dry_run": "[dry-run] home (mention): Bob\n          • list item\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, no banner, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "• list item",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "off",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "none",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "- list item",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "risky_dash off_silent False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "• list item",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          • list item\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, no banner, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "• list item",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "off",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "none",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "- list item",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "risky_dash off_silent True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "• list item",
+   "dry_run": "[dry-run] home (mention): Bob\n          • list item\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, sticky banner full, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "• list item",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": true,
+    "volume": 0
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "- list item",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "risky_dash sticky False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "• list item",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          • list item\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, sticky banner full, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "• list item",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": true,
+    "volume": 0
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "- list item",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "risky_dash sticky True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "• list item",
+   "dry_run": "[dry-run] home (mention): Bob\n          • list item\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, stays 30s banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "• list item",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 30,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "- list item",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "risky_dash stay False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "• list item",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          • list item\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, stays 30s banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "• list item",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 30,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "- list item",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "risky_dash stay True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "​\"quoted\"",
+   "dry_run": "[dry-run] home (mention): Bob\n          ​\"quoted\"\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "\"quoted\"",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "\"quoted\"",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "risky_quote plain False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "​\"quoted\"",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          ​\"quoted\"\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "\"quoted\"",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "\"quoted\"",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "risky_quote plain True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "​\"quoted\"",
+   "dry_run": "[dry-run] home (mention): Bob\n          ​\"quoted\"\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule R, banner title, sound play -q /s/ping.wav vol 0.55, flash screen\n",
+   "group": "z-iris-home-8",
+   "plain_body": "\"quoted\"",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "title",
+    "batch_window": 0,
+    "flash": "screen",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "R",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "\"quoted\"",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "risky_quote title False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "​\"quoted\"",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          ​\"quoted\"\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule R, banner title, sound play -q /s/ping.wav vol 0.55, flash screen\n",
+   "group": "z-iris-home-8",
+   "plain_body": "\"quoted\"",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "title",
+    "batch_window": 0,
+    "flash": "screen",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "R",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "\"quoted\"",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "risky_quote title True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "​\"quoted\"",
+   "dry_run": "[dry-run] home (mention): Bob\n          ​\"quoted\"\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, no banner, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "\"quoted\"",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "off",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "none",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "\"quoted\"",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "risky_quote off_silent False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "​\"quoted\"",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          ​\"quoted\"\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, no banner, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "\"quoted\"",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "off",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "none",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "\"quoted\"",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "risky_quote off_silent True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "​\"quoted\"",
+   "dry_run": "[dry-run] home (mention): Bob\n          ​\"quoted\"\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, sticky banner full, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "\"quoted\"",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": true,
+    "volume": 0
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "\"quoted\"",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "risky_quote sticky False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "​\"quoted\"",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          ​\"quoted\"\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, sticky banner full, sound silent\n",
+   "group": "z-iris-home-8",
+   "plain_body": "\"quoted\"",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": true,
+    "volume": 0
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "\"quoted\"",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "risky_quote sticky True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "​\"quoted\"",
+   "dry_run": "[dry-run] home (mention): Bob\n          ​\"quoted\"\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, stays 30s banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "\"quoted\"",
+   "title": "Bob"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 30,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "\"quoted\"",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "risky_quote stay False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "​\"quoted\"",
+   "dry_run": "[dry-run] home (mention): 3 new in #ops 🔥\n          ​\"quoted\"\n          open zulip://h/#narrow/dm/9-pm/with/8\n          rule default, stays 30s banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-home-8",
+   "plain_body": "\"quoted\"",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 30,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "\"quoted\"",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 8,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Bob",
+    "server": "home",
+    "topic": null
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/dm/9-pm/with/8"
+  },
+  "name": "risky_quote stay True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "link rest",
+   "dry_run": "[dry-run] work (mention): Ada 🙂 (#ops > deploys 🎉)\n          link rest\n          open zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7\n          rule default, banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-work-7",
+   "plain_body": "link rest",
+   "title": "Ada 🙂 (#ops > deploys 🎉)"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": 3,
+    "channel_name": "ops",
+    "content": "  [link](u) rest",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 7,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada :smile:",
+    "server": "work",
+    "topic": "deploys :tada:"
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7"
+  },
+  "name": "risky_after_strip plain False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "link rest",
+   "dry_run": "[dry-run] work (mention): 3 new in #ops 🔥\n          link rest\n          open zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7\n          rule default, banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-work-7",
+   "plain_body": "link rest",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": 3,
+    "channel_name": "ops",
+    "content": "  [link](u) rest",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 7,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada :smile:",
+    "server": "work",
+    "topic": "deploys :tada:"
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7"
+  },
+  "name": "risky_after_strip plain True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "link rest",
+   "dry_run": "[dry-run] work (mention): Ada 🙂 (#ops > deploys 🎉)\n          link rest\n          open zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7\n          rule R, banner title, sound play -q /s/ping.wav vol 0.55, flash screen\n",
+   "group": "z-iris-work-7",
+   "plain_body": "link rest",
+   "title": "Ada 🙂 (#ops > deploys 🎉)"
+  },
+  "input": {
+   "action": {
+    "banner": "title",
+    "batch_window": 0,
+    "flash": "screen",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "R",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": 3,
+    "channel_name": "ops",
+    "content": "  [link](u) rest",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 7,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada :smile:",
+    "server": "work",
+    "topic": "deploys :tada:"
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7"
+  },
+  "name": "risky_after_strip title False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "link rest",
+   "dry_run": "[dry-run] work (mention): 3 new in #ops 🔥\n          link rest\n          open zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7\n          rule R, banner title, sound play -q /s/ping.wav vol 0.55, flash screen\n",
+   "group": "z-iris-work-7",
+   "plain_body": "link rest",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "title",
+    "batch_window": 0,
+    "flash": "screen",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "R",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": 3,
+    "channel_name": "ops",
+    "content": "  [link](u) rest",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 7,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada :smile:",
+    "server": "work",
+    "topic": "deploys :tada:"
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7"
+  },
+  "name": "risky_after_strip title True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "link rest",
+   "dry_run": "[dry-run] work (mention): Ada 🙂 (#ops > deploys 🎉)\n          link rest\n          open zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7\n          rule default, no banner, sound silent\n",
+   "group": "z-iris-work-7",
+   "plain_body": "link rest",
+   "title": "Ada 🙂 (#ops > deploys 🎉)"
+  },
+  "input": {
+   "action": {
+    "banner": "off",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "none",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": 3,
+    "channel_name": "ops",
+    "content": "  [link](u) rest",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 7,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada :smile:",
+    "server": "work",
+    "topic": "deploys :tada:"
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7"
+  },
+  "name": "risky_after_strip off_silent False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "link rest",
+   "dry_run": "[dry-run] work (mention): 3 new in #ops 🔥\n          link rest\n          open zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7\n          rule default, no banner, sound silent\n",
+   "group": "z-iris-work-7",
+   "plain_body": "link rest",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "off",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "none",
+    "stay": 0,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": 3,
+    "channel_name": "ops",
+    "content": "  [link](u) rest",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 7,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada :smile:",
+    "server": "work",
+    "topic": "deploys :tada:"
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7"
+  },
+  "name": "risky_after_strip off_silent True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "link rest",
+   "dry_run": "[dry-run] work (mention): Ada 🙂 (#ops > deploys 🎉)\n          link rest\n          open zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7\n          rule default, sticky banner full, sound silent\n",
+   "group": "z-iris-work-7",
+   "plain_body": "link rest",
+   "title": "Ada 🙂 (#ops > deploys 🎉)"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": true,
+    "volume": 0
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": 3,
+    "channel_name": "ops",
+    "content": "  [link](u) rest",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 7,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada :smile:",
+    "server": "work",
+    "topic": "deploys :tada:"
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7"
+  },
+  "name": "risky_after_strip sticky False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "link rest",
+   "dry_run": "[dry-run] work (mention): 3 new in #ops 🔥\n          link rest\n          open zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7\n          rule default, sticky banner full, sound silent\n",
+   "group": "z-iris-work-7",
+   "plain_body": "link rest",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": null,
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 0,
+    "sticky": true,
+    "volume": 0
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": 3,
+    "channel_name": "ops",
+    "content": "  [link](u) rest",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 7,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada :smile:",
+    "server": "work",
+    "topic": "deploys :tada:"
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7"
+  },
+  "name": "risky_after_strip sticky True"
+ },
+ {
+  "expected": {
+   "banner_body_80": "link rest",
+   "dry_run": "[dry-run] work (mention): Ada 🙂 (#ops > deploys 🎉)\n          link rest\n          open zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7\n          rule default, stays 30s banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-work-7",
+   "plain_body": "link rest",
+   "title": "Ada 🙂 (#ops > deploys 🎉)"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 30,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": 3,
+    "channel_name": "ops",
+    "content": "  [link](u) rest",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 7,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada :smile:",
+    "server": "work",
+    "topic": "deploys :tada:"
+   },
+   "reason": "mention",
+   "summary": null,
+   "url": "zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7"
+  },
+  "name": "risky_after_strip stay False"
+ },
+ {
+  "expected": {
+   "banner_body_80": "link rest",
+   "dry_run": "[dry-run] work (mention): 3 new in #ops 🔥\n          link rest\n          open zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7\n          rule default, stays 30s banner full, sound play -q /s/ping.wav vol 0.55\n",
+   "group": "z-iris-work-7",
+   "plain_body": "link rest",
+   "title": "3 new in #ops 🔥"
+  },
+  "input": {
+   "action": {
+    "banner": "full",
+    "batch_window": 0,
+    "flash": "none",
+    "flash_color": "#ff3b30",
+    "flash_seconds": 0.6,
+    "min_gap": 0,
+    "repeat": 0,
+    "repeat_boost": 0,
+    "repeat_every": 30,
+    "rule": "",
+    "rule_index": null,
+    "sound": "/s/ping.wav",
+    "stay": 30,
+    "sticky": false,
+    "volume": 55
+   },
+   "message": {
+    "avatar_url": null,
+    "channel_id": 3,
+    "channel_name": "ops",
+    "content": "  [link](u) rest",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 7,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada :smile:",
+    "server": "work",
+    "topic": "deploys :tada:"
+   },
+   "reason": "mention",
+   "summary": "3 new in #ops :fire:",
+   "url": "zulip://h/#narrow/channel/3-ops/topic/deploys.20.3Atada.3A/with/7"
+  },
+  "name": "risky_after_strip stay True"
+ }
+]
