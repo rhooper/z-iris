@@ -3,7 +3,9 @@
 Zulip's Icon.png (Apache 2.0, from zulip-desktop) is only 48 px, so the
 colours are sampled from it and the circle and Z are redrawn as vectors.
 Writes src/z_iris/static/: z-iris.png (1024), z-iris.icns, and the menubar
-template images z-iris-menubarTemplate.png and @2x (black Z with a note).
+template image z-iris-menubarTemplate.png (black Z with a note). rumps loads that
+one file and scales it to 20 pt, never reading an @2x sibling, so it is drawn
+large enough to stay sharp at 3x.
 
 Usage: uv run python scripts/claude/make_icon.py [Icon.png]
 """
@@ -20,6 +22,7 @@ from PIL import Image, ImageChops, ImageDraw, ImageFilter
 RES = Path.home() / "Devel/zulip-desktop/public/resources"
 OUT = Path(__file__).resolve().parents[2] / "src/z_iris/static"
 SIZE = 1024
+MENUBAR_PX = 160
 
 
 def shape(draw_fn, size: int) -> Image.Image:
@@ -116,8 +119,7 @@ def main() -> None:
     icon = app_icon(source)
     icon.save(OUT / "z-iris.png")
     write_icns(icon, OUT / "z-iris.icns")
-    menubar(18).save(OUT / "z-iris-menubarTemplate.png")
-    menubar(36).save(OUT / "z-iris-menubarTemplate@2x.png")
+    menubar(MENUBAR_PX).save(OUT / "z-iris-menubarTemplate.png")
 
 
 if __name__ == "__main__":
