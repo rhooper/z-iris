@@ -6,3 +6,5 @@ __pycache__/
 .superpowers/
 xcuserdata/
 dist/
+swift/.build/
+.swiftpm/

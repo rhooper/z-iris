@@ -1,0 +1,215 @@
+[
+ {
+  "expected": "deploys",
+  "input": {
+   "text": "deploys"
+  },
+  "name": "encode 'deploys'"
+ },
+ {
+  "expected": "two.20words",
+  "input": {
+   "text": "two words"
+  },
+  "name": "encode 'two words'"
+ },
+ {
+  "expected": "a.2Eb",
+  "input": {
+   "text": "a.b"
+  },
+  "name": "encode 'a.b'"
+ },
+ {
+  "expected": "a.2Fb",
+  "input": {
+   "text": "a/b"
+  },
+  "name": "encode 'a/b'"
+ },
+ {
+  "expected": "c.231",
+  "input": {
+   "text": "c#1"
+  },
+  "name": "encode 'c#1'"
+ },
+ {
+  "expected": "100.25",
+  "input": {
+   "text": "100%"
+  },
+  "name": "encode '100%'"
+ },
+ {
+  "expected": "caf.C3.A9",
+  "input": {
+   "text": "café"
+  },
+  "name": "encode 'café'"
+ },
+ {
+  "expected": ".F0.9F.9A.80",
+  "input": {
+   "text": "🚀"
+  },
+  "name": "encode '🚀'"
+ },
+ {
+  "expected": "",
+  "input": {
+   "text": ""
+  },
+  "name": "encode ''"
+ },
+ {
+  "expected": "q.26a.3A.201.2E0",
+  "input": {
+   "text": "q&a: 1.0"
+  },
+  "name": "encode 'q&a: 1.0'"
+ },
+ {
+  "expected": "under_score-dash~tilde",
+  "input": {
+   "text": "under_score-dash~tilde"
+  },
+  "name": "encode 'under_score-dash~tilde'"
+ },
+ {
+  "expected": "x.2Ey.23z.20.F0.9F.9A.80",
+  "input": {
+   "text": "x.y#z 🚀"
+  },
+  "name": "encode 'x.y#z 🚀'"
+ },
+ {
+  "expected": ".E6.97.A5.E6.9C.AC.E8.AA.9E",
+  "input": {
+   "text": "日本語"
+  },
+  "name": "encode '日本語'"
+ },
+ {
+  "expected": "tab.09new.0Aline",
+  "input": {
+   "text": "tab\tnew\nline"
+  },
+  "name": "encode 'tab\\tnew\\nline'"
+ },
+ {
+  "expected": "zulip://chat.example.com/#narrow/channel/7-ops/topic/deploys/with/101",
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "chat.example.com",
+    "id": 101,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": "deploys"
+   }
+  },
+  "name": "url channel"
+ },
+ {
+  "expected": "zulip://chat.example.com/#narrow/channel/7-my.20team/topic/q.26a.3A.201.2E0/with/101",
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "my team",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "chat.example.com",
+    "id": 101,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": "q&a: 1.0"
+   }
+  },
+  "name": "url channel_encoded"
+ },
+ {
+  "expected": "zulip://h.example/#narrow/channel/42-a.20b.2Fc/topic//with/5",
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 42,
+    "channel_name": "a b/c",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h.example",
+    "id": 5,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": ""
+   }
+  },
+  "name": "url channel_empty_topic"
+ },
+ {
+  "expected": "zulip://chat.example.com/#narrow/dm/9-pm/with/101",
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "chat.example.com",
+    "id": 101,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": null
+   }
+  },
+  "name": "url dm_one"
+ },
+ {
+  "expected": "zulip://chat.example.com/#narrow/dm/3,12-group/with/101",
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [
+     3,
+     12
+    ],
+    "flags": [],
+    "host": "chat.example.com",
+    "id": 101,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "w",
+    "topic": null
+   }
+  },
+  "name": "url dm_group"
+ }
+]

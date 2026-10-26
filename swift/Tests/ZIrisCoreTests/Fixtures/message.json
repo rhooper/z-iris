@@ -1,0 +1,507 @@
+[
+ {
+  "expected": {
+   "has_alert_word": false,
+   "is_mention": true,
+   "is_wildcard_mention": false,
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "ops",
+    "content": "hello",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [
+     "mentioned"
+    ],
+    "host": "chat.example.com",
+    "id": 101,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": "deploys"
+   }
+  },
+  "input": {
+   "event": {
+    "flags": [
+     "mentioned"
+    ],
+    "message": {
+     "content": "hello",
+     "display_recipient": "ops",
+     "id": 101,
+     "sender_full_name": "Ada",
+     "sender_id": 9,
+     "stream_id": 7,
+     "subject": "deploys",
+     "type": "stream"
+    }
+   },
+   "host": "chat.example.com",
+   "self_id": 5,
+   "server": "work"
+  },
+  "name": "channel"
+ },
+ {
+  "expected": {
+   "has_alert_word": false,
+   "is_mention": false,
+   "is_wildcard_mention": false,
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "ops",
+    "content": "hello",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "chat.example.com",
+    "id": 101,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": "deploys"
+   }
+  },
+  "input": {
+   "event": {
+    "flags": [],
+    "message": {
+     "content": "hello",
+     "display_recipient": "ops",
+     "id": 101,
+     "sender_full_name": "Ada",
+     "sender_id": 9,
+     "stream_id": 7,
+     "topic": "deploys",
+     "type": "stream"
+    }
+   },
+   "host": "chat.example.com",
+   "self_id": 5,
+   "server": "work"
+  },
+  "name": "channel_topic_key"
+ },
+ {
+  "expected": {
+   "has_alert_word": false,
+   "is_mention": false,
+   "is_wildcard_mention": false,
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "ops",
+    "content": "hello",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "chat.example.com",
+    "id": 101,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": "deploys"
+   }
+  },
+  "input": {
+   "event": {
+    "message": {
+     "content": "hello",
+     "display_recipient": "ops",
+     "id": 101,
+     "sender_full_name": "Ada",
+     "sender_id": 9,
+     "stream_id": 7,
+     "subject": "deploys",
+     "type": "stream"
+    }
+   },
+   "host": "chat.example.com",
+   "self_id": 5,
+   "server": "work"
+  },
+  "name": "channel_no_flags"
+ },
+ {
+  "expected": {
+   "has_alert_word": false,
+   "is_mention": false,
+   "is_wildcard_mention": false,
+   "message": {
+    "avatar_url": "https://x/a.png",
+    "channel_id": 7,
+    "channel_name": "ops",
+    "content": "hello",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "chat.example.com",
+    "id": 101,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": "deploys"
+   }
+  },
+  "input": {
+   "event": {
+    "flags": [],
+    "message": {
+     "avatar_url": "https://x/a.png",
+     "content": "hello",
+     "display_recipient": "ops",
+     "id": 101,
+     "sender_full_name": "Ada",
+     "sender_id": 9,
+     "stream_id": 7,
+     "subject": "deploys",
+     "type": "stream"
+    }
+   },
+   "host": "chat.example.com",
+   "self_id": 5,
+   "server": "work"
+  },
+  "name": "channel_avatar"
+ },
+ {
+  "expected": {
+   "has_alert_word": true,
+   "is_mention": false,
+   "is_wildcard_mention": true,
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "ops",
+    "content": "hello",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [
+     "has_alert_word",
+     "read",
+     "stream_wildcard_mentioned"
+    ],
+    "host": "chat.example.com",
+    "id": 101,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": "deploys"
+   }
+  },
+  "input": {
+   "event": {
+    "flags": [
+     "read",
+     "stream_wildcard_mentioned",
+     "has_alert_word"
+    ],
+    "message": {
+     "content": "hello",
+     "display_recipient": "ops",
+     "id": 101,
+     "sender_full_name": "Ada",
+     "sender_id": 9,
+     "stream_id": 7,
+     "subject": "deploys",
+     "type": "stream"
+    }
+   },
+   "host": "chat.example.com",
+   "self_id": 5,
+   "server": "work"
+  },
+  "name": "wildcard_flags"
+ },
+ {
+  "expected": {
+   "has_alert_word": false,
+   "is_mention": false,
+   "is_wildcard_mention": false,
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "hi",
+    "dm_names": [
+     "Ada"
+    ],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [
+     "read"
+    ],
+    "host": "chat.example.com",
+    "id": 202,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": null
+   }
+  },
+  "input": {
+   "event": {
+    "flags": [
+     "read"
+    ],
+    "message": {
+     "content": "hi",
+     "display_recipient": [
+      {
+       "email": "me@x",
+       "full_name": "Me",
+       "id": 5
+      },
+      {
+       "email": "ada@x",
+       "full_name": "Ada",
+       "id": 9
+      }
+     ],
+     "id": 202,
+     "sender_full_name": "Ada",
+     "sender_id": 9,
+     "type": "private"
+    }
+   },
+   "host": "chat.example.com",
+   "self_id": 5,
+   "server": "work"
+  },
+  "name": "dm_one"
+ },
+ {
+  "expected": {
+   "has_alert_word": false,
+   "is_mention": false,
+   "is_wildcard_mention": false,
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "hi",
+    "dm_names": [
+     "Bob",
+     "Ada"
+    ],
+    "dm_user_ids": [
+     3,
+     9
+    ],
+    "flags": [],
+    "host": "chat.example.com",
+    "id": 202,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": null
+   }
+  },
+  "input": {
+   "event": {
+    "flags": [],
+    "message": {
+     "content": "hi",
+     "display_recipient": [
+      {
+       "email": "me@x",
+       "full_name": "Me",
+       "id": 5
+      },
+      {
+       "email": "ada@x",
+       "full_name": "Ada",
+       "id": 9
+      },
+      {
+       "email": "bob@x",
+       "full_name": "Bob",
+       "id": 3
+      }
+     ],
+     "id": 202,
+     "sender_full_name": "Ada",
+     "sender_id": 9,
+     "type": "private"
+    }
+   },
+   "host": "chat.example.com",
+   "self_id": 5,
+   "server": "work"
+  },
+  "name": "dm_group_sorted"
+ },
+ {
+  "expected": {
+   "has_alert_word": false,
+   "is_mention": false,
+   "is_wildcard_mention": false,
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "hi",
+    "dm_names": [
+     "Me"
+    ],
+    "dm_user_ids": [
+     5
+    ],
+    "flags": [],
+    "host": "chat.example.com",
+    "id": 202,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": null
+   }
+  },
+  "input": {
+   "event": {
+    "flags": [],
+    "message": {
+     "content": "hi",
+     "display_recipient": [
+      {
+       "email": "me@x",
+       "full_name": "Me",
+       "id": 5
+      }
+     ],
+     "id": 202,
+     "sender_full_name": "Ada",
+     "sender_id": 9,
+     "type": "private"
+    }
+   },
+   "host": "chat.example.com",
+   "self_id": 5,
+   "server": "work"
+  },
+  "name": "dm_self"
+ },
+ {
+  "expected": {
+   "has_alert_word": false,
+   "is_mention": false,
+   "is_wildcard_mention": false,
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "hi",
+    "dm_names": [
+     "Ada",
+     ""
+    ],
+    "dm_user_ids": [
+     9,
+     12
+    ],
+    "flags": [],
+    "host": "chat.example.com",
+    "id": 202,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": null
+   }
+  },
+  "input": {
+   "event": {
+    "flags": [],
+    "message": {
+     "content": "hi",
+     "display_recipient": [
+      {
+       "email": "me@x",
+       "full_name": "Me",
+       "id": 5
+      },
+      {
+       "email": "anon@x",
+       "id": 12
+      },
+      {
+       "email": "ada@x",
+       "full_name": "Ada",
+       "id": 9
+      }
+     ],
+     "id": 202,
+     "sender_full_name": "Ada",
+     "sender_id": 9,
+     "type": "private"
+    }
+   },
+   "host": "chat.example.com",
+   "self_id": 5,
+   "server": "work"
+  },
+  "name": "dm_missing_name"
+ },
+ {
+  "error": "KeyError",
+  "input": {
+   "event": {
+    "flags": []
+   },
+   "host": "chat.example.com",
+   "self_id": 5,
+   "server": "work"
+  },
+  "name": "malformed_no_message"
+ },
+ {
+  "error": "KeyError",
+  "input": {
+   "event": {
+    "message": {
+     "content": "hello",
+     "display_recipient": "ops",
+     "sender_full_name": "Ada",
+     "sender_id": 9,
+     "stream_id": 7,
+     "subject": "deploys",
+     "type": "stream"
+    }
+   },
+   "host": "chat.example.com",
+   "self_id": 5,
+   "server": "work"
+  },
+  "name": "malformed_no_id"
+ },
+ {
+  "error": "TypeError",
+  "input": {
+   "event": {
+    "message": {
+     "content": "hi",
+     "display_recipient": "ops",
+     "id": 202,
+     "sender_full_name": "Ada",
+     "sender_id": 9,
+     "type": "private"
+    }
+   },
+   "host": "chat.example.com",
+   "self_id": 5,
+   "server": "work"
+  },
+  "name": "malformed_dm_recipient_string"
+ }
+]
