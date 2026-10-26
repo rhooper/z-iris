@@ -21,6 +21,7 @@ let package = Package(
         .target(name: "ZulipKit", dependencies: ["ZIrisCore"]),
         .target(name: "ZIrisMac", dependencies: ["ZIrisCore", "ZulipKit"]),
         .executableTarget(name: "ZIrisCLI", dependencies: ["ZIrisCore", "ZulipKit", "ZIrisMac"]),
+        .testTarget(name: "ZIrisMacTests", dependencies: ["ZIrisMac", "ZIrisCore"]),
         .testTarget(
             name: "ZulipKitTests",
             dependencies: ["ZulipKit", "ZIrisCore"]
