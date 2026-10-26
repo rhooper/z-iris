@@ -1,0 +1,8717 @@
+[
+ {
+  "expected": [
+   {
+    "fullmatch": true,
+    "search": "ops"
+   },
+   {
+    "fullmatch": true,
+    "search": "OPS"
+   },
+   {
+    "fullmatch": false,
+    "search": "ops"
+   },
+   {
+    "fullmatch": false,
+    "search": "ops"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "ops",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re 'ops'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": true,
+    "search": "ops"
+   },
+   {
+    "fullmatch": true,
+    "search": "OPS"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "^ops$",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '^ops$'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": true,
+    "search": "ops"
+   },
+   {
+    "fullmatch": true,
+    "search": "OPS"
+   },
+   {
+    "fullmatch": false,
+    "search": "ops"
+   },
+   {
+    "fullmatch": false,
+    "search": "dev"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "ops|dev",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re 'ops|dev'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": true,
+    "search": "ops"
+   },
+   {
+    "fullmatch": true,
+    "search": "OPS"
+   },
+   {
+    "fullmatch": true,
+    "search": "ops-alerts"
+   },
+   {
+    "fullmatch": true,
+    "search": "dev ops"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": ".*ops.*",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '.*ops.*'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": true,
+    "search": "deploy failed"
+   },
+   {
+    "fullmatch": false,
+    "search": "Deploy FAILED"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "deploy (failed|broke)",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re 'deploy (failed|broke)'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "fail"
+   },
+   {
+    "fullmatch": false,
+    "search": "FAIL"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "\\bfail",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '\\\\bfail'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "1.2"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "\\d+\\.\\d+",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '\\\\d+\\\\.\\\\d+'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": true,
+    "search": "aab"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "(?P<w>a)(?P=w)b",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '(?P<w>a)(?P=w)b'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "a\\Z",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re 'a\\\\Z'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "line\\Z",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re 'line\\\\Z'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "line"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "line$",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re 'line$'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "a{1}",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re 'a{1}'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "aa"
+   },
+   {
+    "fullmatch": true,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   }
+  ],
+  "input": {
+   "pattern": "a{,2}",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re 'a{,2}'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "aa"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "a{2,}",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re 'a{2,}'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "{"
+   },
+   {
+    "fullmatch": false,
+    "search": "{"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "{",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '{'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "y"
+   },
+   {
+    "fullmatch": false,
+    "search": "y"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "y"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "y"
+   }
+  ],
+  "input": {
+   "pattern": "x{,2}y",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re 'x{,2}y'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "a{x}",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re 'a{x}'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "}"
+   },
+   {
+    "fullmatch": false,
+    "search": "}"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "}",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '}'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "x"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "x"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "x"
+   }
+  ],
+  "input": {
+   "pattern": "[]x]",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '[]x]'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "["
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "[[]",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '[[]'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "y"
+   },
+   {
+    "fullmatch": false,
+    "search": "y"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "x"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "&"
+   },
+   {
+    "fullmatch": false,
+    "search": "x"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "x"
+   }
+  ],
+  "input": {
+   "pattern": "[x&&y]",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '[x&&y]'"
+ },
+ {
+  "error": "PatternError",
+  "input": {
+   "pattern": "[a--b]",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '[a--b]'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": "o"
+   },
+   {
+    "fullmatch": false,
+    "search": "O"
+   },
+   {
+    "fullmatch": false,
+    "search": "o"
+   },
+   {
+    "fullmatch": false,
+    "search": "d"
+   },
+   {
+    "fullmatch": false,
+    "search": "d"
+   },
+   {
+    "fullmatch": false,
+    "search": "D"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "{"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "l"
+   },
+   {
+    "fullmatch": false,
+    "search": "c"
+   },
+   {
+    "fullmatch": false,
+    "search": "C"
+   },
+   {
+    "fullmatch": false,
+    "search": "😀"
+   },
+   {
+    "fullmatch": false,
+    "search": "q"
+   },
+   {
+    "fullmatch": false,
+    "search": "["
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "p"
+   },
+   {
+    "fullmatch": false,
+    "search": "b"
+   },
+   {
+    "fullmatch": false,
+    "search": "t"
+   },
+   {
+    "fullmatch": false,
+    "search": "1"
+   },
+   {
+    "fullmatch": false,
+    "search": "s"
+   },
+   {
+    "fullmatch": false,
+    "search": "S"
+   },
+   {
+    "fullmatch": true,
+    "search": "\u000b"
+   },
+   {
+    "fullmatch": false,
+    "search": "y"
+   }
+  ],
+  "input": {
+   "pattern": "[^]x]",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '[^]x]'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "[\\b]",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '[\\\\b]'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": true,
+    "search": "\u000b"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "\\v",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '\\\\v'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": " "
+   },
+   {
+    "fullmatch": false,
+    "search": " "
+   },
+   {
+    "fullmatch": false,
+    "search": " "
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "\n"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": " "
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": " "
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "\t"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": true,
+    "search": "\u000b"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "\\s",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '\\\\s'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": true,
+    "search": "ops"
+   },
+   {
+    "fullmatch": true,
+    "search": "OPS"
+   },
+   {
+    "fullmatch": false,
+    "search": "ops"
+   },
+   {
+    "fullmatch": false,
+    "search": "dev"
+   },
+   {
+    "fullmatch": false,
+    "search": "deploy"
+   },
+   {
+    "fullmatch": false,
+    "search": "Deploy"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "x"
+   },
+   {
+    "fullmatch": true,
+    "search": "ab"
+   },
+   {
+    "fullmatch": true,
+    "search": "aab"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "line"
+   },
+   {
+    "fullmatch": true,
+    "search": "café"
+   },
+   {
+    "fullmatch": true,
+    "search": "CAFÉ"
+   },
+   {
+    "fullmatch": false,
+    "search": "ok"
+   },
+   {
+    "fullmatch": false,
+    "search": "q"
+   },
+   {
+    "fullmatch": false,
+    "search": "x"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "price"
+   },
+   {
+    "fullmatch": false,
+    "search": "back"
+   },
+   {
+    "fullmatch": false,
+    "search": "tab"
+   },
+   {
+    "fullmatch": false,
+    "search": "1"
+   },
+   {
+    "fullmatch": true,
+    "search": "straße"
+   },
+   {
+    "fullmatch": true,
+    "search": "STRASSE"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "x"
+   }
+  ],
+  "input": {
+   "pattern": "\\w+",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '\\\\w+'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": true,
+    "search": "café"
+   },
+   {
+    "fullmatch": true,
+    "search": "CAFÉ"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "caf.",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re 'caf.'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": true,
+    "search": "café"
+   },
+   {
+    "fullmatch": true,
+    "search": "CAFÉ"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "CAFÉ",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re 'CAFÉ'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": true,
+    "search": "straße"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "straße",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re 'straße'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "$5"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "\\$\\d",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '\\\\$\\\\d'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": true,
+    "search": "q&a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "q&a",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re 'q&a'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": true,
+    "search": "back\\slash"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "back\\\\slash",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re 'back\\\\\\\\slash'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "\\x41",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '\\\\x41'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "é"
+   },
+   {
+    "fullmatch": false,
+    "search": "É"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "é",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re 'é'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "😀"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "\\U0001F600",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '\\\\U0001F600'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "é"
+   },
+   {
+    "fullmatch": false,
+    "search": "É"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "\\N{LATIN SMALL LETTER E WITH ACUTE}",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '\\\\N{LATIN SMALL LETTER E WITH ACUTE}'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": true,
+    "search": "ops"
+   },
+   {
+    "fullmatch": true,
+    "search": "OPS"
+   },
+   {
+    "fullmatch": false,
+    "search": "ops"
+   },
+   {
+    "fullmatch": false,
+    "search": "ops"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "(?i)ops",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '(?i)ops'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": true,
+    "search": "ab"
+   },
+   {
+    "fullmatch": false,
+    "search": "ab"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "ab"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "(?:ab)+",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '(?:ab)+'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "aa"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "a++",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re 'a++'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": true,
+    "search": "ops"
+   },
+   {
+    "fullmatch": true,
+    "search": "OPS"
+   },
+   {
+    "fullmatch": false,
+    "search": "ops"
+   },
+   {
+    "fullmatch": false,
+    "search": "ops"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "(?=o)ops",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '(?=o)ops'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "b"
+   },
+   {
+    "fullmatch": false,
+    "search": "b"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "b"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "(?<=a)b",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '(?<=a)b'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": true,
+    "search": "ab"
+   },
+   {
+    "fullmatch": false,
+    "search": "ab"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "ab"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "(?<!x)ab",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '(?<!x)ab'"
+ },
+ {
+  "error": "PatternError",
+  "input": {
+   "pattern": "\\p{L}",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '\\\\p{L}'"
+ },
+ {
+  "error": "PatternError",
+  "input": {
+   "pattern": "\\h",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '\\\\h'"
+ },
+ {
+  "error": "PatternError",
+  "input": {
+   "pattern": "\\Q.\\E",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '\\\\Q.\\\\E'"
+ },
+ {
+  "error": "PatternError",
+  "input": {
+   "pattern": "(",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '('"
+ },
+ {
+  "error": "PatternError",
+  "input": {
+   "pattern": "[",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '['"
+ },
+ {
+  "error": "PatternError",
+  "input": {
+   "pattern": "*",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '*'"
+ },
+ {
+  "error": "PatternError",
+  "input": {
+   "pattern": "a**",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re 'a**'"
+ },
+ {
+  "error": "PatternError",
+  "input": {
+   "pattern": "\\k<x>",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '\\\\k<x>'"
+ },
+ {
+  "error": "PatternError",
+  "input": {
+   "pattern": "(?P<1>x)",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '(?P<1>x)'"
+ },
+ {
+  "error": "PatternError",
+  "input": {
+   "pattern": "(?P>x)",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '(?P>x)'"
+ },
+ {
+  "error": "PatternError",
+  "input": {
+   "pattern": "x(?i)",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re 'x(?i)'"
+ },
+ {
+  "error": "PatternError",
+  "input": {
+   "pattern": "(?<=a+)b",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '(?<=a+)b'"
+ },
+ {
+  "error": "PatternError",
+  "input": {
+   "pattern": "\\1(a)",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '\\\\1(a)'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "aa"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "(a)\\1",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '(a)\\\\1'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "\\0",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '\\\\0'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": true,
+    "search": "ops"
+   },
+   {
+    "fullmatch": true,
+    "search": "OPS"
+   },
+   {
+    "fullmatch": false,
+    "search": "ops"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "\\Aops",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '\\\\Aops'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "\\B",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '\\\\B'"
+ },
+ {
+  "error": "PatternError",
+  "input": {
+   "pattern": "ops\\",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re 'ops\\\\'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": true,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   },
+   {
+    "fullmatch": false,
+    "search": ""
+   }
+  ],
+  "input": {
+   "pattern": "",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re ''"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": true,
+    "search": "ops"
+   },
+   {
+    "fullmatch": true,
+    "search": "OPS"
+   },
+   {
+    "fullmatch": false,
+    "search": "ops"
+   },
+   {
+    "fullmatch": false,
+    "search": "dev"
+   },
+   {
+    "fullmatch": false,
+    "search": "deploy"
+   },
+   {
+    "fullmatch": false,
+    "search": "Deploy"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "x"
+   },
+   {
+    "fullmatch": true,
+    "search": "ab"
+   },
+   {
+    "fullmatch": true,
+    "search": "aab"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "line"
+   },
+   {
+    "fullmatch": false,
+    "search": "caf"
+   },
+   {
+    "fullmatch": false,
+    "search": "CAF"
+   },
+   {
+    "fullmatch": false,
+    "search": "ok"
+   },
+   {
+    "fullmatch": false,
+    "search": "q"
+   },
+   {
+    "fullmatch": false,
+    "search": "x"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "price"
+   },
+   {
+    "fullmatch": false,
+    "search": "back"
+   },
+   {
+    "fullmatch": false,
+    "search": "tab"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "stra"
+   },
+   {
+    "fullmatch": true,
+    "search": "STRASSE"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "x"
+   }
+  ],
+  "input": {
+   "pattern": "[a-z]+",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '[a-z]+'"
+ },
+ {
+  "error": "PatternError",
+  "input": {
+   "pattern": "[z-a]",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '[z-a]'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": true,
+    "search": "ops"
+   },
+   {
+    "fullmatch": true,
+    "search": "OPS"
+   },
+   {
+    "fullmatch": false,
+    "search": "ops"
+   },
+   {
+    "fullmatch": false,
+    "search": "dev"
+   },
+   {
+    "fullmatch": false,
+    "search": "deploy"
+   },
+   {
+    "fullmatch": false,
+    "search": "Deploy"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "x"
+   },
+   {
+    "fullmatch": true,
+    "search": "ab"
+   },
+   {
+    "fullmatch": true,
+    "search": "aab"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "line"
+   },
+   {
+    "fullmatch": false,
+    "search": "caf"
+   },
+   {
+    "fullmatch": false,
+    "search": "CAF"
+   },
+   {
+    "fullmatch": false,
+    "search": "ok"
+   },
+   {
+    "fullmatch": false,
+    "search": "q"
+   },
+   {
+    "fullmatch": false,
+    "search": "x"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "price"
+   },
+   {
+    "fullmatch": false,
+    "search": "back"
+   },
+   {
+    "fullmatch": false,
+    "search": "tab"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "stra"
+   },
+   {
+    "fullmatch": true,
+    "search": "STRASSE"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "x"
+   }
+  ],
+  "input": {
+   "pattern": "[\\x41-\\x5a]+",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '[\\\\x41-\\\\x5a]+'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "\\101",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '\\\\101'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "(a)(b)\\2",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '(a)(b)\\\\2'"
+ },
+ {
+  "error": "PatternError",
+  "input": {
+   "pattern": "(a\\1)",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '(a\\\\1)'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "b"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "(?P<n>a)|b",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '(?P<n>a)|b'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "-"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "[-a]",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '[-a]'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "-"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "[a-]",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '[a-]'"
+ },
+ {
+  "error": "PatternError",
+  "input": {
+   "pattern": "[\\d-z]",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '[\\\\d-z]'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "]"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "]"
+   }
+  ],
+  "input": {
+   "pattern": "[]-a]",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '[]-a]'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "-"
+   },
+   {
+    "fullmatch": false,
+    "search": "e"
+   },
+   {
+    "fullmatch": false,
+    "search": "e"
+   },
+   {
+    "fullmatch": false,
+    "search": "e"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "e"
+   },
+   {
+    "fullmatch": false,
+    "search": "c"
+   },
+   {
+    "fullmatch": false,
+    "search": "C"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "c"
+   },
+   {
+    "fullmatch": false,
+    "search": "b"
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": "a"
+   },
+   {
+    "fullmatch": false,
+    "search": "A"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "[a-c-e]",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '[a-c-e]'"
+ },
+ {
+  "error": "PatternError",
+  "input": {
+   "pattern": "\\x4",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '\\\\x4'"
+ },
+ {
+  "error": "PatternError",
+  "input": {
+   "pattern": "(?<n>a)",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '(?<n>a)'"
+ },
+ {
+  "error": "PatternError",
+  "input": {
+   "pattern": "(?P<2x>a)",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '(?P<2x>a)'"
+ },
+ {
+  "expected": [
+   {
+    "fullmatch": true,
+    "search": "ops"
+   },
+   {
+    "fullmatch": true,
+    "search": "OPS"
+   },
+   {
+    "fullmatch": false,
+    "search": "ops"
+   },
+   {
+    "fullmatch": false,
+    "search": "ops"
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   },
+   {
+    "fullmatch": false,
+    "search": null
+   }
+  ],
+  "input": {
+   "pattern": "(?x) o p s",
+   "subjects": [
+    "ops",
+    "OPS",
+    "ops-alerts",
+    "dev ops",
+    "deploy failed",
+    "Deploy FAILED!",
+    "a{1}",
+    "x{,2}y",
+    "ab",
+    "aab",
+    "",
+    "line\n",
+    "café",
+    "CAFÉ",
+    "😀 ok",
+    "q&a",
+    "[x]",
+    "a-b",
+    "price: $5",
+    "back\\slash",
+    "tab\there",
+    "1.2.3",
+    "straße",
+    "STRASSE",
+    "\u000b",
+    "x]y"
+   ]
+  },
+  "name": "re '(?x) o p s'"
+ }
+]

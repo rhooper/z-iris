@@ -223,8 +223,44 @@ def lower_cases() -> list[dict]:
     return [run(f"lower {t!r}", {"text": t}, lambda t=t: t.lower()) for t in texts]
 
 
+REGEX_SUBJECTS = ["ops", "OPS", "ops-alerts", "dev ops", "deploy failed", "Deploy FAILED!",
+                  "a{1}", "x{,2}y", "ab", "aab", "", "line\n", "café", "CAFÉ", "😀 ok",
+                  "q&a", "[x]", "a-b", "price: $5", "back\\slash", "tab\there", "1.2.3",
+                  "straße", "STRASSE", "\x0b", "x]y"]
+
+REGEX_PATTERNS = [
+    "ops", "^ops$", "ops|dev", ".*ops.*", "deploy (failed|broke)", r"\bfail", r"\d+\.\d+",
+    r"(?P<w>a)(?P=w)b", r"a\Z", r"line\Z", "line$", "a{1}", "a{,2}", "a{2,}", "{", "x{,2}y",
+    "a{x}", "}", "[]x]", "[[]", "[x&&y]", "[a--b]", "[^]x]", r"[\b]", r"\v", r"\s", r"\w+",
+    "caf.", "CAFÉ", "straße", r"\$\d", "q&a", r"back\\slash", r"\x41", r"é", r"\U0001F600",
+    r"\N{LATIN SMALL LETTER E WITH ACUTE}", "(?i)ops", "(?:ab)+", "a++", "(?=o)ops", "(?<=a)b",
+    "(?<!x)ab", r"\p{L}", r"\h", r"\Q.\E", "(", "[", "*", "a**", r"\k<x>", "(?P<1>x)",
+    "(?P>x)", "x(?i)", "(?<=a+)b", r"\1(a)", "(a)\\1", r"\0", r"\Aops", r"\B", "ops\\", "",
+    "[a-z]+", "[z-a]", r"[\x41-\x5a]+", r"\101", r"(a)(b)\2", r"(a\1)", "(?P<n>a)|b", "[-a]",
+    "[a-]", r"[\d-z]", "[]-a]", "[a-c-e]", r"\x4", "(?<n>a)", "(?P<2x>a)", "(?x) o p s",
+]
+
+
+def regex_cases() -> list[dict]:
+    import re
+    cases = []
+    for pattern in REGEX_PATTERNS:
+        def build(pattern=pattern):
+            compiled = re.compile(pattern, re.IGNORECASE)
+            results = []
+            for subject in REGEX_SUBJECTS:
+                found = compiled.search(subject)
+                results.append({"search": None if found is None else found.group(0),
+                                "fullmatch": compiled.fullmatch(subject) is not None})
+            return results
+        cases.append(run(f"re {pattern!r}", {"pattern": pattern, "subjects": REGEX_SUBJECTS},
+                         build))
+    return cases
+
+
 FIXTURES = {
     "lower": lower_cases,
+    "regex": regex_cases,
     "message": message_cases,
     "narrow": narrow_cases,
     "mutes": mute_cases,
