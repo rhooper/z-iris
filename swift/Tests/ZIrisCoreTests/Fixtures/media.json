@@ -1,0 +1,1437 @@
+[
+ {
+  "expected": [
+   "https://x.com/a.png"
+  ],
+  "input": {
+   "content": "![pic](https://x.com/a.png)",
+   "op": "extract"
+  },
+  "name": "extract '![pic](https://x.com/a.png)'"
+ },
+ {
+  "expected": [
+   "https://x.com/a"
+  ],
+  "input": {
+   "content": "![pic](https://x.com/a)",
+   "op": "extract"
+  },
+  "name": "extract '![pic](https://x.com/a)'"
+ },
+ {
+  "expected": [
+   "https://x.com/a.png"
+  ],
+  "input": {
+   "content": "![pic](https://x.com/a.png \"title\")",
+   "op": "extract"
+  },
+  "name": "extract '![pic](https://x.com/a.png \"title\")'"
+ },
+ {
+  "expected": [
+   "https://x.com/a.JPG"
+  ],
+  "input": {
+   "content": "see https://x.com/a.JPG now",
+   "op": "extract"
+  },
+  "name": "extract 'see https://x.com/a.JPG now'"
+ },
+ {
+  "expected": [
+   "https://x.com/a.webp?x=1"
+  ],
+  "input": {
+   "content": "see https://x.com/a.webp?x=1 now",
+   "op": "extract"
+  },
+  "name": "extract 'see https://x.com/a.webp?x=1 now'"
+ },
+ {
+  "expected": [],
+  "input": {
+   "content": "https://x.com/page.html",
+   "op": "extract"
+  },
+  "name": "extract 'https://x.com/page.html'"
+ },
+ {
+  "expected": [
+   "/user_uploads/1/ab/cat.jpeg"
+  ],
+  "input": {
+   "content": "[name](/user_uploads/1/ab/cat.jpeg)",
+   "op": "extract"
+  },
+  "name": "extract '[name](/user_uploads/1/ab/cat.jpeg)'"
+ },
+ {
+  "expected": [],
+  "input": {
+   "content": "[doc](/user_uploads/1/ab/file.pdf)",
+   "op": "extract"
+  },
+  "name": "extract '[doc](/user_uploads/1/ab/file.pdf)'"
+ },
+ {
+  "expected": [],
+  "input": {
+   "content": "[site](https://x.com/page)",
+   "op": "extract"
+  },
+  "name": "extract '[site](https://x.com/page)'"
+ },
+ {
+  "expected": [
+   "/thumbnail?url=user_uploads%2F1%2Fa.png&size=full"
+  ],
+  "input": {
+   "content": "![t](/thumbnail?url=user_uploads%2F1%2Fa.png&size=full)",
+   "op": "extract"
+  },
+  "name": "extract '![t](/thumbnail?url=user_uploads%2F1%2Fa'"
+ },
+ {
+  "expected": [
+   "https://x.com/i.gif"
+  ],
+  "input": {
+   "content": "[![alt](https://x.com/i.gif)](https://x.com/page)",
+   "op": "extract"
+  },
+  "name": "extract '[![alt](https://x.com/i.gif)](https://x.'"
+ },
+ {
+  "expected": [
+   "https://a.com/1.png",
+   "https://b.com/2.png"
+  ],
+  "input": {
+   "content": "first https://a.com/1.png then ![x](https://b.com/2.png)",
+   "op": "extract"
+  },
+  "name": "extract 'first https://a.com/1.png then ![x](http'"
+ },
+ {
+  "expected": [],
+  "input": {
+   "content": "![a](ftp://x.com/a.png)",
+   "op": "extract"
+  },
+  "name": "extract '![a](ftp://x.com/a.png)'"
+ },
+ {
+  "expected": [],
+  "input": {
+   "content": "![a](javascript:alert(1))",
+   "op": "extract"
+  },
+  "name": "extract '![a](javascript:alert(1))'"
+ },
+ {
+  "expected": [],
+  "input": {
+   "content": "```\nhttps://x.com/code.png\n```",
+   "op": "extract"
+  },
+  "name": "extract '```\\nhttps://x.com/code.png\\n```'"
+ },
+ {
+  "expected": [
+   "https://x.com/a.png"
+  ],
+  "input": {
+   "content": "![a](https://x.com/a.png) ![a](https://x.com/a.png)",
+   "op": "extract"
+  },
+  "name": "extract '![a](https://x.com/a.png) ![a](https://x'"
+ },
+ {
+  "expected": [
+   "https://x.com/a.png"
+  ],
+  "input": {
+   "content": "(https://x.com/a.png)",
+   "op": "extract"
+  },
+  "name": "extract '(https://x.com/a.png)'"
+ },
+ {
+  "expected": [],
+  "input": {
+   "content": "",
+   "op": "extract"
+  },
+  "name": "extract ''"
+ },
+ {
+  "expected": [
+   "https://x.com/a.png"
+  ],
+  "input": {
+   "content": "end https://x.com/a.png.",
+   "op": "extract"
+  },
+  "name": "extract 'end https://x.com/a.png.'"
+ },
+ {
+  "expected": [
+   "https://x.com/a.png"
+  ],
+  "input": {
+   "content": "quote 'https://x.com/a.png'",
+   "op": "extract"
+  },
+  "name": "extract \"quote 'https://x.com/a.png'\""
+ },
+ {
+  "expected": [
+   "https://x.com/a.png"
+  ],
+  "input": {
+   "content": "![ ]( <https://x.com/a.png> )",
+   "op": "extract"
+  },
+  "name": "extract '![ ]( <https://x.com/a.png> )'"
+ },
+ {
+  "expected": [],
+  "input": {
+   "content": "``` unclosed\nhttps://x.com/a.png",
+   "op": "extract"
+  },
+  "name": "extract '``` unclosed\\nhttps://x.com/a.png'"
+ },
+ {
+  "expected": [
+   "HTTPS://X.COM/A.PNG"
+  ],
+  "input": {
+   "content": "HTTPS://X.COM/A.PNG",
+   "op": "extract"
+  },
+  "name": "extract 'HTTPS://X.COM/A.PNG'"
+ },
+ {
+  "expected": [
+   "//cdn.x.com/a.png"
+  ],
+  "input": {
+   "content": "![a](//cdn.x.com/a.png)",
+   "op": "extract"
+  },
+  "name": "extract '![a](//cdn.x.com/a.png)'"
+ },
+ {
+  "expected": [],
+  "input": {
+   "content": "![a](relative/a.png)",
+   "op": "extract"
+  },
+  "name": "extract '![a](relative/a.png)'"
+ },
+ {
+  "expected": [
+   "/user_uploads/1/a.PNG#frag"
+  ],
+  "input": {
+   "content": "[x](/user_uploads/1/a.PNG#frag)",
+   "op": "extract"
+  },
+  "name": "extract '[x](/user_uploads/1/a.PNG#frag)'"
+ },
+ {
+  "expected": [
+   "https://x.com/a.png"
+  ],
+  "input": {
+   "content": "https://x.com/a.png!?",
+   "op": "extract"
+  },
+  "name": "extract 'https://x.com/a.png!?'"
+ },
+ {
+  "expected": {
+   "credentials_allowed": true,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/",
+   "op": "origin",
+   "url": "https://chat.example.com/user_uploads/1/a/x.png"
+  },
+  "name": "origin https://chat.example.com/user_uploads/1/a/x.png vs https://chat.example.com/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": true,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/",
+   "op": "origin",
+   "url": "https://chat.example.com/user_avatars/1.png"
+  },
+  "name": "origin https://chat.example.com/user_avatars/1.png vs https://chat.example.com/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": true,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/",
+   "op": "origin",
+   "url": "https://chat.example.com/thumbnail?url=a&size=full"
+  },
+  "name": "origin https://chat.example.com/thumbnail?url=a&size=full vs https://chat.example.com/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": true,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/",
+   "op": "origin",
+   "url": "https://chat.example.com/thumbnail/x"
+  },
+  "name": "origin https://chat.example.com/thumbnail/x vs https://chat.example.com/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/",
+   "op": "origin",
+   "url": "https://chat.example.com/thumbnailX"
+  },
+  "name": "origin https://chat.example.com/thumbnailX vs https://chat.example.com/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/",
+   "op": "origin",
+   "url": "http://chat.example.com/user_uploads/1/a"
+  },
+  "name": "origin http://chat.example.com/user_uploads/1/a vs https://chat.example.com/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/",
+   "op": "origin",
+   "url": "https://chat.example.com:444/user_uploads/1/a"
+  },
+  "name": "origin https://chat.example.com:444/user_uploads/1/a vs https://chat.example.com/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": true,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/",
+   "op": "origin",
+   "url": "https://chat.example.com:443/user_uploads/1/a"
+  },
+  "name": "origin https://chat.example.com:443/user_uploads/1/a vs https://chat.example.com/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/",
+   "op": "origin",
+   "url": "https://chat.example.com/api/v1/users"
+  },
+  "name": "origin https://chat.example.com/api/v1/users vs https://chat.example.com/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/",
+   "op": "origin",
+   "url": "https://chat.example.com/user_uploadsX/1"
+  },
+  "name": "origin https://chat.example.com/user_uploadsX/1 vs https://chat.example.com/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/",
+   "op": "origin",
+   "url": "https://evil.org/user_uploads/1/a"
+  },
+  "name": "origin https://evil.org/user_uploads/1/a vs https://chat.example.com/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": true,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/",
+   "op": "origin",
+   "url": "https://CHAT.Example.com/user_uploads/1/a"
+  },
+  "name": "origin https://CHAT.Example.com/user_uploads/1/a vs https://chat.example.com/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": true,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/",
+   "op": "origin",
+   "url": "https://user:pw@chat.example.com/user_uploads/1"
+  },
+  "name": "origin https://user:pw@chat.example.com/user_uploads/1 vs https://chat.example.com/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/",
+   "op": "origin",
+   "url": "https://chat.example.com:bad/user_uploads/1"
+  },
+  "name": "origin https://chat.example.com:bad/user_uploads/1 vs https://chat.example.com/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": false
+  },
+  "input": {
+   "base": "https://chat.example.com/",
+   "op": "origin",
+   "url": "ftp://chat.example.com/user_uploads/1"
+  },
+  "name": "origin ftp://chat.example.com/user_uploads/1 vs https://chat.example.com/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/",
+   "op": "origin",
+   "url": "/user_uploads/1/a"
+  },
+  "name": "origin /user_uploads/1/a vs https://chat.example.com/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/",
+   "op": "origin",
+   "url": "http://localhost:9991/user_uploads/1/a"
+  },
+  "name": "origin http://localhost:9991/user_uploads/1/a vs https://chat.example.com/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/",
+   "op": "origin",
+   "url": "https://[::1]/user_uploads/1"
+  },
+  "name": "origin https://[::1]/user_uploads/1 vs https://chat.example.com/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/",
+   "op": "origin",
+   "url": "https://chat.example.com/avatar/9"
+  },
+  "name": "origin https://chat.example.com/avatar/9 vs https://chat.example.com/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/",
+   "op": "origin",
+   "url": "https://chat.example.com/user_uploads"
+  },
+  "name": "origin https://chat.example.com/user_uploads vs https://chat.example.com/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": false
+  },
+  "input": {
+   "base": "https://chat.example.com/",
+   "op": "origin",
+   "url": "javascript:alert(1)"
+  },
+  "name": "origin javascript:alert(1) vs https://chat.example.com/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": true,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "origin",
+   "url": "https://chat.example.com/user_uploads/1/a/x.png"
+  },
+  "name": "origin https://chat.example.com/user_uploads/1/a/x.png vs https://chat.example.com/api/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": true,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "origin",
+   "url": "https://chat.example.com/user_avatars/1.png"
+  },
+  "name": "origin https://chat.example.com/user_avatars/1.png vs https://chat.example.com/api/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": true,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "origin",
+   "url": "https://chat.example.com/thumbnail?url=a&size=full"
+  },
+  "name": "origin https://chat.example.com/thumbnail?url=a&size=full vs https://chat.example.com/api/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": true,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "origin",
+   "url": "https://chat.example.com/thumbnail/x"
+  },
+  "name": "origin https://chat.example.com/thumbnail/x vs https://chat.example.com/api/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "origin",
+   "url": "https://chat.example.com/thumbnailX"
+  },
+  "name": "origin https://chat.example.com/thumbnailX vs https://chat.example.com/api/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "origin",
+   "url": "http://chat.example.com/user_uploads/1/a"
+  },
+  "name": "origin http://chat.example.com/user_uploads/1/a vs https://chat.example.com/api/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "origin",
+   "url": "https://chat.example.com:444/user_uploads/1/a"
+  },
+  "name": "origin https://chat.example.com:444/user_uploads/1/a vs https://chat.example.com/api/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": true,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "origin",
+   "url": "https://chat.example.com:443/user_uploads/1/a"
+  },
+  "name": "origin https://chat.example.com:443/user_uploads/1/a vs https://chat.example.com/api/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "origin",
+   "url": "https://chat.example.com/api/v1/users"
+  },
+  "name": "origin https://chat.example.com/api/v1/users vs https://chat.example.com/api/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "origin",
+   "url": "https://chat.example.com/user_uploadsX/1"
+  },
+  "name": "origin https://chat.example.com/user_uploadsX/1 vs https://chat.example.com/api/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "origin",
+   "url": "https://evil.org/user_uploads/1/a"
+  },
+  "name": "origin https://evil.org/user_uploads/1/a vs https://chat.example.com/api/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": true,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "origin",
+   "url": "https://CHAT.Example.com/user_uploads/1/a"
+  },
+  "name": "origin https://CHAT.Example.com/user_uploads/1/a vs https://chat.example.com/api/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": true,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "origin",
+   "url": "https://user:pw@chat.example.com/user_uploads/1"
+  },
+  "name": "origin https://user:pw@chat.example.com/user_uploads/1 vs https://chat.example.com/api/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "origin",
+   "url": "https://chat.example.com:bad/user_uploads/1"
+  },
+  "name": "origin https://chat.example.com:bad/user_uploads/1 vs https://chat.example.com/api/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": false
+  },
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "origin",
+   "url": "ftp://chat.example.com/user_uploads/1"
+  },
+  "name": "origin ftp://chat.example.com/user_uploads/1 vs https://chat.example.com/api/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "origin",
+   "url": "/user_uploads/1/a"
+  },
+  "name": "origin /user_uploads/1/a vs https://chat.example.com/api/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "origin",
+   "url": "http://localhost:9991/user_uploads/1/a"
+  },
+  "name": "origin http://localhost:9991/user_uploads/1/a vs https://chat.example.com/api/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "origin",
+   "url": "https://[::1]/user_uploads/1"
+  },
+  "name": "origin https://[::1]/user_uploads/1 vs https://chat.example.com/api/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "origin",
+   "url": "https://chat.example.com/avatar/9"
+  },
+  "name": "origin https://chat.example.com/avatar/9 vs https://chat.example.com/api/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "origin",
+   "url": "https://chat.example.com/user_uploads"
+  },
+  "name": "origin https://chat.example.com/user_uploads vs https://chat.example.com/api/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": false
+  },
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "origin",
+   "url": "javascript:alert(1)"
+  },
+  "name": "origin javascript:alert(1) vs https://chat.example.com/api/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "http://localhost:9991",
+   "op": "origin",
+   "url": "https://chat.example.com/user_uploads/1/a/x.png"
+  },
+  "name": "origin https://chat.example.com/user_uploads/1/a/x.png vs http://localhost:9991"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "http://localhost:9991",
+   "op": "origin",
+   "url": "https://chat.example.com/user_avatars/1.png"
+  },
+  "name": "origin https://chat.example.com/user_avatars/1.png vs http://localhost:9991"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "http://localhost:9991",
+   "op": "origin",
+   "url": "https://chat.example.com/thumbnail?url=a&size=full"
+  },
+  "name": "origin https://chat.example.com/thumbnail?url=a&size=full vs http://localhost:9991"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "http://localhost:9991",
+   "op": "origin",
+   "url": "https://chat.example.com/thumbnail/x"
+  },
+  "name": "origin https://chat.example.com/thumbnail/x vs http://localhost:9991"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "http://localhost:9991",
+   "op": "origin",
+   "url": "https://chat.example.com/thumbnailX"
+  },
+  "name": "origin https://chat.example.com/thumbnailX vs http://localhost:9991"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "http://localhost:9991",
+   "op": "origin",
+   "url": "http://chat.example.com/user_uploads/1/a"
+  },
+  "name": "origin http://chat.example.com/user_uploads/1/a vs http://localhost:9991"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "http://localhost:9991",
+   "op": "origin",
+   "url": "https://chat.example.com:444/user_uploads/1/a"
+  },
+  "name": "origin https://chat.example.com:444/user_uploads/1/a vs http://localhost:9991"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "http://localhost:9991",
+   "op": "origin",
+   "url": "https://chat.example.com:443/user_uploads/1/a"
+  },
+  "name": "origin https://chat.example.com:443/user_uploads/1/a vs http://localhost:9991"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "http://localhost:9991",
+   "op": "origin",
+   "url": "https://chat.example.com/api/v1/users"
+  },
+  "name": "origin https://chat.example.com/api/v1/users vs http://localhost:9991"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "http://localhost:9991",
+   "op": "origin",
+   "url": "https://chat.example.com/user_uploadsX/1"
+  },
+  "name": "origin https://chat.example.com/user_uploadsX/1 vs http://localhost:9991"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "http://localhost:9991",
+   "op": "origin",
+   "url": "https://evil.org/user_uploads/1/a"
+  },
+  "name": "origin https://evil.org/user_uploads/1/a vs http://localhost:9991"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "http://localhost:9991",
+   "op": "origin",
+   "url": "https://CHAT.Example.com/user_uploads/1/a"
+  },
+  "name": "origin https://CHAT.Example.com/user_uploads/1/a vs http://localhost:9991"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "http://localhost:9991",
+   "op": "origin",
+   "url": "https://user:pw@chat.example.com/user_uploads/1"
+  },
+  "name": "origin https://user:pw@chat.example.com/user_uploads/1 vs http://localhost:9991"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "http://localhost:9991",
+   "op": "origin",
+   "url": "https://chat.example.com:bad/user_uploads/1"
+  },
+  "name": "origin https://chat.example.com:bad/user_uploads/1 vs http://localhost:9991"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": false
+  },
+  "input": {
+   "base": "http://localhost:9991",
+   "op": "origin",
+   "url": "ftp://chat.example.com/user_uploads/1"
+  },
+  "name": "origin ftp://chat.example.com/user_uploads/1 vs http://localhost:9991"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "http://localhost:9991",
+   "op": "origin",
+   "url": "/user_uploads/1/a"
+  },
+  "name": "origin /user_uploads/1/a vs http://localhost:9991"
+ },
+ {
+  "expected": {
+   "credentials_allowed": true,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "http://localhost:9991",
+   "op": "origin",
+   "url": "http://localhost:9991/user_uploads/1/a"
+  },
+  "name": "origin http://localhost:9991/user_uploads/1/a vs http://localhost:9991"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "http://localhost:9991",
+   "op": "origin",
+   "url": "https://[::1]/user_uploads/1"
+  },
+  "name": "origin https://[::1]/user_uploads/1 vs http://localhost:9991"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "http://localhost:9991",
+   "op": "origin",
+   "url": "https://chat.example.com/avatar/9"
+  },
+  "name": "origin https://chat.example.com/avatar/9 vs http://localhost:9991"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "http://localhost:9991",
+   "op": "origin",
+   "url": "https://chat.example.com/user_uploads"
+  },
+  "name": "origin https://chat.example.com/user_uploads vs http://localhost:9991"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": false
+  },
+  "input": {
+   "base": "http://localhost:9991",
+   "op": "origin",
+   "url": "javascript:alert(1)"
+  },
+  "name": "origin javascript:alert(1) vs http://localhost:9991"
+ },
+ {
+  "expected": {
+   "credentials_allowed": true,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com:443/",
+   "op": "origin",
+   "url": "https://chat.example.com/user_uploads/1/a/x.png"
+  },
+  "name": "origin https://chat.example.com/user_uploads/1/a/x.png vs https://chat.example.com:443/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": true,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com:443/",
+   "op": "origin",
+   "url": "https://chat.example.com/user_avatars/1.png"
+  },
+  "name": "origin https://chat.example.com/user_avatars/1.png vs https://chat.example.com:443/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": true,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com:443/",
+   "op": "origin",
+   "url": "https://chat.example.com/thumbnail?url=a&size=full"
+  },
+  "name": "origin https://chat.example.com/thumbnail?url=a&size=full vs https://chat.example.com:443/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": true,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com:443/",
+   "op": "origin",
+   "url": "https://chat.example.com/thumbnail/x"
+  },
+  "name": "origin https://chat.example.com/thumbnail/x vs https://chat.example.com:443/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com:443/",
+   "op": "origin",
+   "url": "https://chat.example.com/thumbnailX"
+  },
+  "name": "origin https://chat.example.com/thumbnailX vs https://chat.example.com:443/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com:443/",
+   "op": "origin",
+   "url": "http://chat.example.com/user_uploads/1/a"
+  },
+  "name": "origin http://chat.example.com/user_uploads/1/a vs https://chat.example.com:443/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com:443/",
+   "op": "origin",
+   "url": "https://chat.example.com:444/user_uploads/1/a"
+  },
+  "name": "origin https://chat.example.com:444/user_uploads/1/a vs https://chat.example.com:443/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": true,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com:443/",
+   "op": "origin",
+   "url": "https://chat.example.com:443/user_uploads/1/a"
+  },
+  "name": "origin https://chat.example.com:443/user_uploads/1/a vs https://chat.example.com:443/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com:443/",
+   "op": "origin",
+   "url": "https://chat.example.com/api/v1/users"
+  },
+  "name": "origin https://chat.example.com/api/v1/users vs https://chat.example.com:443/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com:443/",
+   "op": "origin",
+   "url": "https://chat.example.com/user_uploadsX/1"
+  },
+  "name": "origin https://chat.example.com/user_uploadsX/1 vs https://chat.example.com:443/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com:443/",
+   "op": "origin",
+   "url": "https://evil.org/user_uploads/1/a"
+  },
+  "name": "origin https://evil.org/user_uploads/1/a vs https://chat.example.com:443/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": true,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com:443/",
+   "op": "origin",
+   "url": "https://CHAT.Example.com/user_uploads/1/a"
+  },
+  "name": "origin https://CHAT.Example.com/user_uploads/1/a vs https://chat.example.com:443/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": true,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com:443/",
+   "op": "origin",
+   "url": "https://user:pw@chat.example.com/user_uploads/1"
+  },
+  "name": "origin https://user:pw@chat.example.com/user_uploads/1 vs https://chat.example.com:443/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com:443/",
+   "op": "origin",
+   "url": "https://chat.example.com:bad/user_uploads/1"
+  },
+  "name": "origin https://chat.example.com:bad/user_uploads/1 vs https://chat.example.com:443/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": false
+  },
+  "input": {
+   "base": "https://chat.example.com:443/",
+   "op": "origin",
+   "url": "ftp://chat.example.com/user_uploads/1"
+  },
+  "name": "origin ftp://chat.example.com/user_uploads/1 vs https://chat.example.com:443/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com:443/",
+   "op": "origin",
+   "url": "/user_uploads/1/a"
+  },
+  "name": "origin /user_uploads/1/a vs https://chat.example.com:443/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com:443/",
+   "op": "origin",
+   "url": "http://localhost:9991/user_uploads/1/a"
+  },
+  "name": "origin http://localhost:9991/user_uploads/1/a vs https://chat.example.com:443/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com:443/",
+   "op": "origin",
+   "url": "https://[::1]/user_uploads/1"
+  },
+  "name": "origin https://[::1]/user_uploads/1 vs https://chat.example.com:443/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com:443/",
+   "op": "origin",
+   "url": "https://chat.example.com/avatar/9"
+  },
+  "name": "origin https://chat.example.com/avatar/9 vs https://chat.example.com:443/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": true,
+   "web_or_relative": true
+  },
+  "input": {
+   "base": "https://chat.example.com:443/",
+   "op": "origin",
+   "url": "https://chat.example.com/user_uploads"
+  },
+  "name": "origin https://chat.example.com/user_uploads vs https://chat.example.com:443/"
+ },
+ {
+  "expected": {
+   "credentials_allowed": false,
+   "same_origin": false,
+   "web_or_relative": false
+  },
+  "input": {
+   "base": "https://chat.example.com:443/",
+   "op": "origin",
+   "url": "javascript:alert(1)"
+  },
+  "name": "origin javascript:alert(1) vs https://chat.example.com:443/"
+ },
+ {
+  "expected": "https://chat.example.com/user_uploads/1/a.png",
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "join",
+   "url": "/user_uploads/1/a.png"
+  },
+  "name": "join '/user_uploads/1/a.png'"
+ },
+ {
+  "expected": "https://chat.example.com/api/user_uploads/1/a.png",
+  "input": {
+   "base": "https://chat.example.com/api/",
+   "op": "join",
+   "url": "user_uploads/1/a.png"
+  },
+  "name": "join 'user_uploads/1/a.png'"
+ },
+ {
+  "expected": "https://cdn.other.com/x.png",
+  "input": {
+   "base": "https://chat.example.com/user_uploads/1/a/x.png",
+   "op": "join",
+   "url": "https://cdn.other.com/x.png"
+  },
+  "name": "join 'https://cdn.other.com/x.png'"
+ },
+ {
+  "expected": "https://chat.example.com/json/users/me",
+  "input": {
+   "base": "https://chat.example.com/user_uploads/1/a/x.png",
+   "op": "join",
+   "url": "/json/users/me"
+  },
+  "name": "join '/json/users/me'"
+ },
+ {
+  "expected": "https://chat.example.com/user_uploads/1/a/b.png",
+  "input": {
+   "base": "https://chat.example.com/user_uploads/1/a/x.png",
+   "op": "join",
+   "url": "b.png"
+  },
+  "name": "join 'b.png'"
+ },
+ {
+  "expected": "https://chat.example.com/user_uploads/1/b.png",
+  "input": {
+   "base": "https://chat.example.com/user_uploads/1/a/x.png",
+   "op": "join",
+   "url": "../b.png"
+  },
+  "name": "join '../b.png'"
+ },
+ {
+  "expected": "https://chat.example.com/user_uploads/1/a/x.png?x=1",
+  "input": {
+   "base": "https://chat.example.com/user_uploads/1/a/x.png",
+   "op": "join",
+   "url": "?x=1"
+  },
+  "name": "join '?x=1'"
+ },
+ {
+  "expected": "https://cdn.x.com/y.png",
+  "input": {
+   "base": "https://chat.example.com/user_uploads/1/a/x.png",
+   "op": "join",
+   "url": "//cdn.x.com/y.png"
+  },
+  "name": "join '//cdn.x.com/y.png'"
+ },
+ {
+  "expected": "https://chat.example.com/a/b",
+  "input": {
+   "base": "https://chat.example.com/a/b",
+   "op": "join",
+   "url": ""
+  },
+  "name": "join ''"
+ },
+ {
+  "expected": "ftp://x/a",
+  "input": {
+   "base": "https://chat.example.com/a/b",
+   "op": "join",
+   "url": "ftp://x/a"
+  },
+  "name": "join 'ftp://x/a'"
+ }
+]

@@ -1188,7 +1188,70 @@ sound = "/etc/hosts"
     return [run("preview", {"toml": toml, "messages": messages}, build)]
 
 
+MEDIA_CONTENTS = [
+    "![pic](https://x.com/a.png)", "![pic](https://x.com/a)", '![pic](https://x.com/a.png "title")',
+    "see https://x.com/a.JPG now", "see https://x.com/a.webp?x=1 now", "https://x.com/page.html",
+    "[name](/user_uploads/1/ab/cat.jpeg)", "[doc](/user_uploads/1/ab/file.pdf)",
+    "[site](https://x.com/page)", "![t](/thumbnail?url=user_uploads%2F1%2Fa.png&size=full)",
+    "[![alt](https://x.com/i.gif)](https://x.com/page)",
+    "first https://a.com/1.png then ![x](https://b.com/2.png)", "![a](ftp://x.com/a.png)",
+    "![a](javascript:alert(1))", "```\nhttps://x.com/code.png\n```",
+    "![a](https://x.com/a.png) ![a](https://x.com/a.png)", "(https://x.com/a.png)", "",
+    "end https://x.com/a.png.", "quote 'https://x.com/a.png'", "![ ]( <https://x.com/a.png> )",
+    "``` unclosed\nhttps://x.com/a.png", "HTTPS://X.COM/A.PNG", "![a](//cdn.x.com/a.png)",
+    "![a](relative/a.png)", "[x](/user_uploads/1/a.PNG#frag)", "https://x.com/a.png!?",
+]
+
+MEDIA_URLS = [
+    "https://chat.example.com/user_uploads/1/a/x.png", "https://chat.example.com/user_avatars/1.png",
+    "https://chat.example.com/thumbnail?url=a&size=full", "https://chat.example.com/thumbnail/x",
+    "https://chat.example.com/thumbnailX", "http://chat.example.com/user_uploads/1/a",
+    "https://chat.example.com:444/user_uploads/1/a", "https://chat.example.com:443/user_uploads/1/a",
+    "https://chat.example.com/api/v1/users", "https://chat.example.com/user_uploadsX/1",
+    "https://evil.org/user_uploads/1/a", "https://CHAT.Example.com/user_uploads/1/a",
+    "https://user:pw@chat.example.com/user_uploads/1", "https://chat.example.com:bad/user_uploads/1",
+    "ftp://chat.example.com/user_uploads/1", "/user_uploads/1/a", "http://localhost:9991/user_uploads/1/a",
+    "https://[::1]/user_uploads/1", "https://chat.example.com/avatar/9",
+    "https://chat.example.com/user_uploads", "javascript:alert(1)",
+]
+
+MEDIA_BASES = ["https://chat.example.com/", "https://chat.example.com/api/", "http://localhost:9991",
+               "https://chat.example.com:443/"]
+
+JOIN_CASES = [
+    ("https://chat.example.com/api/", "/user_uploads/1/a.png"),
+    ("https://chat.example.com/api/", "user_uploads/1/a.png"),
+    ("https://chat.example.com/user_uploads/1/a/x.png", "https://cdn.other.com/x.png"),
+    ("https://chat.example.com/user_uploads/1/a/x.png", "/json/users/me"),
+    ("https://chat.example.com/user_uploads/1/a/x.png", "b.png"),
+    ("https://chat.example.com/user_uploads/1/a/x.png", "../b.png"),
+    ("https://chat.example.com/user_uploads/1/a/x.png", "?x=1"),
+    ("https://chat.example.com/user_uploads/1/a/x.png", "//cdn.x.com/y.png"),
+    ("https://chat.example.com/a/b", ""),
+    ("https://chat.example.com/a/b", "ftp://x/a"),
+]
+
+
+def media_cases() -> list[dict]:
+    from urllib.parse import urljoin
+    from z_iris.media import _web_or_relative, credentials_allowed, extract_image_urls, same_origin
+    cases = [run(f"extract {c[:40]!r}", {"op": "extract", "content": c},
+                 lambda c=c: extract_image_urls(c)) for c in MEDIA_CONTENTS]
+    for base in MEDIA_BASES:
+        for url in MEDIA_URLS:
+            cases.append(run(f"origin {url} vs {base}", {"op": "origin", "url": url, "base": base},
+                             lambda url=url, base=base: {
+                                 "same_origin": same_origin(url, base),
+                                 "credentials_allowed": credentials_allowed(url, base),
+                                 "web_or_relative": _web_or_relative(url)}))
+    for base, url in JOIN_CASES:
+        cases.append(run(f"join {url!r}", {"op": "join", "base": base, "url": url},
+                         lambda base=base, url=url: urljoin(base, url)))
+    return cases
+
+
 FIXTURES = {
+    "media": media_cases,
     "preview": preview_cases,
     "editing": editing_cases,
     "engine": engine_cases,
