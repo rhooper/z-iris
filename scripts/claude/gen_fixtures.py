@@ -1306,7 +1306,29 @@ def banner_cases() -> list[dict]:
     return cases
 
 
+def visual_cases() -> list[dict]:
+    from z_iris.visual import fade_alpha, frames, parse_color, start_alpha
+    cases = []
+    for color in ["#ff3b30", "#00FF7f", "#000000", "red", "#12345", "#gg0000", "", "#ff3b30 "]:
+        cases.append(run(f"color {color!r}", {"op": "color", "text": color},
+                         lambda color=color: list(parse_color(color))))
+    for screen in [(0, 0, 1728, 1117), (-1920, 25.5, 1920, 1080), (3456, -200, 1080, 1920)]:
+        for mode in ["screen", "top", "bottom", "left", "right", "none", "blink"]:
+            cases.append(run(f"frames {mode} {screen}", {"op": "frames", "screen": list(screen),
+                                                         "mode": mode},
+                             lambda screen=screen, mode=mode: {
+                                 "frames": [list(f) for f in frames(screen, mode)],
+                                 "alpha": start_alpha(mode)}))
+    for start, elapsed, duration in [(1, 0, 0.6), (0.35, 0.3, 0.6), (1, 0.59, 0.6), (1, 0.6, 0.6),
+                                     (1, -1, 0.6), (1, 0.1, 0), (1, 5, 10)]:
+        cases.append(run(f"fade {start} {elapsed} {duration}",
+                         {"op": "fade", "start": start, "elapsed": elapsed, "duration": duration},
+                         lambda a=start, b=elapsed, c=duration: fade_alpha(a, b, c)))
+    return cases
+
+
 FIXTURES = {
+    "visual": visual_cases,
     "banner": banner_cases,
     "media": media_cases,
     "preview": preview_cases,

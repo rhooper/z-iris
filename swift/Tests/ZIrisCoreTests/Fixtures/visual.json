@@ -1,0 +1,630 @@
+[
+ {
+  "expected": [
+   1.0,
+   0.23137254901960785,
+   0.18823529411764706
+  ],
+  "input": {
+   "op": "color",
+   "text": "#ff3b30"
+  },
+  "name": "color '#ff3b30'"
+ },
+ {
+  "expected": [
+   0.0,
+   1.0,
+   0.4980392156862745
+  ],
+  "input": {
+   "op": "color",
+   "text": "#00FF7f"
+  },
+  "name": "color '#00FF7f'"
+ },
+ {
+  "expected": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "input": {
+   "op": "color",
+   "text": "#000000"
+  },
+  "name": "color '#000000'"
+ },
+ {
+  "expected": [
+   1.0,
+   0.23137254901960785,
+   0.18823529411764706
+  ],
+  "input": {
+   "op": "color",
+   "text": "red"
+  },
+  "name": "color 'red'"
+ },
+ {
+  "expected": [
+   1.0,
+   0.23137254901960785,
+   0.18823529411764706
+  ],
+  "input": {
+   "op": "color",
+   "text": "#12345"
+  },
+  "name": "color '#12345'"
+ },
+ {
+  "expected": [
+   1.0,
+   0.23137254901960785,
+   0.18823529411764706
+  ],
+  "input": {
+   "op": "color",
+   "text": "#gg0000"
+  },
+  "name": "color '#gg0000'"
+ },
+ {
+  "expected": [
+   1.0,
+   0.23137254901960785,
+   0.18823529411764706
+  ],
+  "input": {
+   "op": "color",
+   "text": ""
+  },
+  "name": "color ''"
+ },
+ {
+  "expected": [
+   1.0,
+   0.23137254901960785,
+   0.18823529411764706
+  ],
+  "input": {
+   "op": "color",
+   "text": "#ff3b30 "
+  },
+  "name": "color '#ff3b30 '"
+ },
+ {
+  "expected": {
+   "alpha": 0.35,
+   "frames": [
+    [
+     0,
+     0,
+     1728,
+     1117
+    ]
+   ]
+  },
+  "input": {
+   "mode": "screen",
+   "op": "frames",
+   "screen": [
+    0,
+    0,
+    1728,
+    1117
+   ]
+  },
+  "name": "frames screen (0, 0, 1728, 1117)"
+ },
+ {
+  "expected": {
+   "alpha": 1.0,
+   "frames": [
+    [
+     0,
+     1049.98,
+     1728,
+     67.02
+    ]
+   ]
+  },
+  "input": {
+   "mode": "top",
+   "op": "frames",
+   "screen": [
+    0,
+    0,
+    1728,
+    1117
+   ]
+  },
+  "name": "frames top (0, 0, 1728, 1117)"
+ },
+ {
+  "expected": {
+   "alpha": 1.0,
+   "frames": [
+    [
+     0,
+     0,
+     1728,
+     67.02
+    ]
+   ]
+  },
+  "input": {
+   "mode": "bottom",
+   "op": "frames",
+   "screen": [
+    0,
+    0,
+    1728,
+    1117
+   ]
+  },
+  "name": "frames bottom (0, 0, 1728, 1117)"
+ },
+ {
+  "expected": {
+   "alpha": 1.0,
+   "frames": [
+    [
+     0,
+     0,
+     103.67999999999999,
+     1117
+    ]
+   ]
+  },
+  "input": {
+   "mode": "left",
+   "op": "frames",
+   "screen": [
+    0,
+    0,
+    1728,
+    1117
+   ]
+  },
+  "name": "frames left (0, 0, 1728, 1117)"
+ },
+ {
+  "expected": {
+   "alpha": 1.0,
+   "frames": [
+    [
+     1624.32,
+     0,
+     103.67999999999999,
+     1117
+    ]
+   ]
+  },
+  "input": {
+   "mode": "right",
+   "op": "frames",
+   "screen": [
+    0,
+    0,
+    1728,
+    1117
+   ]
+  },
+  "name": "frames right (0, 0, 1728, 1117)"
+ },
+ {
+  "expected": {
+   "alpha": 1.0,
+   "frames": []
+  },
+  "input": {
+   "mode": "none",
+   "op": "frames",
+   "screen": [
+    0,
+    0,
+    1728,
+    1117
+   ]
+  },
+  "name": "frames none (0, 0, 1728, 1117)"
+ },
+ {
+  "expected": {
+   "alpha": 1.0,
+   "frames": []
+  },
+  "input": {
+   "mode": "blink",
+   "op": "frames",
+   "screen": [
+    0,
+    0,
+    1728,
+    1117
+   ]
+  },
+  "name": "frames blink (0, 0, 1728, 1117)"
+ },
+ {
+  "expected": {
+   "alpha": 0.35,
+   "frames": [
+    [
+     -1920,
+     25.5,
+     1920,
+     1080
+    ]
+   ]
+  },
+  "input": {
+   "mode": "screen",
+   "op": "frames",
+   "screen": [
+    -1920,
+    25.5,
+    1920,
+    1080
+   ]
+  },
+  "name": "frames screen (-1920, 25.5, 1920, 1080)"
+ },
+ {
+  "expected": {
+   "alpha": 1.0,
+   "frames": [
+    [
+     -1920,
+     1040.7,
+     1920,
+     64.8
+    ]
+   ]
+  },
+  "input": {
+   "mode": "top",
+   "op": "frames",
+   "screen": [
+    -1920,
+    25.5,
+    1920,
+    1080
+   ]
+  },
+  "name": "frames top (-1920, 25.5, 1920, 1080)"
+ },
+ {
+  "expected": {
+   "alpha": 1.0,
+   "frames": [
+    [
+     -1920,
+     25.5,
+     1920,
+     64.8
+    ]
+   ]
+  },
+  "input": {
+   "mode": "bottom",
+   "op": "frames",
+   "screen": [
+    -1920,
+    25.5,
+    1920,
+    1080
+   ]
+  },
+  "name": "frames bottom (-1920, 25.5, 1920, 1080)"
+ },
+ {
+  "expected": {
+   "alpha": 1.0,
+   "frames": [
+    [
+     -1920,
+     25.5,
+     115.19999999999999,
+     1080
+    ]
+   ]
+  },
+  "input": {
+   "mode": "left",
+   "op": "frames",
+   "screen": [
+    -1920,
+    25.5,
+    1920,
+    1080
+   ]
+  },
+  "name": "frames left (-1920, 25.5, 1920, 1080)"
+ },
+ {
+  "expected": {
+   "alpha": 1.0,
+   "frames": [
+    [
+     -115.19999999999999,
+     25.5,
+     115.19999999999999,
+     1080
+    ]
+   ]
+  },
+  "input": {
+   "mode": "right",
+   "op": "frames",
+   "screen": [
+    -1920,
+    25.5,
+    1920,
+    1080
+   ]
+  },
+  "name": "frames right (-1920, 25.5, 1920, 1080)"
+ },
+ {
+  "expected": {
+   "alpha": 1.0,
+   "frames": []
+  },
+  "input": {
+   "mode": "none",
+   "op": "frames",
+   "screen": [
+    -1920,
+    25.5,
+    1920,
+    1080
+   ]
+  },
+  "name": "frames none (-1920, 25.5, 1920, 1080)"
+ },
+ {
+  "expected": {
+   "alpha": 1.0,
+   "frames": []
+  },
+  "input": {
+   "mode": "blink",
+   "op": "frames",
+   "screen": [
+    -1920,
+    25.5,
+    1920,
+    1080
+   ]
+  },
+  "name": "frames blink (-1920, 25.5, 1920, 1080)"
+ },
+ {
+  "expected": {
+   "alpha": 0.35,
+   "frames": [
+    [
+     3456,
+     -200,
+     1080,
+     1920
+    ]
+   ]
+  },
+  "input": {
+   "mode": "screen",
+   "op": "frames",
+   "screen": [
+    3456,
+    -200,
+    1080,
+    1920
+   ]
+  },
+  "name": "frames screen (3456, -200, 1080, 1920)"
+ },
+ {
+  "expected": {
+   "alpha": 1.0,
+   "frames": [
+    [
+     3456,
+     1604.8,
+     1080,
+     115.19999999999999
+    ]
+   ]
+  },
+  "input": {
+   "mode": "top",
+   "op": "frames",
+   "screen": [
+    3456,
+    -200,
+    1080,
+    1920
+   ]
+  },
+  "name": "frames top (3456, -200, 1080, 1920)"
+ },
+ {
+  "expected": {
+   "alpha": 1.0,
+   "frames": [
+    [
+     3456,
+     -200,
+     1080,
+     115.19999999999999
+    ]
+   ]
+  },
+  "input": {
+   "mode": "bottom",
+   "op": "frames",
+   "screen": [
+    3456,
+    -200,
+    1080,
+    1920
+   ]
+  },
+  "name": "frames bottom (3456, -200, 1080, 1920)"
+ },
+ {
+  "expected": {
+   "alpha": 1.0,
+   "frames": [
+    [
+     3456,
+     -200,
+     64.8,
+     1920
+    ]
+   ]
+  },
+  "input": {
+   "mode": "left",
+   "op": "frames",
+   "screen": [
+    3456,
+    -200,
+    1080,
+    1920
+   ]
+  },
+  "name": "frames left (3456, -200, 1080, 1920)"
+ },
+ {
+  "expected": {
+   "alpha": 1.0,
+   "frames": [
+    [
+     4471.2,
+     -200,
+     64.8,
+     1920
+    ]
+   ]
+  },
+  "input": {
+   "mode": "right",
+   "op": "frames",
+   "screen": [
+    3456,
+    -200,
+    1080,
+    1920
+   ]
+  },
+  "name": "frames right (3456, -200, 1080, 1920)"
+ },
+ {
+  "expected": {
+   "alpha": 1.0,
+   "frames": []
+  },
+  "input": {
+   "mode": "none",
+   "op": "frames",
+   "screen": [
+    3456,
+    -200,
+    1080,
+    1920
+   ]
+  },
+  "name": "frames none (3456, -200, 1080, 1920)"
+ },
+ {
+  "expected": {
+   "alpha": 1.0,
+   "frames": []
+  },
+  "input": {
+   "mode": "blink",
+   "op": "frames",
+   "screen": [
+    3456,
+    -200,
+    1080,
+    1920
+   ]
+  },
+  "name": "frames blink (3456, -200, 1080, 1920)"
+ },
+ {
+  "expected": 1.0,
+  "input": {
+   "duration": 0.6,
+   "elapsed": 0,
+   "op": "fade",
+   "start": 1
+  },
+  "name": "fade 1 0 0.6"
+ },
+ {
+  "expected": 0.0875,
+  "input": {
+   "duration": 0.6,
+   "elapsed": 0.3,
+   "op": "fade",
+   "start": 0.35
+  },
+  "name": "fade 0.35 0.3 0.6"
+ },
+ {
+  "expected": 0.0002777777777777795,
+  "input": {
+   "duration": 0.6,
+   "elapsed": 0.59,
+   "op": "fade",
+   "start": 1
+  },
+  "name": "fade 1 0.59 0.6"
+ },
+ {
+  "expected": 0.0,
+  "input": {
+   "duration": 0.6,
+   "elapsed": 0.6,
+   "op": "fade",
+   "start": 1
+  },
+  "name": "fade 1 0.6 0.6"
+ },
+ {
+  "expected": 1.0,
+  "input": {
+   "duration": 0.6,
+   "elapsed": -1,
+   "op": "fade",
+   "start": 1
+  },
+  "name": "fade 1 -1 0.6"
+ },
+ {
+  "expected": 0.0,
+  "input": {
+   "duration": 0,
+   "elapsed": 0.1,
+   "op": "fade",
+   "start": 1
+  },
+  "name": "fade 1 0.1 0"
+ },
+ {
+  "expected": 0.25,
+  "input": {
+   "duration": 10,
+   "elapsed": 5,
+   "op": "fade",
+   "start": 1
+  },
+  "name": "fade 1 5 10"
+ }
+]

@@ -1,6 +1,8 @@
 import Foundation
 import ZIrisCore
 import ZulipKit
+import ZIrisMac
+import AppKit
 
 // z-iris's command line while the Swift port is under way. `probe` registers
 // with each configured server, reports what came back, and deregisters. It
@@ -57,10 +59,32 @@ func probe() async -> Int32 {
     return 0
 }
 
-switch CommandLine.arguments.dropFirst().first {
+/// z-iris-cli flash <mode> [color] [seconds]: one test flash, as `z-iris flash`.
+@MainActor
+func flash(_ arguments: [String]) -> Int32 {
+    let modes = ["screen", "top", "bottom", "left", "right"]
+    guard let mode = arguments.first, modes.contains(mode) else {
+        print("usage: z-iris-cli flash \(modes.joined(separator: "|")) [#rrggbb] [seconds]")
+        return 2
+    }
+    let color = arguments.count > 1 ? arguments[1] : fallbackColor
+    let seconds = arguments.count > 2 ? Double(arguments[2]) ?? 0.6 : 0.6
+    let app = NSApplication.shared
+    app.setActivationPolicy(.accessory)
+    let flasher = Flasher()
+    flasher.show(mode: mode, color: color, seconds: seconds)
+    Timer.scheduledTimer(withTimeInterval: seconds + 0.3, repeats: false) { _ in exit(0) }
+    app.run()
+    return 0
+}
+
+let arguments = Array(CommandLine.arguments.dropFirst())
+switch arguments.first {
 case "probe":
     exit(await probe())
+case "flash":
+    exit(await MainActor.run { flash(Array(arguments.dropFirst())) })
 default:
-    print("usage: z-iris-cli probe")
+    print("usage: z-iris-cli probe | flash <mode> [#rrggbb] [seconds]")
     exit(2)
 }
