@@ -463,6 +463,7 @@
    "self_id": 5,
    "server": "work"
   },
+  "message": "'message'",
   "name": "malformed_no_message"
  },
  {
@@ -483,6 +484,7 @@
    "self_id": 5,
    "server": "work"
   },
+  "message": "'id'",
   "name": "malformed_no_id"
  },
  {
@@ -502,6 +504,7 @@
    "self_id": 5,
    "server": "work"
   },
+  "message": "string indices must be integers, not 'str'",
   "name": "malformed_dm_recipient_string"
  }
 ]

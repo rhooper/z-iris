@@ -948,6 +948,7 @@
     ]
    }
   },
+  "message": "'topic_name'",
   "name": "malformed_user_topic"
  }
 ]

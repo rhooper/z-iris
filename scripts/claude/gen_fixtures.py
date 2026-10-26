@@ -42,7 +42,8 @@ def run(name: str, input, fn) -> dict:
     try:
         return {"name": name, "input": input, "expected": fn()}
     except Exception as error:  # the fixture records which cases are refused
-        return {"name": name, "input": input, "error": type(error).__name__}
+        return {"name": name, "input": input, "error": type(error).__name__,
+                "message": str(error)}
 
 
 def channel_raw(**overrides) -> dict:
@@ -319,13 +320,7 @@ def parse(text: str) -> Config:
 
 
 def run_config(name: str, text: str) -> dict:
-    case = run(name, {"toml": text}, lambda: config_dict(parse(text)))
-    if "error" in case:
-        try:
-            parse(text)
-        except ConfigError as error:
-            case["message"] = str(error)
-    return case
+    return run(name, {"toml": text}, lambda: config_dict(parse(text)))
 
 
 S = '[[server]]\nname = "work"\nzuliprc = "~/.zuliprc"\n'
@@ -1006,7 +1001,150 @@ keyword = "deploy"
     return [run("pipeline", {"toml": toml, "register": register, "events": events}, build)]
 
 
+EDIT_TEXTS = {
+    "commented": '''# z-iris config
+[[server]]
+name = "work"   # the work server
+zuliprc = "~/.zuliprc"
+volume = 50
+
+[[server]]
+name = "home"
+zuliprc = "~/.zuliprc-home"
+volume = 50
+
+[defaults]
+sound = "ping"  # my sound
+volume = 30
+flash = "top"
+
+# before rules
+[[rule]]
+description = "Pages"   # important
+match = "keyword"
+keyword = "page me"
+priority = 5
+# inside a rule
+sound = "sos"
+
+# between rules
+[[rule]]
+name = "Old"
+match = "channel"
+channel = "ops"
+
+[[rule]]
+match = "mention"
+enabled = false
+
+# trailing comment
+''',
+    "minimal": '[[server]]\nname = "work"\nzuliprc = "x"\n',
+    "no_newline": '[[server]]\nname = "work"\nzuliprc = "x"\n[defaults]\nvolume = 1',
+    "focus_after_rules": '''[[server]]
+name = "work"
+zuliprc = "x"
+volume = 80
+
+[defaults]
+volume=40
+
+[[rule]]
+match = "dm"
+
+[[rule]]
+match = "channel"
+channel = ["ops", "dev"]
+# c
+
+[focus]
+quiet_hours = [
+  "22:00-07:00",
+]  # nights
+mode = "off"
+''',
+    "mixed_server_volumes": '''[[server]]
+name = "work"
+zuliprc = "x"
+volume = 50
+
+[[server]]
+name = "home"
+zuliprc = "y"
+
+[defaults]
+master_volume = 80
+''',
+    "crlf_and_literals": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n",
+    "rules_first": '[[rule]]\nmatch = "dm"\n[rule.extra]\nx = 1\n\n[[server]]\nname = "work"\nzuliprc = "x"\n',
+    "quoted_keys": '[[server]]\n"name" = "work"\nzuliprc = "x"\n\n[defaults]\n"sound" = "ping"   # q\n',
+}
+
+EDIT_PAYLOADS = {
+    "nothing": {},
+    "defaults": {"defaults": {"sound": "chime", "volume": 45, "flash_seconds": 1.0,
+                              "repeat": 2, "sticky": True, "flash_color": "#00ff00",
+                              "unknown": 5}},
+    "empty_defaults": {"defaults": {}},
+    "master_volume": {"defaults": {"master_volume": 70}},
+    "focus": {"focus": {"mode": "silent", "quiet_hours": ["22:00-07:00", "12:00-13:00"],
+                        "quiet_mode": "mentions_and_dms"}},
+    "focus_empty_hours": {"focus": {"quiet_hours": []}},
+    "servers": {"servers": [{"name": "work", "volume": 90}, {"name": "nope", "volume": 1},
+                            {"name": "home"}]},
+    "rules": {"rules": [
+        {"description": "Zeta", "match": "dm", "sound": "ping", "priority": 0, "enabled": True},
+        {"match": "channel", "channel": ["ops", "", "dev"], "volume": 70, "priority": 3},
+        {"match": "channel", "channel": ["solo"], "flash": "screen", "flash_seconds": 0.5},
+        {"name": "Named", "match": "mention", "description": "", "enabled": False, "banner": "title"},
+        {"match": "keyword", "keyword": "Alpha|beta", "server": "work", "repeat": 3,
+         "repeat_every": 10, "repeat_boost": 20, "min_gap": 5, "batch_window": 2, "stay": 9},
+        {"match": "topic", "topic": "deploy", "channel": [], "sticky": True, "priority": 3},
+        {"description": "alpha", "match": "wildcard", "priority": -1},
+        {"description": "a \"quoted\" \\ name\twith\u0001ctrl é", "match": "dm"},
+    ]},
+    "no_rules": {"rules": []},
+    "everything": {"defaults": {"master_volume": 60, "volume": 20},
+                   "focus": {"mode": "mentions_and_dms"},
+                   "servers": [{"name": "work", "volume": 10}],
+                   "rules": [{"match": "dm"}, {"match": "mention", "priority": 1}]},
+    "invalid_result": {"defaults": {"volume": 500}},
+    "invalid_rule": {"rules": [{"match": "channel"}]},
+}
+
+
+def edit_parse(fn):
+    """Run fn with parse_config seeing the fixture sound library."""
+    import z_iris.config as config_module
+    real = config_module.library
+    config_module.library = lambda _dir: fixture_sounds()
+    try:
+        return fn()
+    finally:
+        config_module.library = real
+
+
+def editing_cases() -> list[dict]:
+    from z_iris.editing import apply_edit, read_editable, replace_sound
+    cases = []
+    for text_name, text in EDIT_TEXTS.items():
+        cases.append(run(f"read {text_name}", {"op": "read", "text": text},
+                         lambda text=text: read_editable(text)))
+        for payload_name, payload in EDIT_PAYLOADS.items():
+            case = run(f"apply {text_name} {payload_name}",
+                       {"op": "apply", "text": text, "payload": payload},
+                       lambda text=text, payload=payload: edit_parse(
+                           lambda: apply_edit(text, payload)))
+            cases.append(case)
+        for old, new in (("ping", "chime"), ("sos", "bell"), ("missing", "x")):
+            cases.append(run(f"replace {text_name} {old}",
+                             {"op": "replace", "text": text, "old": old, "new": new},
+                             lambda text=text, old=old, new=new: replace_sound(text, old, new)))
+    return cases
+
+
 FIXTURES = {
+    "editing": editing_cases,
     "engine": engine_cases,
     "pipeline": pipeline_cases,
     "sender": sender_cases,

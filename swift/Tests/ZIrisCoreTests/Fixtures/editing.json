@@ -1,0 +1,2493 @@
+[
+ {
+  "expected": {
+   "defaults": {
+    "flash": "top",
+    "master_volume": 50,
+    "notify_channel_messages": false,
+    "sound": "ping",
+    "volume": 30
+   },
+   "focus": {
+    "mode": "off",
+    "quiet_hours": [],
+    "quiet_mode": "silent"
+   },
+   "rules": [
+    {
+     "description": "Pages",
+     "keyword": "page me",
+     "match": "keyword",
+     "priority": 5,
+     "sound": "sos"
+    },
+    {
+     "channel": [
+      "ops"
+     ],
+     "description": "Old",
+     "match": "channel"
+    },
+    {
+     "enabled": false,
+     "match": "mention"
+    }
+   ],
+   "servers": [
+    {
+     "name": "work"
+    },
+    {
+     "name": "home"
+    }
+   ]
+  },
+  "input": {
+   "op": "read",
+   "text": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n"
+  },
+  "name": "read commented"
+ },
+ {
+  "expected": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n",
+  "input": {
+   "op": "apply",
+   "payload": {},
+   "text": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n"
+  },
+  "name": "apply commented nothing"
+ },
+ {
+  "expected": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"chime\"  # my sound\nvolume = 45\nflash = \"top\"\n\n# before rules\nflash_color = \"#00ff00\"\nflash_seconds = 1.0\nrepeat = 2\nsticky = true\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "flash_color": "#00ff00",
+     "flash_seconds": 1.0,
+     "repeat": 2,
+     "sound": "chime",
+     "sticky": true,
+     "unknown": 5,
+     "volume": 45
+    }
+   },
+   "text": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n"
+  },
+  "name": "apply commented defaults"
+ },
+ {
+  "expected": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {}
+   },
+   "text": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n"
+  },
+  "name": "apply commented empty_defaults"
+ },
+ {
+  "expected": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\nmaster_volume = 70\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "master_volume": 70
+    }
+   },
+   "text": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n"
+  },
+  "name": "apply commented master_volume"
+ },
+ {
+  "expected": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n\n[focus]\nmode = \"silent\"\nquiet_hours = [\"22:00-07:00\", \"12:00-13:00\"]\nquiet_mode = \"mentions_and_dms\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "focus": {
+     "mode": "silent",
+     "quiet_hours": [
+      "22:00-07:00",
+      "12:00-13:00"
+     ],
+     "quiet_mode": "mentions_and_dms"
+    }
+   },
+   "text": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n"
+  },
+  "name": "apply commented focus"
+ },
+ {
+  "expected": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n\n[focus]\nquiet_hours = []\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "focus": {
+     "quiet_hours": []
+    }
+   },
+   "text": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n"
+  },
+  "name": "apply commented focus_empty_hours"
+ },
+ {
+  "expected": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 90\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "servers": [
+     {
+      "name": "work",
+      "volume": 90
+     },
+     {
+      "name": "nope",
+      "volume": 1
+     },
+     {
+      "name": "home"
+     }
+    ]
+   },
+   "text": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n"
+  },
+  "name": "apply commented servers"
+ },
+ {
+  "expected": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\nvolume = 70\npriority = 3\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"deploy\"\npriority = 3\nsticky = true\n\n[[rule]]\ndescription = \"a \\\"quoted\\\" \\\\ name\\twith\\u0001ctrl é\"\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = \"solo\"\nflash = \"screen\"\nflash_seconds = 0.5\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"Alpha|beta\"\nserver = \"work\"\nrepeat = 3\nrepeat_every = 10\nrepeat_boost = 20\nmin_gap = 5\nbatch_window = 2\nstay = 9\n\n[[rule]]\ndescription = \"Named\"\nmatch = \"mention\"\nbanner = \"title\"\nenabled = false\n\n[[rule]]\ndescription = \"Zeta\"\nmatch = \"dm\"\nsound = \"ping\"\n\n[[rule]]\ndescription = \"alpha\"\nmatch = \"wildcard\"\npriority = -1\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": [
+     {
+      "description": "Zeta",
+      "enabled": true,
+      "match": "dm",
+      "priority": 0,
+      "sound": "ping"
+     },
+     {
+      "channel": [
+       "ops",
+       "",
+       "dev"
+      ],
+      "match": "channel",
+      "priority": 3,
+      "volume": 70
+     },
+     {
+      "channel": [
+       "solo"
+      ],
+      "flash": "screen",
+      "flash_seconds": 0.5,
+      "match": "channel"
+     },
+     {
+      "banner": "title",
+      "description": "",
+      "enabled": false,
+      "match": "mention",
+      "name": "Named"
+     },
+     {
+      "batch_window": 2,
+      "keyword": "Alpha|beta",
+      "match": "keyword",
+      "min_gap": 5,
+      "repeat": 3,
+      "repeat_boost": 20,
+      "repeat_every": 10,
+      "server": "work",
+      "stay": 9
+     },
+     {
+      "channel": [],
+      "match": "topic",
+      "priority": 3,
+      "sticky": true,
+      "topic": "deploy"
+     },
+     {
+      "description": "alpha",
+      "match": "wildcard",
+      "priority": -1
+     },
+     {
+      "description": "a \"quoted\" \\ name\twith\u0001ctrl é",
+      "match": "dm"
+     }
+    ]
+   },
+   "text": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n"
+  },
+  "name": "apply commented rules"
+ },
+ {
+  "expected": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": []
+   },
+   "text": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n"
+  },
+  "name": "apply commented no_rules"
+ },
+ {
+  "expected": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 10\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 20\nflash = \"top\"\n\n# before rules\nmaster_volume = 60\n\n[focus]\nmode = \"mentions_and_dms\"\n\n[[rule]]\nmatch = \"mention\"\npriority = 1\n\n[[rule]]\nmatch = \"dm\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "master_volume": 60,
+     "volume": 20
+    },
+    "focus": {
+     "mode": "mentions_and_dms"
+    },
+    "rules": [
+     {
+      "match": "dm"
+     },
+     {
+      "match": "mention",
+      "priority": 1
+     }
+    ],
+    "servers": [
+     {
+      "name": "work",
+      "volume": 10
+     }
+    ]
+   },
+   "text": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n"
+  },
+  "name": "apply commented everything"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "volume": 500
+    }
+   },
+   "text": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n"
+  },
+  "message": "volume must be an integer from 0 to 100",
+  "name": "apply commented invalid_result"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": [
+     {
+      "match": "channel"
+     }
+    ]
+   },
+   "text": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n"
+  },
+  "message": "rule number 1: a channel rule needs channel",
+  "name": "apply commented invalid_rule"
+ },
+ {
+  "expected": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"chime\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n",
+  "input": {
+   "new": "chime",
+   "old": "ping",
+   "op": "replace",
+   "text": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n"
+  },
+  "name": "replace commented ping"
+ },
+ {
+  "expected": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"bell\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n",
+  "input": {
+   "new": "bell",
+   "old": "sos",
+   "op": "replace",
+   "text": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n"
+  },
+  "name": "replace commented sos"
+ },
+ {
+  "expected": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n",
+  "input": {
+   "new": "x",
+   "old": "missing",
+   "op": "replace",
+   "text": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n"
+  },
+  "name": "replace commented missing"
+ },
+ {
+  "expected": {
+   "defaults": {
+    "master_volume": 100,
+    "notify_channel_messages": false,
+    "sound": "chime",
+    "volume": 60
+   },
+   "focus": {
+    "mode": "off",
+    "quiet_hours": [],
+    "quiet_mode": "silent"
+   },
+   "rules": [],
+   "servers": [
+    {
+     "name": "work"
+    }
+   ]
+  },
+  "input": {
+   "op": "read",
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "read minimal"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {},
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "apply minimal nothing"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n\n[defaults]\nsound = \"chime\"\nvolume = 45\nflash_color = \"#00ff00\"\nflash_seconds = 1.0\nrepeat = 2\nsticky = true\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "flash_color": "#00ff00",
+     "flash_seconds": 1.0,
+     "repeat": 2,
+     "sound": "chime",
+     "sticky": true,
+     "unknown": 5,
+     "volume": 45
+    }
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "apply minimal defaults"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {}
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "apply minimal empty_defaults"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n\n[defaults]\nmaster_volume = 70\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "master_volume": 70
+    }
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "apply minimal master_volume"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n\n[focus]\nmode = \"silent\"\nquiet_hours = [\"22:00-07:00\", \"12:00-13:00\"]\nquiet_mode = \"mentions_and_dms\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "focus": {
+     "mode": "silent",
+     "quiet_hours": [
+      "22:00-07:00",
+      "12:00-13:00"
+     ],
+     "quiet_mode": "mentions_and_dms"
+    }
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "apply minimal focus"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n\n[focus]\nquiet_hours = []\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "focus": {
+     "quiet_hours": []
+    }
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "apply minimal focus_empty_hours"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 90\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "servers": [
+     {
+      "name": "work",
+      "volume": 90
+     },
+     {
+      "name": "nope",
+      "volume": 1
+     },
+     {
+      "name": "home"
+     }
+    ]
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "apply minimal servers"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\nvolume = 70\npriority = 3\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"deploy\"\npriority = 3\nsticky = true\n\n[[rule]]\ndescription = \"a \\\"quoted\\\" \\\\ name\\twith\\u0001ctrl é\"\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = \"solo\"\nflash = \"screen\"\nflash_seconds = 0.5\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"Alpha|beta\"\nserver = \"work\"\nrepeat = 3\nrepeat_every = 10\nrepeat_boost = 20\nmin_gap = 5\nbatch_window = 2\nstay = 9\n\n[[rule]]\ndescription = \"Named\"\nmatch = \"mention\"\nbanner = \"title\"\nenabled = false\n\n[[rule]]\ndescription = \"Zeta\"\nmatch = \"dm\"\nsound = \"ping\"\n\n[[rule]]\ndescription = \"alpha\"\nmatch = \"wildcard\"\npriority = -1\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": [
+     {
+      "description": "Zeta",
+      "enabled": true,
+      "match": "dm",
+      "priority": 0,
+      "sound": "ping"
+     },
+     {
+      "channel": [
+       "ops",
+       "",
+       "dev"
+      ],
+      "match": "channel",
+      "priority": 3,
+      "volume": 70
+     },
+     {
+      "channel": [
+       "solo"
+      ],
+      "flash": "screen",
+      "flash_seconds": 0.5,
+      "match": "channel"
+     },
+     {
+      "banner": "title",
+      "description": "",
+      "enabled": false,
+      "match": "mention",
+      "name": "Named"
+     },
+     {
+      "batch_window": 2,
+      "keyword": "Alpha|beta",
+      "match": "keyword",
+      "min_gap": 5,
+      "repeat": 3,
+      "repeat_boost": 20,
+      "repeat_every": 10,
+      "server": "work",
+      "stay": 9
+     },
+     {
+      "channel": [],
+      "match": "topic",
+      "priority": 3,
+      "sticky": true,
+      "topic": "deploy"
+     },
+     {
+      "description": "alpha",
+      "match": "wildcard",
+      "priority": -1
+     },
+     {
+      "description": "a \"quoted\" \\ name\twith\u0001ctrl é",
+      "match": "dm"
+     }
+    ]
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "apply minimal rules"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": []
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "apply minimal no_rules"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 10\n\n[defaults]\nvolume = 20\nmaster_volume = 60\n\n[focus]\nmode = \"mentions_and_dms\"\n\n[[rule]]\nmatch = \"mention\"\npriority = 1\n\n[[rule]]\nmatch = \"dm\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "master_volume": 60,
+     "volume": 20
+    },
+    "focus": {
+     "mode": "mentions_and_dms"
+    },
+    "rules": [
+     {
+      "match": "dm"
+     },
+     {
+      "match": "mention",
+      "priority": 1
+     }
+    ],
+    "servers": [
+     {
+      "name": "work",
+      "volume": 10
+     }
+    ]
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "apply minimal everything"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "volume": 500
+    }
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "message": "volume must be an integer from 0 to 100",
+  "name": "apply minimal invalid_result"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": [
+     {
+      "match": "channel"
+     }
+    ]
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "message": "rule number 1: a channel rule needs channel",
+  "name": "apply minimal invalid_rule"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n",
+  "input": {
+   "new": "chime",
+   "old": "ping",
+   "op": "replace",
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "replace minimal ping"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n",
+  "input": {
+   "new": "bell",
+   "old": "sos",
+   "op": "replace",
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "replace minimal sos"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n",
+  "input": {
+   "new": "x",
+   "old": "missing",
+   "op": "replace",
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "replace minimal missing"
+ },
+ {
+  "expected": {
+   "defaults": {
+    "master_volume": 100,
+    "notify_channel_messages": false,
+    "sound": "chime",
+    "volume": 1
+   },
+   "focus": {
+    "mode": "off",
+    "quiet_hours": [],
+    "quiet_mode": "silent"
+   },
+   "rules": [],
+   "servers": [
+    {
+     "name": "work"
+    }
+   ]
+  },
+  "input": {
+   "op": "read",
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1"
+  },
+  "name": "read no_newline"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1",
+  "input": {
+   "op": "apply",
+   "payload": {},
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1"
+  },
+  "name": "apply no_newline nothing"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 45\nsound = \"chime\"\nflash_color = \"#00ff00\"\nflash_seconds = 1.0\nrepeat = 2\nsticky = true\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "flash_color": "#00ff00",
+     "flash_seconds": 1.0,
+     "repeat": 2,
+     "sound": "chime",
+     "sticky": true,
+     "unknown": 5,
+     "volume": 45
+    }
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1"
+  },
+  "name": "apply no_newline defaults"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {}
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1"
+  },
+  "name": "apply no_newline empty_defaults"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1\nmaster_volume = 70\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "master_volume": 70
+    }
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1"
+  },
+  "name": "apply no_newline master_volume"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1\n[focus]\nmode = \"silent\"\nquiet_hours = [\"22:00-07:00\", \"12:00-13:00\"]\nquiet_mode = \"mentions_and_dms\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "focus": {
+     "mode": "silent",
+     "quiet_hours": [
+      "22:00-07:00",
+      "12:00-13:00"
+     ],
+     "quiet_mode": "mentions_and_dms"
+    }
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1"
+  },
+  "name": "apply no_newline focus"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1\n[focus]\nquiet_hours = []\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "focus": {
+     "quiet_hours": []
+    }
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1"
+  },
+  "name": "apply no_newline focus_empty_hours"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 90\n[defaults]\nvolume = 1",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "servers": [
+     {
+      "name": "work",
+      "volume": 90
+     },
+     {
+      "name": "nope",
+      "volume": 1
+     },
+     {
+      "name": "home"
+     }
+    ]
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1"
+  },
+  "name": "apply no_newline servers"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\nvolume = 70\npriority = 3\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"deploy\"\npriority = 3\nsticky = true\n\n[[rule]]\ndescription = \"a \\\"quoted\\\" \\\\ name\\twith\\u0001ctrl é\"\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = \"solo\"\nflash = \"screen\"\nflash_seconds = 0.5\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"Alpha|beta\"\nserver = \"work\"\nrepeat = 3\nrepeat_every = 10\nrepeat_boost = 20\nmin_gap = 5\nbatch_window = 2\nstay = 9\n\n[[rule]]\ndescription = \"Named\"\nmatch = \"mention\"\nbanner = \"title\"\nenabled = false\n\n[[rule]]\ndescription = \"Zeta\"\nmatch = \"dm\"\nsound = \"ping\"\n\n[[rule]]\ndescription = \"alpha\"\nmatch = \"wildcard\"\npriority = -1\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": [
+     {
+      "description": "Zeta",
+      "enabled": true,
+      "match": "dm",
+      "priority": 0,
+      "sound": "ping"
+     },
+     {
+      "channel": [
+       "ops",
+       "",
+       "dev"
+      ],
+      "match": "channel",
+      "priority": 3,
+      "volume": 70
+     },
+     {
+      "channel": [
+       "solo"
+      ],
+      "flash": "screen",
+      "flash_seconds": 0.5,
+      "match": "channel"
+     },
+     {
+      "banner": "title",
+      "description": "",
+      "enabled": false,
+      "match": "mention",
+      "name": "Named"
+     },
+     {
+      "batch_window": 2,
+      "keyword": "Alpha|beta",
+      "match": "keyword",
+      "min_gap": 5,
+      "repeat": 3,
+      "repeat_boost": 20,
+      "repeat_every": 10,
+      "server": "work",
+      "stay": 9
+     },
+     {
+      "channel": [],
+      "match": "topic",
+      "priority": 3,
+      "sticky": true,
+      "topic": "deploy"
+     },
+     {
+      "description": "alpha",
+      "match": "wildcard",
+      "priority": -1
+     },
+     {
+      "description": "a \"quoted\" \\ name\twith\u0001ctrl é",
+      "match": "dm"
+     }
+    ]
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1"
+  },
+  "name": "apply no_newline rules"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": []
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1"
+  },
+  "name": "apply no_newline no_rules"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 10\n[defaults]\nvolume = 20\nmaster_volume = 60\n\n[focus]\nmode = \"mentions_and_dms\"\n\n[[rule]]\nmatch = \"mention\"\npriority = 1\n\n[[rule]]\nmatch = \"dm\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "master_volume": 60,
+     "volume": 20
+    },
+    "focus": {
+     "mode": "mentions_and_dms"
+    },
+    "rules": [
+     {
+      "match": "dm"
+     },
+     {
+      "match": "mention",
+      "priority": 1
+     }
+    ],
+    "servers": [
+     {
+      "name": "work",
+      "volume": 10
+     }
+    ]
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1"
+  },
+  "name": "apply no_newline everything"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "volume": 500
+    }
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1"
+  },
+  "message": "volume must be an integer from 0 to 100",
+  "name": "apply no_newline invalid_result"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": [
+     {
+      "match": "channel"
+     }
+    ]
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1"
+  },
+  "message": "rule number 1: a channel rule needs channel",
+  "name": "apply no_newline invalid_rule"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1",
+  "input": {
+   "new": "chime",
+   "old": "ping",
+   "op": "replace",
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1"
+  },
+  "name": "replace no_newline ping"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1",
+  "input": {
+   "new": "bell",
+   "old": "sos",
+   "op": "replace",
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1"
+  },
+  "name": "replace no_newline sos"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1",
+  "input": {
+   "new": "x",
+   "old": "missing",
+   "op": "replace",
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1"
+  },
+  "name": "replace no_newline missing"
+ },
+ {
+  "expected": {
+   "defaults": {
+    "master_volume": 80,
+    "notify_channel_messages": false,
+    "sound": "chime",
+    "volume": 40
+   },
+   "focus": {
+    "mode": "off",
+    "quiet_hours": [
+     "22:00-07:00"
+    ],
+    "quiet_mode": "silent"
+   },
+   "rules": [
+    {
+     "match": "dm"
+    },
+    {
+     "channel": [
+      "ops",
+      "dev"
+     ],
+     "match": "channel"
+    }
+   ],
+   "servers": [
+    {
+     "name": "work"
+    }
+   ]
+  },
+  "input": {
+   "op": "read",
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n"
+  },
+  "name": "read focus_after_rules"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {},
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n"
+  },
+  "name": "apply focus_after_rules nothing"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=45\nsound = \"chime\"\nflash_color = \"#00ff00\"\nflash_seconds = 1.0\nrepeat = 2\nsticky = true\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "flash_color": "#00ff00",
+     "flash_seconds": 1.0,
+     "repeat": 2,
+     "sound": "chime",
+     "sticky": true,
+     "unknown": 5,
+     "volume": 45
+    }
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n"
+  },
+  "name": "apply focus_after_rules defaults"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {}
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n"
+  },
+  "name": "apply focus_after_rules empty_defaults"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n\n[defaults]\nvolume=40\nmaster_volume = 70\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "master_volume": 70
+    }
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n"
+  },
+  "name": "apply focus_after_rules master_volume"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\"22:00-07:00\", \"12:00-13:00\"]  # nights\nmode = \"silent\"\nquiet_mode = \"mentions_and_dms\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "focus": {
+     "mode": "silent",
+     "quiet_hours": [
+      "22:00-07:00",
+      "12:00-13:00"
+     ],
+     "quiet_mode": "mentions_and_dms"
+    }
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n"
+  },
+  "name": "apply focus_after_rules focus"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = []  # nights\nmode = \"off\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "focus": {
+     "quiet_hours": []
+    }
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n"
+  },
+  "name": "apply focus_after_rules focus_empty_hours"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 90\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "servers": [
+     {
+      "name": "work",
+      "volume": 90
+     },
+     {
+      "name": "nope",
+      "volume": 1
+     },
+     {
+      "name": "home"
+     }
+    ]
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n"
+  },
+  "name": "apply focus_after_rules servers"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\nvolume = 70\npriority = 3\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"deploy\"\npriority = 3\nsticky = true\n\n[[rule]]\ndescription = \"a \\\"quoted\\\" \\\\ name\\twith\\u0001ctrl é\"\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = \"solo\"\nflash = \"screen\"\nflash_seconds = 0.5\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"Alpha|beta\"\nserver = \"work\"\nrepeat = 3\nrepeat_every = 10\nrepeat_boost = 20\nmin_gap = 5\nbatch_window = 2\nstay = 9\n\n[[rule]]\ndescription = \"Named\"\nmatch = \"mention\"\nbanner = \"title\"\nenabled = false\n\n[[rule]]\ndescription = \"Zeta\"\nmatch = \"dm\"\nsound = \"ping\"\n\n[[rule]]\ndescription = \"alpha\"\nmatch = \"wildcard\"\npriority = -1\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": [
+     {
+      "description": "Zeta",
+      "enabled": true,
+      "match": "dm",
+      "priority": 0,
+      "sound": "ping"
+     },
+     {
+      "channel": [
+       "ops",
+       "",
+       "dev"
+      ],
+      "match": "channel",
+      "priority": 3,
+      "volume": 70
+     },
+     {
+      "channel": [
+       "solo"
+      ],
+      "flash": "screen",
+      "flash_seconds": 0.5,
+      "match": "channel"
+     },
+     {
+      "banner": "title",
+      "description": "",
+      "enabled": false,
+      "match": "mention",
+      "name": "Named"
+     },
+     {
+      "batch_window": 2,
+      "keyword": "Alpha|beta",
+      "match": "keyword",
+      "min_gap": 5,
+      "repeat": 3,
+      "repeat_boost": 20,
+      "repeat_every": 10,
+      "server": "work",
+      "stay": 9
+     },
+     {
+      "channel": [],
+      "match": "topic",
+      "priority": 3,
+      "sticky": true,
+      "topic": "deploy"
+     },
+     {
+      "description": "alpha",
+      "match": "wildcard",
+      "priority": -1
+     },
+     {
+      "description": "a \"quoted\" \\ name\twith\u0001ctrl é",
+      "match": "dm"
+     }
+    ]
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n"
+  },
+  "name": "apply focus_after_rules rules"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": []
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n"
+  },
+  "name": "apply focus_after_rules no_rules"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 10\n\n[defaults]\nvolume=20\nmaster_volume = 60\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"mentions_and_dms\"\n\n[[rule]]\nmatch = \"mention\"\npriority = 1\n\n[[rule]]\nmatch = \"dm\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "master_volume": 60,
+     "volume": 20
+    },
+    "focus": {
+     "mode": "mentions_and_dms"
+    },
+    "rules": [
+     {
+      "match": "dm"
+     },
+     {
+      "match": "mention",
+      "priority": 1
+     }
+    ],
+    "servers": [
+     {
+      "name": "work",
+      "volume": 10
+     }
+    ]
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n"
+  },
+  "name": "apply focus_after_rules everything"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "volume": 500
+    }
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n"
+  },
+  "message": "volume must be an integer from 0 to 100",
+  "name": "apply focus_after_rules invalid_result"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": [
+     {
+      "match": "channel"
+     }
+    ]
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n"
+  },
+  "message": "rule number 1: a channel rule needs channel",
+  "name": "apply focus_after_rules invalid_rule"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n",
+  "input": {
+   "new": "chime",
+   "old": "ping",
+   "op": "replace",
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n"
+  },
+  "name": "replace focus_after_rules ping"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n",
+  "input": {
+   "new": "bell",
+   "old": "sos",
+   "op": "replace",
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n"
+  },
+  "name": "replace focus_after_rules sos"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n",
+  "input": {
+   "new": "x",
+   "old": "missing",
+   "op": "replace",
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n"
+  },
+  "name": "replace focus_after_rules missing"
+ },
+ {
+  "expected": {
+   "defaults": {
+    "master_volume": 80,
+    "notify_channel_messages": false,
+    "sound": "chime",
+    "volume": 60
+   },
+   "focus": {
+    "mode": "off",
+    "quiet_hours": [],
+    "quiet_mode": "silent"
+   },
+   "rules": [],
+   "servers": [
+    {
+     "name": "work"
+    },
+    {
+     "name": "home"
+    }
+   ]
+  },
+  "input": {
+   "op": "read",
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n"
+  },
+  "name": "read mixed_server_volumes"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n",
+  "input": {
+   "op": "apply",
+   "payload": {},
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n"
+  },
+  "name": "apply mixed_server_volumes nothing"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\nsound = \"chime\"\nvolume = 45\nflash_color = \"#00ff00\"\nflash_seconds = 1.0\nrepeat = 2\nsticky = true\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "flash_color": "#00ff00",
+     "flash_seconds": 1.0,
+     "repeat": 2,
+     "sound": "chime",
+     "sticky": true,
+     "unknown": 5,
+     "volume": 45
+    }
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n"
+  },
+  "name": "apply mixed_server_volumes defaults"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {}
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n"
+  },
+  "name": "apply mixed_server_volumes empty_defaults"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 70\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "master_volume": 70
+    }
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n"
+  },
+  "name": "apply mixed_server_volumes master_volume"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n\n[focus]\nmode = \"silent\"\nquiet_hours = [\"22:00-07:00\", \"12:00-13:00\"]\nquiet_mode = \"mentions_and_dms\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "focus": {
+     "mode": "silent",
+     "quiet_hours": [
+      "22:00-07:00",
+      "12:00-13:00"
+     ],
+     "quiet_mode": "mentions_and_dms"
+    }
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n"
+  },
+  "name": "apply mixed_server_volumes focus"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n\n[focus]\nquiet_hours = []\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "focus": {
+     "quiet_hours": []
+    }
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n"
+  },
+  "name": "apply mixed_server_volumes focus_empty_hours"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 90\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "servers": [
+     {
+      "name": "work",
+      "volume": 90
+     },
+     {
+      "name": "nope",
+      "volume": 1
+     },
+     {
+      "name": "home"
+     }
+    ]
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n"
+  },
+  "name": "apply mixed_server_volumes servers"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\nvolume = 70\npriority = 3\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"deploy\"\npriority = 3\nsticky = true\n\n[[rule]]\ndescription = \"a \\\"quoted\\\" \\\\ name\\twith\\u0001ctrl é\"\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = \"solo\"\nflash = \"screen\"\nflash_seconds = 0.5\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"Alpha|beta\"\nserver = \"work\"\nrepeat = 3\nrepeat_every = 10\nrepeat_boost = 20\nmin_gap = 5\nbatch_window = 2\nstay = 9\n\n[[rule]]\ndescription = \"Named\"\nmatch = \"mention\"\nbanner = \"title\"\nenabled = false\n\n[[rule]]\ndescription = \"Zeta\"\nmatch = \"dm\"\nsound = \"ping\"\n\n[[rule]]\ndescription = \"alpha\"\nmatch = \"wildcard\"\npriority = -1\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": [
+     {
+      "description": "Zeta",
+      "enabled": true,
+      "match": "dm",
+      "priority": 0,
+      "sound": "ping"
+     },
+     {
+      "channel": [
+       "ops",
+       "",
+       "dev"
+      ],
+      "match": "channel",
+      "priority": 3,
+      "volume": 70
+     },
+     {
+      "channel": [
+       "solo"
+      ],
+      "flash": "screen",
+      "flash_seconds": 0.5,
+      "match": "channel"
+     },
+     {
+      "banner": "title",
+      "description": "",
+      "enabled": false,
+      "match": "mention",
+      "name": "Named"
+     },
+     {
+      "batch_window": 2,
+      "keyword": "Alpha|beta",
+      "match": "keyword",
+      "min_gap": 5,
+      "repeat": 3,
+      "repeat_boost": 20,
+      "repeat_every": 10,
+      "server": "work",
+      "stay": 9
+     },
+     {
+      "channel": [],
+      "match": "topic",
+      "priority": 3,
+      "sticky": true,
+      "topic": "deploy"
+     },
+     {
+      "description": "alpha",
+      "match": "wildcard",
+      "priority": -1
+     },
+     {
+      "description": "a \"quoted\" \\ name\twith\u0001ctrl é",
+      "match": "dm"
+     }
+    ]
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n"
+  },
+  "name": "apply mixed_server_volumes rules"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": []
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n"
+  },
+  "name": "apply mixed_server_volumes no_rules"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 10\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 60\nvolume = 20\n\n[focus]\nmode = \"mentions_and_dms\"\n\n[[rule]]\nmatch = \"mention\"\npriority = 1\n\n[[rule]]\nmatch = \"dm\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "master_volume": 60,
+     "volume": 20
+    },
+    "focus": {
+     "mode": "mentions_and_dms"
+    },
+    "rules": [
+     {
+      "match": "dm"
+     },
+     {
+      "match": "mention",
+      "priority": 1
+     }
+    ],
+    "servers": [
+     {
+      "name": "work",
+      "volume": 10
+     }
+    ]
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n"
+  },
+  "name": "apply mixed_server_volumes everything"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "volume": 500
+    }
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n"
+  },
+  "message": "volume must be an integer from 0 to 100",
+  "name": "apply mixed_server_volumes invalid_result"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": [
+     {
+      "match": "channel"
+     }
+    ]
+   },
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n"
+  },
+  "message": "rule number 1: a channel rule needs channel",
+  "name": "apply mixed_server_volumes invalid_rule"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n",
+  "input": {
+   "new": "chime",
+   "old": "ping",
+   "op": "replace",
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n"
+  },
+  "name": "replace mixed_server_volumes ping"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n",
+  "input": {
+   "new": "bell",
+   "old": "sos",
+   "op": "replace",
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n"
+  },
+  "name": "replace mixed_server_volumes sos"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n",
+  "input": {
+   "new": "x",
+   "old": "missing",
+   "op": "replace",
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n"
+  },
+  "name": "replace mixed_server_volumes missing"
+ },
+ {
+  "expected": {
+   "defaults": {
+    "master_volume": 100,
+    "notify_channel_messages": false,
+    "sound": "ping",
+    "volume": 60
+   },
+   "focus": {
+    "mode": "off",
+    "quiet_hours": [],
+    "quiet_mode": "silent"
+   },
+   "rules": [],
+   "servers": [
+    {
+     "name": "work"
+    }
+   ]
+  },
+  "input": {
+   "op": "read",
+   "text": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n"
+  },
+  "name": "read crlf_and_literals"
+ },
+ {
+  "expected": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n",
+  "input": {
+   "op": "apply",
+   "payload": {},
+   "text": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n"
+  },
+  "name": "apply crlf_and_literals nothing"
+ },
+ {
+  "expected": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = \"chime\"\r\nvolume = 45\nflash_color = \"#00ff00\"\nflash_seconds = 1.0\nrepeat = 2\nsticky = true\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "flash_color": "#00ff00",
+     "flash_seconds": 1.0,
+     "repeat": 2,
+     "sound": "chime",
+     "sticky": true,
+     "unknown": 5,
+     "volume": 45
+    }
+   },
+   "text": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n"
+  },
+  "name": "apply crlf_and_literals defaults"
+ },
+ {
+  "expected": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {}
+   },
+   "text": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n"
+  },
+  "name": "apply crlf_and_literals empty_defaults"
+ },
+ {
+  "expected": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\nmaster_volume = 70\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "master_volume": 70
+    }
+   },
+   "text": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n"
+  },
+  "name": "apply crlf_and_literals master_volume"
+ },
+ {
+  "expected": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n\n[focus]\nmode = \"silent\"\nquiet_hours = [\"22:00-07:00\", \"12:00-13:00\"]\nquiet_mode = \"mentions_and_dms\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "focus": {
+     "mode": "silent",
+     "quiet_hours": [
+      "22:00-07:00",
+      "12:00-13:00"
+     ],
+     "quiet_mode": "mentions_and_dms"
+    }
+   },
+   "text": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n"
+  },
+  "name": "apply crlf_and_literals focus"
+ },
+ {
+  "expected": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n\n[focus]\nquiet_hours = []\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "focus": {
+     "quiet_hours": []
+    }
+   },
+   "text": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n"
+  },
+  "name": "apply crlf_and_literals focus_empty_hours"
+ },
+ {
+  "expected": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\nvolume = 90\n\r\n[defaults]\r\nsound = 'ping'\r\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "servers": [
+     {
+      "name": "work",
+      "volume": 90
+     },
+     {
+      "name": "nope",
+      "volume": 1
+     },
+     {
+      "name": "home"
+     }
+    ]
+   },
+   "text": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n"
+  },
+  "name": "apply crlf_and_literals servers"
+ },
+ {
+  "expected": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\nvolume = 70\npriority = 3\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"deploy\"\npriority = 3\nsticky = true\n\n[[rule]]\ndescription = \"a \\\"quoted\\\" \\\\ name\\twith\\u0001ctrl é\"\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = \"solo\"\nflash = \"screen\"\nflash_seconds = 0.5\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"Alpha|beta\"\nserver = \"work\"\nrepeat = 3\nrepeat_every = 10\nrepeat_boost = 20\nmin_gap = 5\nbatch_window = 2\nstay = 9\n\n[[rule]]\ndescription = \"Named\"\nmatch = \"mention\"\nbanner = \"title\"\nenabled = false\n\n[[rule]]\ndescription = \"Zeta\"\nmatch = \"dm\"\nsound = \"ping\"\n\n[[rule]]\ndescription = \"alpha\"\nmatch = \"wildcard\"\npriority = -1\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": [
+     {
+      "description": "Zeta",
+      "enabled": true,
+      "match": "dm",
+      "priority": 0,
+      "sound": "ping"
+     },
+     {
+      "channel": [
+       "ops",
+       "",
+       "dev"
+      ],
+      "match": "channel",
+      "priority": 3,
+      "volume": 70
+     },
+     {
+      "channel": [
+       "solo"
+      ],
+      "flash": "screen",
+      "flash_seconds": 0.5,
+      "match": "channel"
+     },
+     {
+      "banner": "title",
+      "description": "",
+      "enabled": false,
+      "match": "mention",
+      "name": "Named"
+     },
+     {
+      "batch_window": 2,
+      "keyword": "Alpha|beta",
+      "match": "keyword",
+      "min_gap": 5,
+      "repeat": 3,
+      "repeat_boost": 20,
+      "repeat_every": 10,
+      "server": "work",
+      "stay": 9
+     },
+     {
+      "channel": [],
+      "match": "topic",
+      "priority": 3,
+      "sticky": true,
+      "topic": "deploy"
+     },
+     {
+      "description": "alpha",
+      "match": "wildcard",
+      "priority": -1
+     },
+     {
+      "description": "a \"quoted\" \\ name\twith\u0001ctrl é",
+      "match": "dm"
+     }
+    ]
+   },
+   "text": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n"
+  },
+  "name": "apply crlf_and_literals rules"
+ },
+ {
+  "expected": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": []
+   },
+   "text": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n"
+  },
+  "name": "apply crlf_and_literals no_rules"
+ },
+ {
+  "expected": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\nvolume = 10\n\r\n[defaults]\r\nsound = 'ping'\r\nvolume = 20\nmaster_volume = 60\n\n[focus]\nmode = \"mentions_and_dms\"\n\n[[rule]]\nmatch = \"mention\"\npriority = 1\n\n[[rule]]\nmatch = \"dm\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "master_volume": 60,
+     "volume": 20
+    },
+    "focus": {
+     "mode": "mentions_and_dms"
+    },
+    "rules": [
+     {
+      "match": "dm"
+     },
+     {
+      "match": "mention",
+      "priority": 1
+     }
+    ],
+    "servers": [
+     {
+      "name": "work",
+      "volume": 10
+     }
+    ]
+   },
+   "text": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n"
+  },
+  "name": "apply crlf_and_literals everything"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "volume": 500
+    }
+   },
+   "text": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n"
+  },
+  "message": "volume must be an integer from 0 to 100",
+  "name": "apply crlf_and_literals invalid_result"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": [
+     {
+      "match": "channel"
+     }
+    ]
+   },
+   "text": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n"
+  },
+  "message": "rule number 1: a channel rule needs channel",
+  "name": "apply crlf_and_literals invalid_rule"
+ },
+ {
+  "expected": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = \"chime\"\r\n",
+  "input": {
+   "new": "chime",
+   "old": "ping",
+   "op": "replace",
+   "text": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n"
+  },
+  "name": "replace crlf_and_literals ping"
+ },
+ {
+  "expected": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n",
+  "input": {
+   "new": "bell",
+   "old": "sos",
+   "op": "replace",
+   "text": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n"
+  },
+  "name": "replace crlf_and_literals sos"
+ },
+ {
+  "expected": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n",
+  "input": {
+   "new": "x",
+   "old": "missing",
+   "op": "replace",
+   "text": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n"
+  },
+  "name": "replace crlf_and_literals missing"
+ },
+ {
+  "expected": {
+   "defaults": {
+    "master_volume": 100,
+    "notify_channel_messages": false,
+    "sound": "chime",
+    "volume": 60
+   },
+   "focus": {
+    "mode": "off",
+    "quiet_hours": [],
+    "quiet_mode": "silent"
+   },
+   "rules": [
+    {
+     "match": "dm"
+    }
+   ],
+   "servers": [
+    {
+     "name": "work"
+    }
+   ]
+  },
+  "input": {
+   "op": "read",
+   "text": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "read rules_first"
+ },
+ {
+  "expected": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {},
+   "text": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "apply rules_first nothing"
+ },
+ {
+  "expected": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n\n[defaults]\nsound = \"chime\"\nvolume = 45\nflash_color = \"#00ff00\"\nflash_seconds = 1.0\nrepeat = 2\nsticky = true\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "flash_color": "#00ff00",
+     "flash_seconds": 1.0,
+     "repeat": 2,
+     "sound": "chime",
+     "sticky": true,
+     "unknown": 5,
+     "volume": 45
+    }
+   },
+   "text": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "apply rules_first defaults"
+ },
+ {
+  "expected": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {}
+   },
+   "text": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "apply rules_first empty_defaults"
+ },
+ {
+  "expected": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n\n[defaults]\nmaster_volume = 70\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "master_volume": 70
+    }
+   },
+   "text": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "apply rules_first master_volume"
+ },
+ {
+  "expected": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n\n[focus]\nmode = \"silent\"\nquiet_hours = [\"22:00-07:00\", \"12:00-13:00\"]\nquiet_mode = \"mentions_and_dms\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "focus": {
+     "mode": "silent",
+     "quiet_hours": [
+      "22:00-07:00",
+      "12:00-13:00"
+     ],
+     "quiet_mode": "mentions_and_dms"
+    }
+   },
+   "text": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "apply rules_first focus"
+ },
+ {
+  "expected": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n\n[focus]\nquiet_hours = []\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "focus": {
+     "quiet_hours": []
+    }
+   },
+   "text": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "apply rules_first focus_empty_hours"
+ },
+ {
+  "expected": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 90\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "servers": [
+     {
+      "name": "work",
+      "volume": 90
+     },
+     {
+      "name": "nope",
+      "volume": 1
+     },
+     {
+      "name": "home"
+     }
+    ]
+   },
+   "text": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "apply rules_first servers"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\nvolume = 70\npriority = 3\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"deploy\"\npriority = 3\nsticky = true\n\n[[rule]]\ndescription = \"a \\\"quoted\\\" \\\\ name\\twith\\u0001ctrl é\"\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = \"solo\"\nflash = \"screen\"\nflash_seconds = 0.5\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"Alpha|beta\"\nserver = \"work\"\nrepeat = 3\nrepeat_every = 10\nrepeat_boost = 20\nmin_gap = 5\nbatch_window = 2\nstay = 9\n\n[[rule]]\ndescription = \"Named\"\nmatch = \"mention\"\nbanner = \"title\"\nenabled = false\n\n[[rule]]\ndescription = \"Zeta\"\nmatch = \"dm\"\nsound = \"ping\"\n\n[[rule]]\ndescription = \"alpha\"\nmatch = \"wildcard\"\npriority = -1\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": [
+     {
+      "description": "Zeta",
+      "enabled": true,
+      "match": "dm",
+      "priority": 0,
+      "sound": "ping"
+     },
+     {
+      "channel": [
+       "ops",
+       "",
+       "dev"
+      ],
+      "match": "channel",
+      "priority": 3,
+      "volume": 70
+     },
+     {
+      "channel": [
+       "solo"
+      ],
+      "flash": "screen",
+      "flash_seconds": 0.5,
+      "match": "channel"
+     },
+     {
+      "banner": "title",
+      "description": "",
+      "enabled": false,
+      "match": "mention",
+      "name": "Named"
+     },
+     {
+      "batch_window": 2,
+      "keyword": "Alpha|beta",
+      "match": "keyword",
+      "min_gap": 5,
+      "repeat": 3,
+      "repeat_boost": 20,
+      "repeat_every": 10,
+      "server": "work",
+      "stay": 9
+     },
+     {
+      "channel": [],
+      "match": "topic",
+      "priority": 3,
+      "sticky": true,
+      "topic": "deploy"
+     },
+     {
+      "description": "alpha",
+      "match": "wildcard",
+      "priority": -1
+     },
+     {
+      "description": "a \"quoted\" \\ name\twith\u0001ctrl é",
+      "match": "dm"
+     }
+    ]
+   },
+   "text": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "apply rules_first rules"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": []
+   },
+   "text": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "apply rules_first no_rules"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 10\n\n[defaults]\nvolume = 20\nmaster_volume = 60\n\n[focus]\nmode = \"mentions_and_dms\"\n\n[[rule]]\nmatch = \"mention\"\npriority = 1\n\n[[rule]]\nmatch = \"dm\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "master_volume": 60,
+     "volume": 20
+    },
+    "focus": {
+     "mode": "mentions_and_dms"
+    },
+    "rules": [
+     {
+      "match": "dm"
+     },
+     {
+      "match": "mention",
+      "priority": 1
+     }
+    ],
+    "servers": [
+     {
+      "name": "work",
+      "volume": 10
+     }
+    ]
+   },
+   "text": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "apply rules_first everything"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "volume": 500
+    }
+   },
+   "text": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "message": "volume must be an integer from 0 to 100",
+  "name": "apply rules_first invalid_result"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": [
+     {
+      "match": "channel"
+     }
+    ]
+   },
+   "text": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "message": "rule number 1: a channel rule needs channel",
+  "name": "apply rules_first invalid_rule"
+ },
+ {
+  "expected": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n",
+  "input": {
+   "new": "chime",
+   "old": "ping",
+   "op": "replace",
+   "text": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "replace rules_first ping"
+ },
+ {
+  "expected": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n",
+  "input": {
+   "new": "bell",
+   "old": "sos",
+   "op": "replace",
+   "text": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "replace rules_first sos"
+ },
+ {
+  "expected": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n",
+  "input": {
+   "new": "x",
+   "old": "missing",
+   "op": "replace",
+   "text": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "replace rules_first missing"
+ },
+ {
+  "expected": {
+   "defaults": {
+    "master_volume": 100,
+    "notify_channel_messages": false,
+    "sound": "ping",
+    "volume": 60
+   },
+   "focus": {
+    "mode": "off",
+    "quiet_hours": [],
+    "quiet_mode": "silent"
+   },
+   "rules": [],
+   "servers": [
+    {
+     "name": "work"
+    }
+   ]
+  },
+  "input": {
+   "op": "read",
+   "text": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n"
+  },
+  "name": "read quoted_keys"
+ },
+ {
+  "expected": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n",
+  "input": {
+   "op": "apply",
+   "payload": {},
+   "text": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n"
+  },
+  "name": "apply quoted_keys nothing"
+ },
+ {
+  "expected": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"chime\"   # q\nvolume = 45\nflash_color = \"#00ff00\"\nflash_seconds = 1.0\nrepeat = 2\nsticky = true\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "flash_color": "#00ff00",
+     "flash_seconds": 1.0,
+     "repeat": 2,
+     "sound": "chime",
+     "sticky": true,
+     "unknown": 5,
+     "volume": 45
+    }
+   },
+   "text": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n"
+  },
+  "name": "apply quoted_keys defaults"
+ },
+ {
+  "expected": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {}
+   },
+   "text": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n"
+  },
+  "name": "apply quoted_keys empty_defaults"
+ },
+ {
+  "expected": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\nmaster_volume = 70\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "master_volume": 70
+    }
+   },
+   "text": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n"
+  },
+  "name": "apply quoted_keys master_volume"
+ },
+ {
+  "expected": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n\n[focus]\nmode = \"silent\"\nquiet_hours = [\"22:00-07:00\", \"12:00-13:00\"]\nquiet_mode = \"mentions_and_dms\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "focus": {
+     "mode": "silent",
+     "quiet_hours": [
+      "22:00-07:00",
+      "12:00-13:00"
+     ],
+     "quiet_mode": "mentions_and_dms"
+    }
+   },
+   "text": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n"
+  },
+  "name": "apply quoted_keys focus"
+ },
+ {
+  "expected": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n\n[focus]\nquiet_hours = []\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "focus": {
+     "quiet_hours": []
+    }
+   },
+   "text": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n"
+  },
+  "name": "apply quoted_keys focus_empty_hours"
+ },
+ {
+  "expected": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\nvolume = 90\n\n[defaults]\n\"sound\" = \"ping\"   # q\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "servers": [
+     {
+      "name": "work",
+      "volume": 90
+     },
+     {
+      "name": "nope",
+      "volume": 1
+     },
+     {
+      "name": "home"
+     }
+    ]
+   },
+   "text": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n"
+  },
+  "name": "apply quoted_keys servers"
+ },
+ {
+  "expected": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\nvolume = 70\npriority = 3\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"deploy\"\npriority = 3\nsticky = true\n\n[[rule]]\ndescription = \"a \\\"quoted\\\" \\\\ name\\twith\\u0001ctrl é\"\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = \"solo\"\nflash = \"screen\"\nflash_seconds = 0.5\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"Alpha|beta\"\nserver = \"work\"\nrepeat = 3\nrepeat_every = 10\nrepeat_boost = 20\nmin_gap = 5\nbatch_window = 2\nstay = 9\n\n[[rule]]\ndescription = \"Named\"\nmatch = \"mention\"\nbanner = \"title\"\nenabled = false\n\n[[rule]]\ndescription = \"Zeta\"\nmatch = \"dm\"\nsound = \"ping\"\n\n[[rule]]\ndescription = \"alpha\"\nmatch = \"wildcard\"\npriority = -1\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": [
+     {
+      "description": "Zeta",
+      "enabled": true,
+      "match": "dm",
+      "priority": 0,
+      "sound": "ping"
+     },
+     {
+      "channel": [
+       "ops",
+       "",
+       "dev"
+      ],
+      "match": "channel",
+      "priority": 3,
+      "volume": 70
+     },
+     {
+      "channel": [
+       "solo"
+      ],
+      "flash": "screen",
+      "flash_seconds": 0.5,
+      "match": "channel"
+     },
+     {
+      "banner": "title",
+      "description": "",
+      "enabled": false,
+      "match": "mention",
+      "name": "Named"
+     },
+     {
+      "batch_window": 2,
+      "keyword": "Alpha|beta",
+      "match": "keyword",
+      "min_gap": 5,
+      "repeat": 3,
+      "repeat_boost": 20,
+      "repeat_every": 10,
+      "server": "work",
+      "stay": 9
+     },
+     {
+      "channel": [],
+      "match": "topic",
+      "priority": 3,
+      "sticky": true,
+      "topic": "deploy"
+     },
+     {
+      "description": "alpha",
+      "match": "wildcard",
+      "priority": -1
+     },
+     {
+      "description": "a \"quoted\" \\ name\twith\u0001ctrl é",
+      "match": "dm"
+     }
+    ]
+   },
+   "text": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n"
+  },
+  "name": "apply quoted_keys rules"
+ },
+ {
+  "expected": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": []
+   },
+   "text": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n"
+  },
+  "name": "apply quoted_keys no_rules"
+ },
+ {
+  "expected": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\nvolume = 10\n\n[defaults]\n\"sound\" = \"ping\"   # q\nvolume = 20\nmaster_volume = 60\n\n[focus]\nmode = \"mentions_and_dms\"\n\n[[rule]]\nmatch = \"mention\"\npriority = 1\n\n[[rule]]\nmatch = \"dm\"\n",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "master_volume": 60,
+     "volume": 20
+    },
+    "focus": {
+     "mode": "mentions_and_dms"
+    },
+    "rules": [
+     {
+      "match": "dm"
+     },
+     {
+      "match": "mention",
+      "priority": 1
+     }
+    ],
+    "servers": [
+     {
+      "name": "work",
+      "volume": 10
+     }
+    ]
+   },
+   "text": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n"
+  },
+  "name": "apply quoted_keys everything"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "defaults": {
+     "volume": 500
+    }
+   },
+   "text": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n"
+  },
+  "message": "volume must be an integer from 0 to 100",
+  "name": "apply quoted_keys invalid_result"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "op": "apply",
+   "payload": {
+    "rules": [
+     {
+      "match": "channel"
+     }
+    ]
+   },
+   "text": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n"
+  },
+  "message": "rule number 1: a channel rule needs channel",
+  "name": "apply quoted_keys invalid_rule"
+ },
+ {
+  "expected": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"chime\"   # q\n",
+  "input": {
+   "new": "chime",
+   "old": "ping",
+   "op": "replace",
+   "text": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n"
+  },
+  "name": "replace quoted_keys ping"
+ },
+ {
+  "expected": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n",
+  "input": {
+   "new": "bell",
+   "old": "sos",
+   "op": "replace",
+   "text": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n"
+  },
+  "name": "replace quoted_keys sos"
+ },
+ {
+  "expected": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n",
+  "input": {
+   "new": "x",
+   "old": "missing",
+   "op": "replace",
+   "text": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n"
+  },
+  "name": "replace quoted_keys missing"
+ }
+]

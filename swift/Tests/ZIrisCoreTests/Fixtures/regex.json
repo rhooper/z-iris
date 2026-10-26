@@ -2972,6 +2972,7 @@
     "x]y"
    ]
   },
+  "message": "bad character range a-- at position 1",
   "name": "re '[a--b]'"
  },
  {
@@ -5947,6 +5948,7 @@
     "x]y"
    ]
   },
+  "message": "bad escape \\p at position 0",
   "name": "re '\\\\p{L}'"
  },
  {
@@ -5982,6 +5984,7 @@
     "x]y"
    ]
   },
+  "message": "bad escape \\h at position 0",
   "name": "re '\\\\h'"
  },
  {
@@ -6017,6 +6020,7 @@
     "x]y"
    ]
   },
+  "message": "bad escape \\Q at position 0",
   "name": "re '\\\\Q.\\\\E'"
  },
  {
@@ -6052,6 +6056,7 @@
     "x]y"
    ]
   },
+  "message": "missing ), unterminated subpattern at position 0",
   "name": "re '('"
  },
  {
@@ -6087,6 +6092,7 @@
     "x]y"
    ]
   },
+  "message": "unterminated character set at position 0",
   "name": "re '['"
  },
  {
@@ -6122,6 +6128,7 @@
     "x]y"
    ]
   },
+  "message": "nothing to repeat at position 0",
   "name": "re '*'"
  },
  {
@@ -6157,6 +6164,7 @@
     "x]y"
    ]
   },
+  "message": "multiple repeat at position 2",
   "name": "re 'a**'"
  },
  {
@@ -6192,6 +6200,7 @@
     "x]y"
    ]
   },
+  "message": "bad escape \\k at position 0",
   "name": "re '\\\\k<x>'"
  },
  {
@@ -6227,6 +6236,7 @@
     "x]y"
    ]
   },
+  "message": "bad character in group name '1' at position 4",
   "name": "re '(?P<1>x)'"
  },
  {
@@ -6262,6 +6272,7 @@
     "x]y"
    ]
   },
+  "message": "unknown extension ?P> at position 1",
   "name": "re '(?P>x)'"
  },
  {
@@ -6297,6 +6308,7 @@
     "x]y"
    ]
   },
+  "message": "global flags not at the start of the expression at position 1",
   "name": "re 'x(?i)'"
  },
  {
@@ -6332,6 +6344,7 @@
     "x]y"
    ]
   },
+  "message": "look-behind requires fixed-width pattern",
   "name": "re '(?<=a+)b'"
  },
  {
@@ -6367,6 +6380,7 @@
     "x]y"
    ]
   },
+  "message": "invalid group reference 1 at position 1",
   "name": "re '\\\\1(a)'"
  },
  {
@@ -6962,6 +6976,7 @@
     "x]y"
    ]
   },
+  "message": "bad escape (end of pattern) at position 3",
   "name": "re 'ops\\\\'"
  },
  {
@@ -7277,6 +7292,7 @@
     "x]y"
    ]
   },
+  "message": "bad character range z-a at position 1",
   "name": "re '[z-a]'"
  },
  {
@@ -7732,6 +7748,7 @@
     "x]y"
    ]
   },
+  "message": "cannot refer to an open group at position 2",
   "name": "re '(a\\\\1)'"
  },
  {
@@ -8187,6 +8204,7 @@
     "x]y"
    ]
   },
+  "message": "bad character range \\d-z at position 1",
   "name": "re '[\\\\d-z]'"
  },
  {
@@ -8502,6 +8520,7 @@
     "x]y"
    ]
   },
+  "message": "incomplete escape \\x4 at position 0",
   "name": "re '\\\\x4'"
  },
  {
@@ -8537,6 +8556,7 @@
     "x]y"
    ]
   },
+  "message": "unknown extension ?<n at position 1",
   "name": "re '(?<n>a)'"
  },
  {
@@ -8572,6 +8592,7 @@
     "x]y"
    ]
   },
+  "message": "bad character in group name '2x' at position 4",
   "name": "re '(?P<2x>a)'"
  },
  {
