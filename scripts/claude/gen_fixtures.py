@@ -1143,7 +1143,53 @@ def editing_cases() -> list[dict]:
     return cases
 
 
+def preview_cases() -> list[dict]:
+    from z_iris.preview import PreviewSource, _Snapshot
+    toml = ENGINE_CONFIG + '''
+[[rule]]
+match = "keyword"
+keyword = "deploy"
+sound = "sos"
+
+[[rule]]
+match = "channel"
+channel = "noise"
+sound = "none"
+banner = "off"
+
+[[rule]]
+match = "dm"
+sound = "/etc/hosts"
+'''
+    long = "word " * 60 + "é" * 30
+
+    def raw(mid, content="hi", kind="stream", stream="ops", flags=None, sender=9):
+        message = {"id": mid, "type": kind, "sender_id": sender, "sender_full_name": "Ada",
+                   "content": content}
+        if kind == "stream":
+            message.update(stream_id=7, display_recipient=stream, subject="t")
+        else:
+            message["display_recipient"] = [{"id": 5, "full_name": "Me"}, {"id": sender},
+                                            *([{"id": 3}] if kind == "group" else [])]
+            message["type"] = "private"
+        if flags is not None:
+            message["flags"] = flags
+        return message
+    messages = [raw(1), raw(2, "please deploy"), raw(3, stream="noise"),
+                raw(4, stream="noise", flags=["mentioned"]), raw(5, kind="private"),
+                raw(6, kind="group"), raw(7, "  spaced\n\tout  "), raw(8, long), raw(9, sender=5),
+                {"id": 10}, raw(11, flags=["has_alert_word"])]
+
+    def build():
+        source = PreviewSource()
+        snapshot = _Snapshot(0.0, "chat.example.com", 5, MuteState(), messages)
+        server = parse(toml).servers[0]
+        return edit_parse(lambda: source._evaluate(server, snapshot, Settings(parse(toml))))["messages"]
+    return [run("preview", {"toml": toml, "messages": messages}, build)]
+
+
 FIXTURES = {
+    "preview": preview_cases,
     "editing": editing_cases,
     "engine": engine_cases,
     "pipeline": pipeline_cases,

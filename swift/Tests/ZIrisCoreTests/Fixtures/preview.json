@@ -1,0 +1,246 @@
+[
+ {
+  "expected": [
+   {
+    "id": 11,
+    "notify": true,
+    "rule_index": null,
+    "sender": "Ada",
+    "sound": "chime",
+    "text": "hi",
+    "volume": 54,
+    "where": "#ops > t",
+    "why": "alert word"
+   },
+   {
+    "id": 9,
+    "notify": false,
+    "rule_index": null,
+    "sender": "Ada",
+    "sound": null,
+    "text": "hi",
+    "volume": null,
+    "where": "#ops > t",
+    "why": "own message"
+   },
+   {
+    "id": 8,
+    "notify": false,
+    "rule_index": null,
+    "sender": "Ada",
+    "sound": null,
+    "text": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word…",
+    "volume": null,
+    "where": "#ops > t",
+    "why": "channel messages not enabled"
+   },
+   {
+    "id": 7,
+    "notify": false,
+    "rule_index": null,
+    "sender": "Ada",
+    "sound": null,
+    "text": "spaced out",
+    "volume": null,
+    "where": "#ops > t",
+    "why": "channel messages not enabled"
+   },
+   {
+    "id": 6,
+    "notify": true,
+    "rule_index": null,
+    "sender": "Ada",
+    "sound": "chime",
+    "text": "hi",
+    "volume": 54,
+    "where": "Group DM",
+    "why": "dm"
+   },
+   {
+    "id": 5,
+    "notify": true,
+    "rule_index": 2,
+    "sender": "Ada",
+    "sound": "hosts",
+    "text": "hi",
+    "volume": 54,
+    "where": "DM",
+    "why": "rule"
+   },
+   {
+    "id": 4,
+    "notify": true,
+    "rule_index": null,
+    "sender": "Ada",
+    "sound": "chime",
+    "text": "hi",
+    "volume": 54,
+    "where": "#noise > t",
+    "why": "mention"
+   },
+   {
+    "id": 3,
+    "notify": false,
+    "rule_index": 1,
+    "sender": "Ada",
+    "sound": null,
+    "text": "hi",
+    "volume": null,
+    "where": "#noise > t",
+    "why": "silenced by rule"
+   },
+   {
+    "id": 2,
+    "notify": true,
+    "rule_index": 0,
+    "sender": "Ada",
+    "sound": "sos",
+    "text": "please deploy",
+    "volume": 54,
+    "where": "#ops > t",
+    "why": "rule"
+   },
+   {
+    "id": 1,
+    "notify": false,
+    "rule_index": null,
+    "sender": "Ada",
+    "sound": null,
+    "text": "hi",
+    "volume": null,
+    "where": "#ops > t",
+    "why": "channel messages not enabled"
+   }
+  ],
+  "input": {
+   "messages": [
+    {
+     "content": "hi",
+     "display_recipient": "ops",
+     "id": 1,
+     "sender_full_name": "Ada",
+     "sender_id": 9,
+     "stream_id": 7,
+     "subject": "t",
+     "type": "stream"
+    },
+    {
+     "content": "please deploy",
+     "display_recipient": "ops",
+     "id": 2,
+     "sender_full_name": "Ada",
+     "sender_id": 9,
+     "stream_id": 7,
+     "subject": "t",
+     "type": "stream"
+    },
+    {
+     "content": "hi",
+     "display_recipient": "noise",
+     "id": 3,
+     "sender_full_name": "Ada",
+     "sender_id": 9,
+     "stream_id": 7,
+     "subject": "t",
+     "type": "stream"
+    },
+    {
+     "content": "hi",
+     "display_recipient": "noise",
+     "flags": [
+      "mentioned"
+     ],
+     "id": 4,
+     "sender_full_name": "Ada",
+     "sender_id": 9,
+     "stream_id": 7,
+     "subject": "t",
+     "type": "stream"
+    },
+    {
+     "content": "hi",
+     "display_recipient": [
+      {
+       "full_name": "Me",
+       "id": 5
+      },
+      {
+       "id": 9
+      }
+     ],
+     "id": 5,
+     "sender_full_name": "Ada",
+     "sender_id": 9,
+     "type": "private"
+    },
+    {
+     "content": "hi",
+     "display_recipient": [
+      {
+       "full_name": "Me",
+       "id": 5
+      },
+      {
+       "id": 9
+      },
+      {
+       "id": 3
+      }
+     ],
+     "id": 6,
+     "sender_full_name": "Ada",
+     "sender_id": 9,
+     "type": "private"
+    },
+    {
+     "content": "  spaced\n\tout  ",
+     "display_recipient": "ops",
+     "id": 7,
+     "sender_full_name": "Ada",
+     "sender_id": 9,
+     "stream_id": 7,
+     "subject": "t",
+     "type": "stream"
+    },
+    {
+     "content": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word éééééééééééééééééééééééééééééé",
+     "display_recipient": "ops",
+     "id": 8,
+     "sender_full_name": "Ada",
+     "sender_id": 9,
+     "stream_id": 7,
+     "subject": "t",
+     "type": "stream"
+    },
+    {
+     "content": "hi",
+     "display_recipient": "ops",
+     "id": 9,
+     "sender_full_name": "Ada",
+     "sender_id": 5,
+     "stream_id": 7,
+     "subject": "t",
+     "type": "stream"
+    },
+    {
+     "id": 10
+    },
+    {
+     "content": "hi",
+     "display_recipient": "ops",
+     "flags": [
+      "has_alert_word"
+     ],
+     "id": 11,
+     "sender_full_name": "Ada",
+     "sender_id": 9,
+     "stream_id": 7,
+     "subject": "t",
+     "type": "stream"
+    }
+   ],
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 80\n[defaults]\nmaster_volume = 90\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"deploy\"\nsound = \"sos\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = \"noise\"\nsound = \"none\"\nbanner = \"off\"\n\n[[rule]]\nmatch = \"dm\"\nsound = \"/etc/hosts\"\n"
+  },
+  "name": "preview"
+ }
+]
