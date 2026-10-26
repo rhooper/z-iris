@@ -100,6 +100,8 @@ build_one() {
 }
 
 mkdir -p "$out"
+# Absolute, because the zip step runs from inside $out.
+out="$(CDPATH= cd "$out" && pwd)"
 build_one "$out/z-iris.app" ca.toybox.z-iris z-iris z-iris z_iris "" \
 	"$root/scripts/claude/z-iris.entitlements" "$main_profile"
 build_one "$out/z-iris-priority.app" ca.toybox.z-iris.priority "z-iris priority" z-iris-priority \
