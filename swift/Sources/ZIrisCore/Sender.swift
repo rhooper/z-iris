@@ -38,6 +38,11 @@ public struct Sender: Sendable, Equatable {
     public struct Member: Sendable, Equatable {
         public var handle: String
         public var name: String
+
+        public init(handle: String, name: String) {
+            self.handle = handle
+            self.name = name
+        }
     }
 
     public func toJSON() -> [String: Any] {
