@@ -1,0 +1,485 @@
+[
+ {
+  "expected": "bold and bold and it and it and gone",
+  "input": {
+   "text": "**bold** and __bold__ and *it* and _it_ and ~~gone~~"
+  },
+  "name": "plain '**bold** and __bold__ and *it* and _it_ '"
+ },
+ {
+  "expected": "use code here",
+  "input": {
+   "text": "use `code` here"
+  },
+  "name": "plain 'use `code` here'"
+ },
+ {
+  "expected": "snake_case_name stays",
+  "input": {
+   "text": "snake_case_name stays"
+  },
+  "name": "plain 'snake_case_name stays'"
+ },
+ {
+  "expected": "2 * 3 * 4",
+  "input": {
+   "text": "2 * 3 * 4"
+  },
+  "name": "plain '2 * 3 * 4'"
+ },
+ {
+  "expected": "the docs rock",
+  "input": {
+   "text": "[the docs](https://example.com/x) rock"
+  },
+  "name": "plain '[the docs](https://example.com/x) rock'"
+ },
+ {
+  "expected": "🖼 diagram",
+  "input": {
+   "text": "![diagram](https://example.com/a.png)"
+  },
+  "name": "plain '![diagram](https://example.com/a.png)'"
+ },
+ {
+  "expected": "🖼 image",
+  "input": {
+   "text": "![](https://example.com/a.png)"
+  },
+  "name": "plain '![](https://example.com/a.png)'"
+ },
+ {
+  "expected": "🖼 image",
+  "input": {
+   "text": "![  ](x)"
+  },
+  "name": "plain '![  ](x)'"
+ },
+ {
+  "expected": "📎 report.pdf",
+  "input": {
+   "text": "[report.pdf](/user_uploads/1/ab/report.pdf)"
+  },
+  "name": "plain '[report.pdf](/user_uploads/1/ab/report.p'"
+ },
+ {
+  "expected": "hi @Ada Lovelace and @Bob",
+  "input": {
+   "text": "hi @**Ada Lovelace** and @**Bob|12**"
+  },
+  "name": "plain 'hi @**Ada Lovelace** and @**Bob|12**'"
+ },
+ {
+  "expected": "Ada said",
+  "input": {
+   "text": "@_**Ada** said"
+  },
+  "name": "plain '@_**Ada** said'"
+ },
+ {
+  "expected": "@backend look",
+  "input": {
+   "text": "@*backend* look"
+  },
+  "name": "plain '@*backend* look'"
+ },
+ {
+  "expected": "@all heads up",
+  "input": {
+   "text": "@**all** heads up"
+  },
+  "name": "plain '@**all** heads up'"
+ },
+ {
+  "expected": "see #ops > deploys and #dev",
+  "input": {
+   "text": "see #**ops>deploys** and #**dev**"
+  },
+  "name": "plain 'see #**ops>deploys** and #**dev**'"
+ },
+ {
+  "expected": "Title text",
+  "input": {
+   "text": "# Title\ntext"
+  },
+  "name": "plain '# Title\\ntext'"
+ },
+ {
+  "expected": "####### seven",
+  "input": {
+   "text": "####### seven"
+  },
+  "name": "plain '####### seven'"
+ },
+ {
+  "expected": "# indented four",
+  "input": {
+   "text": "    # indented four"
+  },
+  "name": "plain '    # indented four'"
+ },
+ {
+  "expected": "quoted line reply",
+  "input": {
+   "text": "> quoted line\nreply"
+  },
+  "name": "plain '> quoted line\\nreply'"
+ },
+ {
+  "expected": "nested",
+  "input": {
+   "text": ">>> nested"
+  },
+  "name": "plain '>>> nested'"
+ },
+ {
+  "expected": "• one • two 1. three",
+  "input": {
+   "text": "- one\n- two\n1. three"
+  },
+  "name": "plain '- one\\n- two\\n1. three'"
+ },
+ {
+  "expected": "• nested • plus",
+  "input": {
+   "text": "  * nested\n+ plus"
+  },
+  "name": "plain '  * nested\\n+ plus'"
+ },
+ {
+  "expected": "a b",
+  "input": {
+   "text": "a\n\n---\n\nb"
+  },
+  "name": "plain 'a\\n\\n---\\n\\nb'"
+ },
+ {
+  "expected": "--",
+  "input": {
+   "text": "* * *\n_ _ _\n--"
+  },
+  "name": "plain '* * *\\n_ _ _\\n--'"
+ },
+ {
+  "expected": "nice 🎉 👍 🐙",
+  "input": {
+   "text": "nice :tada: :+1: :octopus:"
+  },
+  "name": "plain 'nice :tada: :+1: :octopus:'"
+ },
+ {
+  "expected": "🛠 ✅ 🙃 🙂",
+  "input": {
+   "text": ":working_on_it: :check: :upside_down: :smile:"
+  },
+  "name": "plain ':working_on_it: :check: :upside_down: :s'"
+ },
+ {
+  "expected": "✅ 😂",
+  "input": {
+   "text": ":white_check_mark: :face_with_tears_of_joy:"
+  },
+  "name": "plain ':white_check_mark: :face_with_tears_of_j'"
+ },
+ {
+  "expected": "custom :party_parrot: stays",
+  "input": {
+   "text": "custom :party_parrot: stays"
+  },
+  "name": "plain 'custom :party_parrot: stays'"
+ },
+ {
+  "expected": "10:30:45 and a:b:c stay",
+  "input": {
+   "text": "10:30:45 and a:b:c stay"
+  },
+  "name": "plain '10:30:45 and a:b:c stay'"
+ },
+ {
+  "expected": "🎉🎉 (🐙)",
+  "input": {
+   "text": ":tada::tada: (:octopus:)"
+  },
+  "name": "plain ':tada::tada: (:octopus:)'"
+ },
+ {
+  "expected": "👍 👎 📧",
+  "input": {
+   "text": ":thumbs_up: :-1: :e-mail:"
+  },
+  "name": "plain ':thumbs_up: :-1: :e-mail:'"
+ },
+ {
+  "expected": "print(1) x = 2",
+  "input": {
+   "text": "```python\nprint(1)\nx = 2\n```"
+  },
+  "name": "plain '```python\\nprint(1)\\nx = 2\\n```'"
+ },
+ {
+  "expected": "before they said hi after",
+  "input": {
+   "text": "before ```quote\nthey said hi\n``` after"
+  },
+  "name": "plain 'before ```quote\\nthey said hi\\n``` after'"
+ },
+ {
+  "expected": "[spoiler: Plot twist]",
+  "input": {
+   "text": "```spoiler Plot twist\nthe butler did it\n```"
+  },
+  "name": "plain '```spoiler Plot twist\\nthe butler did it\\n'"
+ },
+ {
+  "expected": "[spoiler]",
+  "input": {
+   "text": "```spoiler\nsecret\n```"
+  },
+  "name": "plain '```spoiler\\nsecret\\n```'"
+ },
+ {
+  "expected": "[spoiler: Loud]",
+  "input": {
+   "text": "```SPOILER  Loud \nx\n```"
+  },
+  "name": "plain '```SPOILER  Loud \\nx\\n```'"
+ },
+ {
+  "expected": "E = mc^2",
+  "input": {
+   "text": "```math\nE = mc^2\n```"
+  },
+  "name": "plain '```math\\nE = mc^2\\n```'"
+ },
+ {
+  "expected": "unclosed fence still",
+  "input": {
+   "text": "```\nunclosed fence\nstill"
+  },
+  "name": "plain '```\\nunclosed fence\\nstill'"
+ },
+ {
+  "expected": "b",
+  "input": {
+   "text": "```a```b```c```"
+  },
+  "name": "plain '```a```b```c```'"
+ },
+ {
+  "expected": "lots of space and lines",
+  "input": {
+   "text": "  lots   of\t space \n\n\n and lines "
+  },
+  "name": "plain '  lots   of\\t space \\n\\n\\n and lines '"
+ },
+ {
+  "expected": "meeting",
+  "input": {
+   "text": "<time:2024-01-01T10:00:00Z> meeting"
+  },
+  "name": "plain '<time:2024-01-01T10:00:00Z> meeting'"
+ },
+ {
+  "expected": "",
+  "input": {
+   "text": ""
+  },
+  "name": "plain ''"
+ },
+ {
+  "expected": "**",
+  "input": {
+   "text": "**"
+  },
+  "name": "plain '**'"
+ },
+ {
+  "expected": "[",
+  "input": {
+   "text": "["
+  },
+  "name": "plain '['"
+ },
+ {
+  "expected": "](",
+  "input": {
+   "text": "]("
+  },
+  "name": "plain ']('"
+ },
+ {
+  "expected": "![](",
+  "input": {
+   "text": "![]("
+  },
+  "name": "plain '![]('"
+ },
+ {
+  "expected": "",
+  "input": {
+   "text": "```"
+  },
+  "name": "plain '```'"
+ },
+ {
+  "expected": ":::",
+  "input": {
+   "text": ":::"
+  },
+  "name": "plain ':::'"
+ },
+ {
+  "expected": "@**",
+  "input": {
+   "text": "@**"
+  },
+  "name": "plain '@**'"
+ },
+ {
+  "expected": "#**>",
+  "input": {
+   "text": "#**>"
+  },
+  "name": "plain '#**>'"
+ },
+ {
+  "expected": "",
+  "input": {
+   "text": "**************************************************"
+  },
+  "name": "plain '****************************************'"
+ },
+ {
+  "expected": "",
+  "input": {
+   "text": "__________________________________________________"
+  },
+  "name": "plain '________________________________________'"
+ },
+ {
+  "expected": "a b 🙂 d a b 🙂 d a b 🙂 d a b 🙂 d a b 🙂 d a b 🙂 d a b 🙂 d a b 🙂 d a b 🙂 d a b 🙂 d a b 🙂 d a b 🙂 d a b 🙂 d a b 🙂 d a b 🙂 d a b 🙂 d a b 🙂 d a b 🙂 d a b 🙂 d a b 🙂 d",
+  "input": {
+   "text": "**a** [b](c) :smile: `d` **a** [b](c) :smile: `d` **a** [b](c) :smile: `d` **a** [b](c) :smile: `d` **a** [b](c) :smile: `d` **a** [b](c) :smile: `d` **a** [b](c) :smile: `d` **a** [b](c) :smile: `d` **a** [b](c) :smile: `d` **a** [b](c) :smile: `d` **a** [b](c) :smile: `d` **a** [b](c) :smile: `d` **a** [b](c) :smile: `d` **a** [b](c) :smile: `d` **a** [b](c) :smile: `d` **a** [b](c) :smile: `d` **a** [b](c) :smile: `d` **a** [b](c) :smile: `d` **a** [b](c) :smile: `d` **a** [b](c) :smile: `d` "
+  },
+  "name": "plain '**a** [b](c) :smile: `d` **a** [b](c) :s'"
+ },
+ {
+  "expected": "**not bold **",
+  "input": {
+   "text": "**not bold **"
+  },
+  "name": "plain '**not bold **'"
+ },
+ {
+  "expected": "** spaced**",
+  "input": {
+   "text": "** spaced**"
+  },
+  "name": "plain '** spaced**'"
+ },
+ {
+  "expected": "*a*b",
+  "input": {
+   "text": "*a*b"
+  },
+  "name": "plain '*a*b'"
+ },
+ {
+  "expected": "x*a*",
+  "input": {
+   "text": "x*a*"
+  },
+  "name": "plain 'x*a*'"
+ },
+ {
+  "expected": "_a_b",
+  "input": {
+   "text": "_a_b"
+  },
+  "name": "plain '_a_b'"
+ },
+ {
+  "expected": "it_is_",
+  "input": {
+   "text": "it_is_"
+  },
+  "name": "plain 'it_is_'"
+ },
+ {
+  "expected": "~~ x~~",
+  "input": {
+   "text": "~~ x~~"
+  },
+  "name": "plain '~~ x~~'"
+ },
+ {
+  "expected": "windows line ends",
+  "input": {
+   "text": "windows\r\nline\r\nends"
+  },
+  "name": "plain 'windows\\r\\nline\\r\\nends'"
+ },
+ {
+  "expected": "tab here nbsp wide sep",
+  "input": {
+   "text": "tab\there nbsp　wide sep"
+  },
+  "name": "plain 'tab\\there\\xa0nbsp\\u3000wide\\u2028sep'"
+ },
+ {
+  "expected": "café naïve 日本語 強調",
+  "input": {
+   "text": "café **naïve** 日本語 _強調_"
+  },
+  "name": "plain 'café **naïve** 日本語 _強調_'"
+ },
+ {
+  "expected": "emoji 👍🏽 👍👎",
+  "input": {
+   "text": "emoji 👍🏽 :+1::-1:"
+  },
+  "name": "plain 'emoji 👍🏽 :+1::-1:'"
+ },
+ {
+  "expected": "link with bold",
+  "input": {
+   "text": "[link with **bold**](u)"
+  },
+  "name": "plain '[link with **bold**](u)'"
+ },
+ {
+  "expected": "@Ada|x",
+  "input": {
+   "text": "@**Ada|x**"
+  },
+  "name": "plain '@**Ada|x**'"
+ },
+ {
+  "expected": "#ops> no",
+  "input": {
+   "text": "#**ops**> no"
+  },
+  "name": "plain '#**ops**> no'"
+ },
+ {
+  "expected": "<time:x",
+  "input": {
+   "text": "<time:x"
+  },
+  "name": "plain '<time:x'"
+ },
+ {
+  "expected": "`unclosed code",
+  "input": {
+   "text": "`unclosed code"
+  },
+  "name": "plain '`unclosed code'"
+ },
+ {
+  "expected": "`double`",
+  "input": {
+   "text": "``double``"
+  },
+  "name": "plain '``double``'"
+ }
+]

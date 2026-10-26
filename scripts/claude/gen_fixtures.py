@@ -18,6 +18,7 @@ from z_iris.config import Config, ConfigError, parse_config, resolve_action
 from z_iris.message import Message, message_from_event
 from z_iris.mutes import MuteState
 from z_iris.narrow import encode_component, narrow_url
+from z_iris.plaintext import plain_text
 from z_iris.policy import decide
 from z_iris.rules import Rule, pick_rule
 from z_iris.sounds import builtin_names
@@ -629,7 +630,37 @@ def pick_cases() -> list[dict]:
     return cases
 
 
+PLAIN_SAMPLES = [
+    "**bold** and __bold__ and *it* and _it_ and ~~gone~~", "use `code` here",
+    "snake_case_name stays", "2 * 3 * 4", "[the docs](https://example.com/x) rock",
+    "![diagram](https://example.com/a.png)", "![](https://example.com/a.png)",
+    "![  ](x)", "[report.pdf](/user_uploads/1/ab/report.pdf)",
+    "hi @**Ada Lovelace** and @**Bob|12**", "@_**Ada** said", "@*backend* look",
+    "@**all** heads up", "see #**ops>deploys** and #**dev**", "# Title\ntext",
+    "####### seven", "    # indented four", "> quoted line\nreply", ">>> nested",
+    "- one\n- two\n1. three", "  * nested\n+ plus", "a\n\n---\n\nb", "* * *\n_ _ _\n--",
+    "nice :tada: :+1: :octopus:", ":working_on_it: :check: :upside_down: :smile:",
+    ":white_check_mark: :face_with_tears_of_joy:", "custom :party_parrot: stays",
+    "10:30:45 and a:b:c stay", ":tada::tada: (:octopus:)", ":thumbs_up: :-1: :e-mail:",
+    "```python\nprint(1)\nx = 2\n```", "before ```quote\nthey said hi\n``` after",
+    "```spoiler Plot twist\nthe butler did it\n```", "```spoiler\nsecret\n```",
+    "```SPOILER  Loud \nx\n```", "```math\nE = mc^2\n```", "```\nunclosed fence\nstill",
+    "```a```b```c```", "  lots   of\t space \n\n\n and lines ",
+    "<time:2024-01-01T10:00:00Z> meeting", "", "**", "[", "](", "![](", "```", ":::",
+    "@**", "#**>", "*" * 50, "_" * 50, "**a** [b](c) :smile: `d` " * 20,
+    "**not bold **", "** spaced**", "*a*b", "x*a*", "_a_b", "it_is_", "~~ x~~",
+    "windows\r\nline\r\nends", "tab\there\u00a0nbsp\u3000wide\u2028sep",
+    "café **naïve** 日本語 _強調_", "emoji 👍🏽 :+1::-1:", "[link with **bold**](u)",
+    "@**Ada|x**", "#**ops**> no", "<time:x", "`unclosed code", "``double``",
+]
+
+
+def plain_cases() -> list[dict]:
+    return [run(f"plain {t[:40]!r}", {"text": t}, lambda t=t: plain_text(t)) for t in PLAIN_SAMPLES]
+
+
 FIXTURES = {
+    "plain": plain_cases,
     "config": config_cases,
     "action": action_cases,
     "pick": pick_cases,

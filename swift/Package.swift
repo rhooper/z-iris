@@ -11,7 +11,11 @@ let package = Package(
         .package(url: "https://github.com/dduan/TOMLDecoder.git", exact: "0.4.5"),
     ],
     targets: [
-        .target(name: "ZIrisCore", dependencies: ["TOMLDecoder"]),
+        .target(
+            name: "ZIrisCore",
+            dependencies: ["TOMLDecoder"],
+            resources: [.copy("Resources/emoji.json")]
+        ),
         .testTarget(
             name: "ZIrisCoreTests",
             dependencies: ["ZIrisCore"],
