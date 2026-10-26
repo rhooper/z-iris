@@ -1,0 +1,204 @@
+[
+ {
+  "expected": {
+   "name": "group-44e8f3f40236c266.png",
+   "tiles": [
+    [
+     "avatar",
+     "/c/av.png"
+    ],
+    [
+     "initials",
+     "BS",
+     "#d6409f"
+    ],
+    [
+     "initials",
+     "ÉV",
+     "#ffc53d"
+    ]
+   ]
+  },
+  "input": {
+   "sender": {
+    "avatar": "/c/av.png",
+    "conversation": "w:dm:3,9",
+    "group_name": "group",
+    "handle": "zulip:w:9",
+    "members": [
+     [
+      "zulip:w:3",
+      "Bob Smith"
+     ],
+     [
+      "zulip:w:9",
+      "Ada Lovelace"
+     ],
+     [
+      "zulip:w:12",
+      "élan (vital)"
+     ]
+    ],
+    "name": "Ada Lovelace",
+    "picture": null
+   }
+  },
+  "name": "avatar"
+ },
+ {
+  "expected": {
+   "name": "group-dede063856926d35.png",
+   "tiles": [
+    [
+     "initials",
+     "AL",
+     "#30a46c"
+    ],
+    [
+     "initials",
+     "BS",
+     "#d6409f"
+    ],
+    [
+     "initials",
+     "ÉV",
+     "#ffc53d"
+    ],
+    [
+     "initials",
+     "?",
+     "#e5484d"
+    ]
+   ]
+  },
+  "input": {
+   "sender": {
+    "avatar": null,
+    "conversation": "w:dm:3,9",
+    "group_name": "group",
+    "handle": "zulip:w:9",
+    "members": [
+     [
+      "zulip:w:3",
+      "Bob Smith"
+     ],
+     [
+      "zulip:w:9",
+      "Ada Lovelace"
+     ],
+     [
+      "zulip:w:12",
+      "élan (vital)"
+     ],
+     [
+      "zulip:w:15",
+      "  "
+     ],
+     [
+      "zulip:w:16",
+      "ßtraße x"
+     ],
+     [
+      "zulip:w:17",
+      "42 answers"
+     ],
+     [
+      "zulip:w:18",
+      "-dash _under"
+     ],
+     [
+      "zulip:w:19",
+      "李 小龍"
+     ]
+    ],
+    "name": "Ada Lovelace",
+    "picture": null
+   }
+  },
+  "name": "no_avatar"
+ },
+ {
+  "expected": {
+   "name": "group-64f08ca27ee30509.png",
+   "tiles": [
+    [
+     "initials",
+     "?",
+     "#e5484d"
+    ],
+    [
+     "initials",
+     "SSX",
+     "#6e56cf"
+    ],
+    [
+     "initials",
+     "4A",
+     "#ffc53d"
+    ],
+    [
+     "initials",
+     "?",
+     "#d6409f"
+    ]
+   ]
+  },
+  "input": {
+   "sender": {
+    "avatar": null,
+    "conversation": "c",
+    "group_name": "group",
+    "handle": "zulip:w:15",
+    "members": [
+     [
+      "zulip:w:15",
+      "  "
+     ],
+     [
+      "zulip:w:16",
+      "ßtraße x"
+     ],
+     [
+      "zulip:w:17",
+      "42 answers"
+     ],
+     [
+      "zulip:w:18",
+      "-dash _under"
+     ],
+     [
+      "zulip:w:19",
+      "李 小龍"
+     ]
+    ],
+    "name": "  ",
+    "picture": null
+   }
+  },
+  "name": "odd_names"
+ },
+ {
+  "expected": {
+   "name": "group-54c1f4116ed1d1c5.png",
+   "tiles": [
+    [
+     "initials",
+     "S",
+     "#6e56cf"
+    ]
+   ]
+  },
+  "input": {
+   "sender": {
+    "avatar": null,
+    "conversation": "c",
+    "group_name": "group",
+    "handle": "zulip:w:1",
+    "members": [],
+    "name": "(Solo)",
+    "picture": null
+   }
+  },
+  "name": "alone"
+ }
+]

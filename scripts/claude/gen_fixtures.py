@@ -1327,7 +1327,31 @@ def visual_cases() -> list[dict]:
     return cases
 
 
+def tile_cases() -> list[dict]:
+    import hashlib
+    from z_iris.comms import group_tiles
+    members = [("zulip:w:3", "Bob Smith"), ("zulip:w:9", "Ada Lovelace"), ("zulip:w:12", "élan (vital)"),
+               ("zulip:w:15", "  "), ("zulip:w:16", "ßtraße x"), ("zulip:w:17", "42 answers"),
+               ("zulip:w:18", "-dash _under"), ("zulip:w:19", "李 小龍")]
+    senders = {
+        "avatar": Sender("zulip:w:9", "Ada Lovelace", Path("/c/av.png"), None, "w:dm:3,9", "group",
+                         tuple(members[:3])),
+        "no_avatar": Sender("zulip:w:9", "Ada Lovelace", None, None, "w:dm:3,9", "group", tuple(members)),
+        "odd_names": Sender("zulip:w:15", "  ", None, None, "c", "group", tuple(members[3:])),
+        "alone": Sender("zulip:w:1", "(Solo)", None, None, "c", "group", ()),
+    }
+    cases = []
+    for name, sender in senders.items():
+        def build(sender=sender):
+            tiles = group_tiles(sender)
+            return {"tiles": [list(t) for t in tiles],
+                    "name": f"group-{hashlib.sha1(repr(tiles).encode()).hexdigest()[:16]}.png"}
+        cases.append(run(name, {"sender": sender.to_json()}, build))
+    return cases
+
+
 FIXTURES = {
+    "tiles": tile_cases,
     "visual": visual_cases,
     "banner": banner_cases,
     "media": media_cases,
