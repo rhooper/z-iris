@@ -3,6 +3,7 @@ import ZIrisCore
 import ZulipKit
 import ZIrisMac
 import AppKit
+import AVFoundation
 
 // z-iris's command line while the Swift port is under way. `probe` registers
 // with each configured server, reports what came back, and deregisters. It
@@ -78,13 +79,28 @@ func flash(_ arguments: [String]) -> Int32 {
     return 0
 }
 
+/// z-iris-cli play FILE [volume] [device]: one sound through SoundPlayer.
+func play(_ arguments: [String]) async -> Int32 {
+    guard let path = arguments.first else {
+        print("usage: z-iris-cli play FILE [volume] [device]")
+        return 2
+    }
+    let player = SoundPlayer(device: arguments.count > 2 ? arguments[2...].joined(separator: " ") : nil)
+    player.play(path, volume: arguments.count > 1 ? Int(arguments[1]) ?? 100 : 100)
+    let seconds = (try? AVAudioFile(forReading: URL(fileURLWithPath: path))).map { Double($0.length) / $0.fileFormat.sampleRate } ?? 1
+    try? await Task.sleep(for: .seconds(seconds + 0.5))
+    return 0
+}
+
 let arguments = Array(CommandLine.arguments.dropFirst())
 switch arguments.first {
 case "probe":
     exit(await probe())
+case "play":
+    exit(await play(Array(arguments.dropFirst())))
 case "flash":
     exit(await MainActor.run { flash(Array(arguments.dropFirst())) })
 default:
-    print("usage: z-iris-cli probe | flash <mode> [#rrggbb] [seconds]")
+    print("usage: z-iris-cli probe | flash <mode> [#rrggbb] [seconds] | play FILE [volume] [device]")
     exit(2)
 }
