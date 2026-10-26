@@ -1,0 +1,964 @@
+[
+ {
+  "expected": {
+   "behaviour": {},
+   "external_images": false,
+   "focus": {
+    "mode": "off",
+    "quiet_hours": [],
+    "quiet_mode": "silent"
+   },
+   "master_volume": 100,
+   "notifier": "terminal-notifier",
+   "notify_channel_messages": false,
+   "player": [
+    "play",
+    "-q"
+   ],
+   "rules": [],
+   "servers": [
+    {
+     "name": "work",
+     "volume": 100,
+     "zuliprc": "~HOME/.zuliprc"
+    }
+   ],
+   "sound": "chime",
+   "volume": 60
+  },
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n"
+  },
+  "name": "minimal"
+ },
+ {
+  "expected": {
+   "behaviour": {
+    "flash": "top",
+    "flash_color": "#ffaa00",
+    "flash_seconds": 2,
+    "repeat": 3,
+    "sticky": true
+   },
+   "external_images": true,
+   "focus": {
+    "mode": "mentions_and_dms",
+    "quiet_hours": [
+     [
+      1320,
+      420
+     ],
+     [
+      545,
+      570
+     ],
+     [
+      0,
+      1439
+     ]
+    ],
+    "quiet_mode": "mentions_and_dms"
+   },
+   "master_volume": 90,
+   "notifier": "/opt/bin/tn",
+   "notify_channel_messages": true,
+   "player": [
+    "play",
+    "-q",
+    "-V1"
+   ],
+   "rules": [
+    {
+     "banner": "title",
+     "behaviour": {
+      "flash": "screen",
+      "repeat": 2,
+      "repeat_every": 10
+     },
+     "channels": [],
+     "description": "Pages",
+     "enabled": true,
+     "index": 0,
+     "kind": "keyword",
+     "label": "Pages",
+     "pattern": "(?P<w>page)\\s+me",
+     "priority": 5,
+     "server": null,
+     "sound": "sos",
+     "volume": 100
+    },
+    {
+     "banner": null,
+     "behaviour": {},
+     "channels": [
+      "ops",
+      "deploy-.*"
+     ],
+     "description": null,
+     "enabled": true,
+     "index": 1,
+     "kind": "channel",
+     "label": "Channel #ops, #deploy-.*",
+     "pattern": null,
+     "priority": 0,
+     "server": "work",
+     "sound": null,
+     "volume": null
+    },
+    {
+     "banner": null,
+     "behaviour": {
+      "stay": 30
+     },
+     "channels": [
+      "eng"
+     ],
+     "description": "Old name",
+     "enabled": false,
+     "index": 2,
+     "kind": "topic",
+     "label": "Old name",
+     "pattern": "release",
+     "priority": 0,
+     "server": null,
+     "sound": null,
+     "volume": null
+    },
+    {
+     "banner": null,
+     "behaviour": {},
+     "channels": [],
+     "description": null,
+     "enabled": true,
+     "index": 3,
+     "kind": "topic",
+     "label": "Topic /it's/",
+     "pattern": "it's",
+     "priority": 0,
+     "server": null,
+     "sound": null,
+     "volume": null
+    },
+    {
+     "banner": null,
+     "behaviour": {
+      "batch_window": 5,
+      "min_gap": 60,
+      "repeat_boost": 20
+     },
+     "channels": [],
+     "description": "it's quoted",
+     "enabled": true,
+     "index": 4,
+     "kind": "dm",
+     "label": "it's quoted",
+     "pattern": null,
+     "priority": 0,
+     "server": null,
+     "sound": "none",
+     "volume": null
+    },
+    {
+     "banner": null,
+     "behaviour": {},
+     "channels": [],
+     "description": null,
+     "enabled": true,
+     "index": 5,
+     "kind": "mention",
+     "label": "Mention",
+     "pattern": null,
+     "priority": 0,
+     "server": null,
+     "sound": "/etc/hosts",
+     "volume": null
+    },
+    {
+     "banner": null,
+     "behaviour": {},
+     "channels": [],
+     "description": null,
+     "enabled": true,
+     "index": 6,
+     "kind": "wildcard",
+     "label": "Wildcard mention",
+     "pattern": null,
+     "priority": 0,
+     "server": null,
+     "sound": null,
+     "volume": null
+    },
+    {
+     "banner": null,
+     "behaviour": {},
+     "channels": [],
+     "description": null,
+     "enabled": true,
+     "index": 7,
+     "kind": "alert_word",
+     "label": "Alert word",
+     "pattern": null,
+     "priority": 0,
+     "server": null,
+     "sound": null,
+     "volume": null
+    },
+    {
+     "banner": null,
+     "behaviour": {
+      "flash_seconds": 0.25
+     },
+     "channels": [],
+     "description": null,
+     "enabled": true,
+     "index": 8,
+     "kind": "group_dm",
+     "label": "Group DM",
+     "pattern": null,
+     "priority": 0,
+     "server": null,
+     "sound": null,
+     "volume": null
+    }
+   ],
+   "servers": [
+    {
+     "name": "work",
+     "volume": 100,
+     "zuliprc": "~HOME/.zuliprc"
+    },
+    {
+     "name": "home",
+     "volume": 50,
+     "zuliprc": "/etc/zuliprc-home"
+    }
+   ],
+   "sound": "ping",
+   "volume": 70
+  },
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/etc/./zuliprc-home\"\nvolume = 50\n\n[defaults]\nvolume = 70\nmaster_volume = 90\nsound = \"ping\"\nnotify_channel_messages = true\nflash = \"top\"\nflash_color = \"#FFAA00\"\nflash_seconds = 2\nrepeat = 3\nsticky = true\n\n[output]\nplayer = [\"play\", \"-q\", \"-V1\"]\nnotifier = \"/opt/bin/tn\"\nexternal_images = true\n\n[focus]\nmode = \"mentions_and_dms\"\nquiet_mode = \"mentions_and_dms\"\nquiet_hours = [\"22:00-07:00\", \"9:05-9:30\", \"00:00-23:59\"]\n\n[[rule]]\ndescription = \"Pages\"\nmatch = \"keyword\"\nkeyword = \"(?P<w>page)\\\\s+me\"\npriority = 5\nsound = \"sos\"\nvolume = 100\nbanner = \"title\"\nflash = \"screen\"\nrepeat = 2\nrepeat_every = 10\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"deploy-.*\"]\nserver = \"work\"\n\n[[rule]]\nname = \"Old name\"\nmatch = \"topic\"\ntopic = \"release\"\nchannel = \"eng\"\nenabled = false\nstay = 30\n\n[[rule]]\ndescription = \"\"\nmatch = \"topic\"\ntopic = \"it's\"\n\n[[rule]]\ndescription = \"it's quoted\"\nmatch = \"dm\"\nsound = \"none\"\nmin_gap = 60\nbatch_window = 5\nrepeat_boost = 20\n\n[[rule]]\nmatch = \"mention\"\nsound = \"/etc/hosts\"\n\n[[rule]]\nmatch = \"wildcard\"\n[[rule]]\nmatch = \"alert_word\"\n[[rule]]\nmatch = \"group_dm\"\nflash_seconds = 0.25\n"
+  },
+  "name": "full"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\nvolume = = 3\n"
+  },
+  "message": "invalid TOML: Invalid value (at line 4, column 10)",
+  "name": "invalid_toml"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[defaults]\nvolume = 1\nvolume = 2\n"
+  },
+  "message": "invalid TOML: Cannot overwrite a value (at line 6, column 11)",
+  "name": "duplicate_key"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[defaults]\nvolume = 5\n"
+  },
+  "message": "at least one [[server]] is required",
+  "name": "no_server"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "server = 5\n"
+  },
+  "message": "[[server]] must be a list of tables, written [[server]]",
+  "name": "server_not_list"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[server]\nname = \"w\"\n"
+  },
+  "message": "[[server]] must be a list of tables, written [[server]]",
+  "name": "server_table"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nzuliprc = \"x\"\n"
+  },
+  "message": "each [[server]] needs a name",
+  "name": "server_no_name"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"\"\nzuliprc = \"x\"\n"
+  },
+  "message": "each [[server]] needs a name",
+  "name": "server_empty_name"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"w\"\n"
+  },
+  "message": "server 'w' needs a zuliprc path",
+  "name": "server_no_zuliprc"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n"
+  },
+  "message": "duplicate server name 'work'",
+  "name": "server_duplicate"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\nvolume = 101\n"
+  },
+  "message": "server 'work' volume must be an integer from 0 to 100",
+  "name": "server_volume_high"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\nvolume = true\n"
+  },
+  "message": "server 'work' volume must be an integer from 0 to 100",
+  "name": "server_volume_bool"
+ },
+ {
+  "expected": {
+   "behaviour": {},
+   "external_images": false,
+   "focus": {
+    "mode": "off",
+    "quiet_hours": [],
+    "quiet_mode": "silent"
+   },
+   "master_volume": 100,
+   "notifier": "terminal-notifier",
+   "notify_channel_messages": false,
+   "player": [
+    "play",
+    "-q"
+   ],
+   "rules": [],
+   "servers": [
+    {
+     "name": "w",
+     "volume": 100,
+     "zuliprc": "a/b/c"
+    }
+   ],
+   "sound": "chime",
+   "volume": 60
+  },
+  "input": {
+   "toml": "[[server]]\nname = \"w\"\nzuliprc = \"a//b/./c/\"\n"
+  },
+  "name": "server_relative_zuliprc"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "defaults = 5\n[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n"
+  },
+  "message": "[defaults] must be a table",
+  "name": "defaults_not_table"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "output = [1]\n[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n"
+  },
+  "message": "[output] must be a table",
+  "name": "output_not_table"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[defaults]\nvolume = \"x\"\n"
+  },
+  "message": "volume must be an integer from 0 to 100",
+  "name": "volume_string"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[defaults]\nvolume = 1979-05-27\n"
+  },
+  "message": "volume must be an integer from 0 to 100",
+  "name": "volume_date"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[defaults]\nmaster_volume = 1.5\n"
+  },
+  "message": "master_volume must be an integer from 0 to 100",
+  "name": "master_volume_float"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[defaults]\nsound = \"boing\"\n"
+  },
+  "message": "default sound: unknown sound 'boing'; choose none or one of alert, bell, bicycle-bell, blip, chime, church-bells, cowbell, doorbell, double, dx-bass, dx-bells, dx-brass, dx-clav, dx-epiano, dx-flute, dx-harpsichord, dx-koto, dx-marimba, dx-orch-chime, dx-organ, dx-piano-c, dx-steel-drum, dx-strings, dx-synlead, dx-vibe, fall, foghorn, gong, knock, low, mid-long, mid-short, moog-a, ping, rise, rooster, singing-bowl, soft, sos, steam-whistle, synth, triple, typewriter-ding, urgent, wind-chimes",
+  "name": "sound_unknown"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[defaults]\nsound = \"\"\n"
+  },
+  "message": "default sound must be a sound name, a file path or 'none'",
+  "name": "sound_empty"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[defaults]\nsound = 3\n"
+  },
+  "message": "default sound must be a sound name, a file path or 'none'",
+  "name": "sound_number"
+ },
+ {
+  "expected": {
+   "behaviour": {},
+   "external_images": false,
+   "focus": {
+    "mode": "off",
+    "quiet_hours": [],
+    "quiet_mode": "silent"
+   },
+   "master_volume": 100,
+   "notifier": "terminal-notifier",
+   "notify_channel_messages": false,
+   "player": [
+    "play",
+    "-q"
+   ],
+   "rules": [],
+   "servers": [
+    {
+     "name": "work",
+     "volume": 100,
+     "zuliprc": "~HOME/.zuliprc"
+    }
+   ],
+   "sound": "/etc/hosts",
+   "volume": 60
+  },
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[defaults]\nsound = \"/etc/hosts\"\n"
+  },
+  "name": "sound_path"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[defaults]\nsound = \"/etc\"\n"
+  },
+  "message": "default sound: unknown sound '/etc'; choose none or one of alert, bell, bicycle-bell, blip, chime, church-bells, cowbell, doorbell, double, dx-bass, dx-bells, dx-brass, dx-clav, dx-epiano, dx-flute, dx-harpsichord, dx-koto, dx-marimba, dx-orch-chime, dx-organ, dx-piano-c, dx-steel-drum, dx-strings, dx-synlead, dx-vibe, fall, foghorn, gong, knock, low, mid-long, mid-short, moog-a, ping, rise, rooster, singing-bowl, soft, sos, steam-whistle, synth, triple, typewriter-ding, urgent, wind-chimes",
+  "name": "sound_dir"
+ },
+ {
+  "expected": {
+   "behaviour": {},
+   "external_images": false,
+   "focus": {
+    "mode": "off",
+    "quiet_hours": [],
+    "quiet_mode": "silent"
+   },
+   "master_volume": 100,
+   "notifier": "terminal-notifier",
+   "notify_channel_messages": false,
+   "player": [
+    "play",
+    "-q"
+   ],
+   "rules": [],
+   "servers": [
+    {
+     "name": "work",
+     "volume": 100,
+     "zuliprc": "~HOME/.zuliprc"
+    }
+   ],
+   "sound": "synth",
+   "volume": 60
+  },
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[defaults]\nsound = \"synth\"\n"
+  },
+  "name": "sound_synth"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[defaults]\nnotify_channel_messages = \"yes\"\n"
+  },
+  "message": "notify_channel_messages must be true or false",
+  "name": "notify_string"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[output]\nplayer = []\n"
+  },
+  "message": "player must be a non-empty list of strings",
+  "name": "player_empty"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[output]\nplayer = [1]\n"
+  },
+  "message": "player must be a non-empty list of strings",
+  "name": "player_numbers"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[output]\nplayer = \"play\"\n"
+  },
+  "message": "player must be a non-empty list of strings",
+  "name": "player_string"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[output]\nnotifier = \"\"\n"
+  },
+  "message": "notifier must be a command name or path",
+  "name": "notifier_empty"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[output]\nexternal_images = 1\n"
+  },
+  "message": "external_images must be true or false",
+  "name": "external_images_int"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "rule = 3\n[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n"
+  },
+  "message": "[[rule]] must be a list of tables, written [[rule]]",
+  "name": "rules_not_list"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\ndescription = 5\nmatch = \"dm\"\n"
+  },
+  "message": "rule number 1: description must be text",
+  "name": "rule_description_number"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nname = 5\nmatch = \"dm\"\n"
+  },
+  "message": "rule number 1: description must be text",
+  "name": "rule_name_number"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\ndescription = \"x\"\nmatch = \"everything\"\n"
+  },
+  "message": "rule 'x': match must be one of topic, keyword, mention, wildcard, alert_word, channel, group_dm, dm",
+  "name": "rule_match_bad"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nsound = \"ping\"\n"
+  },
+  "message": "rule number 1: match must be one of topic, keyword, mention, wildcard, alert_word, channel, group_dm, dm",
+  "name": "rule_match_missing"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"mention\"\nchannel = \"ops\"\n"
+  },
+  "message": "rule number 1: channel only applies to channel and topic rules",
+  "name": "rule_channel_on_mention"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"channel\"\n"
+  },
+  "message": "rule number 1: a channel rule needs channel",
+  "name": "rule_channel_missing"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"channel\"\nchannel = []\n"
+  },
+  "message": "rule number 1: channel must be a channel name or a list of them",
+  "name": "rule_channel_empty_list"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"channel\"\nchannel = [\"\"]\n"
+  },
+  "message": "rule number 1: channel must be a channel name or a list of them",
+  "name": "rule_channel_empty_name"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"channel\"\nchannel = \"\"\n"
+  },
+  "message": "rule number 1: channel must be a channel name or a list of them",
+  "name": "rule_channel_empty_string"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"channel\"\nchannel = 5\n"
+  },
+  "message": "rule number 1: channel must be a channel name or a list of them",
+  "name": "rule_channel_number"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"channel\"\nchannel = false\n"
+  },
+  "message": "rule number 1: channel must be a channel name or a list of them",
+  "name": "rule_channel_bool"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ok\", \"(\"]\n"
+  },
+  "message": "rule number 1: bad channel pattern '(': missing ), unterminated subpattern at position 0",
+  "name": "rule_channel_bad_pattern"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"topic\"\n"
+  },
+  "message": "rule number 1: a topic rule needs topic",
+  "name": "rule_topic_missing"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\ndescription = \"Bad\"\nmatch = \"topic\"\ntopic = \"(\"\n"
+  },
+  "message": "rule 'Bad': bad regular expression: missing ), unterminated subpattern at position 0",
+  "name": "rule_topic_bad_regex"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"\"\n"
+  },
+  "message": "rule number 1: a keyword rule needs keyword",
+  "name": "rule_keyword_empty"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"dm\"\nserver = \"play\"\n"
+  },
+  "message": "rule number 1: unknown server 'play'",
+  "name": "rule_server_unknown"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"dm\"\nserver = 3\n"
+  },
+  "message": "rule number 1: unknown server 3",
+  "name": "rule_server_number"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"dm\"\nvolume = 200\n"
+  },
+  "message": "rule number 1: volume must be an integer from 0 to 100",
+  "name": "rule_volume_high"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"dm\"\nbanner = \"huge\"\n"
+  },
+  "message": "rule number 1: banner must be full, title or off",
+  "name": "rule_banner_bad"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"dm\"\nsound = \"boing\"\n"
+  },
+  "message": "rule number 1: unknown sound 'boing'; choose none or one of alert, bell, bicycle-bell, blip, chime, church-bells, cowbell, doorbell, double, dx-bass, dx-bells, dx-brass, dx-clav, dx-epiano, dx-flute, dx-harpsichord, dx-koto, dx-marimba, dx-orch-chime, dx-organ, dx-piano-c, dx-steel-drum, dx-strings, dx-synlead, dx-vibe, fall, foghorn, gong, knock, low, mid-long, mid-short, moog-a, ping, rise, rooster, singing-bowl, soft, sos, steam-whistle, synth, triple, typewriter-ding, urgent, wind-chimes",
+  "name": "rule_sound_unknown"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"dm\"\nenabled = \"no\"\n"
+  },
+  "message": "rule number 1: enabled must be true or false",
+  "name": "rule_enabled_string"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"dm\"\npriority = 1.5\n"
+  },
+  "message": "rule number 1: priority must be an integer",
+  "name": "rule_priority_float"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"dm\"\npriority = true\n"
+  },
+  "message": "rule number 1: priority must be an integer",
+  "name": "rule_priority_bool"
+ },
+ {
+  "expected": {
+   "behaviour": {},
+   "external_images": false,
+   "focus": {
+    "mode": "off",
+    "quiet_hours": [],
+    "quiet_mode": "silent"
+   },
+   "master_volume": 100,
+   "notifier": "terminal-notifier",
+   "notify_channel_messages": false,
+   "player": [
+    "play",
+    "-q"
+   ],
+   "rules": [
+    {
+     "banner": null,
+     "behaviour": {},
+     "channels": [],
+     "description": null,
+     "enabled": true,
+     "index": 0,
+     "kind": "dm",
+     "label": "Direct message",
+     "pattern": null,
+     "priority": -3,
+     "server": null,
+     "sound": null,
+     "volume": null
+    }
+   ],
+   "servers": [
+    {
+     "name": "work",
+     "volume": 100,
+     "zuliprc": "~HOME/.zuliprc"
+    }
+   ],
+   "sound": "chime",
+   "volume": 60
+  },
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"dm\"\npriority = -3\n"
+  },
+  "name": "rule_priority_negative"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"dm\"\nflash = \"blink\"\n"
+  },
+  "message": "rule number 1: flash must be one of none, screen, top, bottom, left, right",
+  "name": "rule_flash_bad"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"dm\"\nflash_color = \"red\"\n"
+  },
+  "message": "rule number 1: flash_color must be a colour like #ff3b30",
+  "name": "rule_flash_color_bad"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"dm\"\nflash_seconds = 0.05\n"
+  },
+  "message": "rule number 1: flash_seconds must be from 0.1 to 10",
+  "name": "rule_flash_seconds_low"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"dm\"\nflash_seconds = \"1\"\n"
+  },
+  "message": "rule number 1: flash_seconds must be a number from 0.1 to 10",
+  "name": "rule_flash_seconds_string"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"dm\"\nrepeat = 1.0\n"
+  },
+  "message": "rule number 1: repeat must be an integer from 0 to 20",
+  "name": "rule_repeat_float"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"dm\"\nrepeat = 21\n"
+  },
+  "message": "rule number 1: repeat must be from 0 to 20",
+  "name": "rule_repeat_high"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"dm\"\nsticky = 1\n"
+  },
+  "message": "rule number 1: sticky must be true or false",
+  "name": "rule_sticky_int"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"dm\"\nstay = 3601\n"
+  },
+  "message": "rule number 1: stay must be from 0 to 3600",
+  "name": "rule_stay_high"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[defaults]\nflash = \"blink\"\n"
+  },
+  "message": "flash must be one of none, screen, top, bottom, left, right",
+  "name": "defaults_flash_bad"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[defaults]\nflash = \"blink\"\n[[rule]]\nmatch = \"x\"\n"
+  },
+  "message": "rule number 1: match must be one of topic, keyword, mention, wildcard, alert_word, channel, group_dm, dm",
+  "name": "rule_error_before_defaults_error"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[defaults]\nrepeat = -1\n[focus]\nmode = \"x\"\n"
+  },
+  "message": "repeat must be from 0 to 20",
+  "name": "defaults_error_before_focus_error"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "focus = 5\n[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n"
+  },
+  "message": "[focus] must be a table",
+  "name": "focus_not_table"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[focus]\nmode = \"loud\"\n"
+  },
+  "message": "focus: mode must be one of off, mentions_and_dms, silent",
+  "name": "focus_mode_bad"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[focus]\nquiet_mode = \"off\"\n"
+  },
+  "message": "focus: quiet_mode must be one of mentions_and_dms, silent",
+  "name": "focus_quiet_mode_off"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[focus]\nquiet_hours = \"22:00-07:00\"\n"
+  },
+  "message": "focus: quiet_hours must be a list like [\"22:00-07:00\"]",
+  "name": "focus_hours_string"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[focus]\nquiet_hours = [\"7-8\"]\n"
+  },
+  "message": "focus: bad quiet hours '7-8', use HH:MM-HH:MM",
+  "name": "focus_hours_bad_format"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[focus]\nquiet_hours = [\"25:00-07:00\"]\n"
+  },
+  "message": "focus: bad time in quiet hours '25:00-07:00'",
+  "name": "focus_hours_bad_time"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[focus]\nquiet_hours = [\"22:60-07:00\"]\n"
+  },
+  "message": "focus: bad time in quiet hours '22:60-07:00'",
+  "name": "focus_hours_bad_minute"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[focus]\nquiet_hours = [\"22:00-22:00\"]\n"
+  },
+  "message": "focus: quiet hours '22:00-22:00' start and end together, so it would never be quiet; use 00:00-23:59 for all day",
+  "name": "focus_hours_same"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[focus]\nquiet_hours = [5]\n"
+  },
+  "message": "focus: bad quiet hours 5, use HH:MM-HH:MM",
+  "name": "focus_hours_number"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[focus]\nquiet_hours = [\"123:00-07:00\"]\n"
+  },
+  "message": "focus: bad quiet hours '123:00-07:00', use HH:MM-HH:MM",
+  "name": "focus_hours_three_digits"
+ },
+ {
+  "error": "ConfigError",
+  "input": {
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[focus]\nquiet_hours = [\"it's\"]\n"
+  },
+  "message": "focus: bad quiet hours \"it's\", use HH:MM-HH:MM",
+  "name": "focus_hours_quote"
+ }
+]

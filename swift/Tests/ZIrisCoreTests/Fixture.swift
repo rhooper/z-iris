@@ -9,6 +9,8 @@ struct Fixture: CustomTestStringConvertible, Sendable {
     nonisolated(unsafe) let expected: Any?
     /// The Python exception's class name when the case is refused.
     let error: String?
+    /// Its text, for config errors.
+    let message: String?
 
     var testDescription: String { name }
 
@@ -22,7 +24,8 @@ struct Fixture: CustomTestStringConvertible, Sendable {
                 name: $0["name"] as! String,
                 input: $0["input"] as! [String: Any],
                 expected: $0["expected"],
-                error: $0["error"] as? String
+                error: $0["error"] as? String,
+                message: $0["message"] as? String
             )
         }
     }

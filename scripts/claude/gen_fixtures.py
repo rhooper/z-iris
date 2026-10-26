@@ -14,10 +14,13 @@ import dataclasses
 import json
 from pathlib import Path
 
+from z_iris.config import Config, ConfigError, parse_config, resolve_action
 from z_iris.message import Message, message_from_event
 from z_iris.mutes import MuteState
 from z_iris.narrow import encode_component, narrow_url
 from z_iris.policy import decide
+from z_iris.rules import Rule, pick_rule
+from z_iris.sounds import builtin_names
 
 OUT = Path(__file__).resolve().parents[2] / "swift/Tests/ZIrisCoreTests/Fixtures"
 
@@ -258,7 +261,378 @@ def regex_cases() -> list[dict]:
     return cases
 
 
+HOME = str(Path.home())
+
+
+def unhome(text: str) -> str:
+    """Keep the user's home directory out of committed fixtures."""
+    return "~HOME" + text[len(HOME):] if text.startswith(HOME) else text
+
+
+def fixture_sounds() -> dict[str, Path]:
+    """The bundled sound names at fixed paths, so fixtures don't depend on
+    where the package is installed."""
+    sounds = {name: Path(f"/sounds/{name}.wav") for name in builtin_names()}
+    sounds["synth"] = sounds["chime"]
+    return sounds
+
+
+def rule_dict(rule: Rule) -> dict:
+    return {
+        "description": rule.description, "kind": rule.kind, "channels": list(rule.channels),
+        "pattern": rule.pattern.pattern if rule.pattern else None, "server": rule.server,
+        "sound": rule.sound, "volume": rule.volume, "banner": rule.banner,
+        "priority": rule.priority, "index": rule.index, "enabled": rule.enabled,
+        "behaviour": rule.behaviour, "label": rule.label,
+    }
+
+
+def config_dict(config: Config) -> dict:
+    return {
+        "servers": [{"name": s.name, "zuliprc": unhome(str(s.zuliprc)), "volume": s.volume}
+                    for s in config.servers],
+        "sound": unhome(config.sound), "volume": config.volume,
+        "notify_channel_messages": config.notify_channel_messages,
+        "player": list(config.player), "notifier": config.notifier,
+        "external_images": config.external_images, "master_volume": config.master_volume,
+        "rules": [rule_dict(r) for r in config.rules], "behaviour": config.behaviour,
+        "focus": {"mode": config.focus.mode, "quiet_mode": config.focus.quiet_mode,
+                  "quiet_hours": [list(h) for h in config.focus.quiet_hours]},
+    }
+
+
+def parse(text: str) -> Config:
+    import z_iris.config as config_module
+    real = config_module.library
+    config_module.library = lambda _dir: fixture_sounds()
+    try:
+        return parse_config(text)
+    finally:
+        config_module.library = real
+
+
+def run_config(name: str, text: str) -> dict:
+    case = run(name, {"toml": text}, lambda: config_dict(parse(text)))
+    if "error" in case:
+        try:
+            parse(text)
+        except ConfigError as error:
+            case["message"] = str(error)
+    return case
+
+
+S = '[[server]]\nname = "work"\nzuliprc = "~/.zuliprc"\n'
+FULL = S + '''
+[[server]]
+name = "home"
+zuliprc = "/etc/./zuliprc-home"
+volume = 50
+
+[defaults]
+volume = 70
+master_volume = 90
+sound = "ping"
+notify_channel_messages = true
+flash = "top"
+flash_color = "#FFAA00"
+flash_seconds = 2
+repeat = 3
+sticky = true
+
+[output]
+player = ["play", "-q", "-V1"]
+notifier = "/opt/bin/tn"
+external_images = true
+
+[focus]
+mode = "mentions_and_dms"
+quiet_mode = "mentions_and_dms"
+quiet_hours = ["22:00-07:00", "9:05-9:30", "00:00-23:59"]
+
+[[rule]]
+description = "Pages"
+match = "keyword"
+keyword = "(?P<w>page)\\\\s+me"
+priority = 5
+sound = "sos"
+volume = 100
+banner = "title"
+flash = "screen"
+repeat = 2
+repeat_every = 10
+
+[[rule]]
+match = "channel"
+channel = ["ops", "deploy-.*"]
+server = "work"
+
+[[rule]]
+name = "Old name"
+match = "topic"
+topic = "release"
+channel = "eng"
+enabled = false
+stay = 30
+
+[[rule]]
+description = ""
+match = "topic"
+topic = "it's"
+
+[[rule]]
+description = "it's quoted"
+match = "dm"
+sound = "none"
+min_gap = 60
+batch_window = 5
+repeat_boost = 20
+
+[[rule]]
+match = "mention"
+sound = "/etc/hosts"
+
+[[rule]]
+match = "wildcard"
+[[rule]]
+match = "alert_word"
+[[rule]]
+match = "group_dm"
+flash_seconds = 0.25
+'''
+
+
+def config_cases() -> list[dict]:
+    rule = lambda body: S + "[[rule]]\n" + body  # noqa: E731
+    texts = {
+        "minimal": S,
+        "full": FULL,
+        "invalid_toml": S + "volume = = 3\n",
+        "duplicate_key": S + "[defaults]\nvolume = 1\nvolume = 2\n",
+        "no_server": "[defaults]\nvolume = 5\n",
+        "server_not_list": "server = 5\n",
+        "server_table": '[server]\nname = "w"\n',
+        "server_no_name": '[[server]]\nzuliprc = "x"\n',
+        "server_empty_name": '[[server]]\nname = ""\nzuliprc = "x"\n',
+        "server_no_zuliprc": '[[server]]\nname = "w"\n',
+        "server_duplicate": S + S,
+        "server_volume_high": S + "volume = 101\n",
+        "server_volume_bool": S + "volume = true\n",
+        "server_relative_zuliprc": '[[server]]\nname = "w"\nzuliprc = "a//b/./c/"\n',
+        "defaults_not_table": "defaults = 5\n" + S,
+        "output_not_table": "output = [1]\n" + S,
+        "volume_string": S + '[defaults]\nvolume = "x"\n',
+        "volume_date": S + "[defaults]\nvolume = 1979-05-27\n",
+        "master_volume_float": S + "[defaults]\nmaster_volume = 1.5\n",
+        "sound_unknown": S + '[defaults]\nsound = "boing"\n',
+        "sound_empty": S + '[defaults]\nsound = ""\n',
+        "sound_number": S + "[defaults]\nsound = 3\n",
+        "sound_path": S + '[defaults]\nsound = "/etc/hosts"\n',
+        "sound_dir": S + '[defaults]\nsound = "/etc"\n',
+        "sound_synth": S + '[defaults]\nsound = "synth"\n',
+        "notify_string": S + '[defaults]\nnotify_channel_messages = "yes"\n',
+        "player_empty": S + "[output]\nplayer = []\n",
+        "player_numbers": S + "[output]\nplayer = [1]\n",
+        "player_string": S + '[output]\nplayer = "play"\n',
+        "notifier_empty": S + '[output]\nnotifier = ""\n',
+        "external_images_int": S + "[output]\nexternal_images = 1\n",
+        "rules_not_list": "rule = 3\n" + S,
+        "rule_description_number": rule('description = 5\nmatch = "dm"\n'),
+        "rule_name_number": rule('name = 5\nmatch = "dm"\n'),
+        "rule_match_bad": rule('description = "x"\nmatch = "everything"\n'),
+        "rule_match_missing": rule('sound = "ping"\n'),
+        "rule_channel_on_mention": rule('match = "mention"\nchannel = "ops"\n'),
+        "rule_channel_missing": rule('match = "channel"\n'),
+        "rule_channel_empty_list": rule('match = "channel"\nchannel = []\n'),
+        "rule_channel_empty_name": rule('match = "channel"\nchannel = [""]\n'),
+        "rule_channel_empty_string": rule('match = "channel"\nchannel = ""\n'),
+        "rule_channel_number": rule('match = "channel"\nchannel = 5\n'),
+        "rule_channel_bool": rule('match = "channel"\nchannel = false\n'),
+        "rule_channel_bad_pattern": rule('match = "channel"\nchannel = ["ok", "("]\n'),
+        "rule_topic_missing": rule('match = "topic"\n'),
+        "rule_topic_bad_regex": rule('description = "Bad"\nmatch = "topic"\ntopic = "("\n'),
+        "rule_keyword_empty": rule('match = "keyword"\nkeyword = ""\n'),
+        "rule_server_unknown": rule('match = "dm"\nserver = "play"\n'),
+        "rule_server_number": rule('match = "dm"\nserver = 3\n'),
+        "rule_volume_high": rule('match = "dm"\nvolume = 200\n'),
+        "rule_banner_bad": rule('match = "dm"\nbanner = "huge"\n'),
+        "rule_sound_unknown": rule('match = "dm"\nsound = "boing"\n'),
+        "rule_enabled_string": rule('match = "dm"\nenabled = "no"\n'),
+        "rule_priority_float": rule('match = "dm"\npriority = 1.5\n'),
+        "rule_priority_bool": rule('match = "dm"\npriority = true\n'),
+        "rule_priority_negative": rule('match = "dm"\npriority = -3\n'),
+        "rule_flash_bad": rule('match = "dm"\nflash = "blink"\n'),
+        "rule_flash_color_bad": rule('match = "dm"\nflash_color = "red"\n'),
+        "rule_flash_seconds_low": rule('match = "dm"\nflash_seconds = 0.05\n'),
+        "rule_flash_seconds_string": rule('match = "dm"\nflash_seconds = "1"\n'),
+        "rule_repeat_float": rule('match = "dm"\nrepeat = 1.0\n'),
+        "rule_repeat_high": rule('match = "dm"\nrepeat = 21\n'),
+        "rule_sticky_int": rule('match = "dm"\nsticky = 1\n'),
+        "rule_stay_high": rule('match = "dm"\nstay = 3601\n'),
+        "defaults_flash_bad": S + '[defaults]\nflash = "blink"\n',
+        "rule_error_before_defaults_error": S + '[defaults]\nflash = "blink"\n[[rule]]\nmatch = "x"\n',
+        "defaults_error_before_focus_error": S + '[defaults]\nrepeat = -1\n[focus]\nmode = "x"\n',
+        "focus_not_table": "focus = 5\n" + S,
+        "focus_mode_bad": S + '[focus]\nmode = "loud"\n',
+        "focus_quiet_mode_off": S + '[focus]\nquiet_mode = "off"\n',
+        "focus_hours_string": S + '[focus]\nquiet_hours = "22:00-07:00"\n',
+        "focus_hours_bad_format": S + '[focus]\nquiet_hours = ["7-8"]\n',
+        "focus_hours_bad_time": S + '[focus]\nquiet_hours = ["25:00-07:00"]\n',
+        "focus_hours_bad_minute": S + '[focus]\nquiet_hours = ["22:60-07:00"]\n',
+        "focus_hours_same": S + '[focus]\nquiet_hours = ["22:00-22:00"]\n',
+        "focus_hours_number": S + "[focus]\nquiet_hours = [5]\n",
+        "focus_hours_three_digits": S + '[focus]\nquiet_hours = ["123:00-07:00"]\n',
+        "focus_hours_quote": S + "[focus]\nquiet_hours = [\"it's\"]\n",
+    }
+    return [run_config(name, text) for name, text in texts.items()]
+
+
+ACTION_CONFIG = S + '''
+[[server]]
+name = "home"
+zuliprc = "/x"
+volume = 33
+
+[defaults]
+volume = 50
+master_volume = 75
+flash_color = "#00ff00"
+repeat = 1
+
+[[rule]]
+match = "dm"
+volume = 90
+sound = "ping"
+banner = "off"
+repeat = 4
+flash_seconds = 1
+
+[[rule]]
+match = "mention"
+sound = "none"
+
+[[rule]]
+match = "wildcard"
+sound = "/etc/hosts"
+volume = 1
+'''
+
+
+def action_cases() -> list[dict]:
+    config = parse(ACTION_CONFIG)
+    cases = []
+    for server in ("work", "home", "elsewhere"):
+        for index in (None, 0, 1, 2):
+            rule = None if index is None else config.rules[index]
+            def build(server=server, rule=rule):
+                action = resolve_action(config, server, rule)
+                data = dataclasses.asdict(action)
+                data["sound"] = unhome(data["sound"])
+                return data
+            cases.append(run(f"{server} rule={index}", {"toml": ACTION_CONFIG, "server": server,
+                                                         "rule": index}, build))
+    # Python rounds halves to even: 50 * 33 * 75 / 10000 = 12.375; 5 * 50 * 50 / 10000 = 1.25.
+    halves = S + '[[server]]\nname = "h"\nzuliprc = "/x"\nvolume = 50\n[defaults]\nvolume = 5\nmaster_volume = 50\n'
+    half_config = parse(halves)
+    for server in ("work", "h"):
+        cases.append(run(f"halves {server}", {"toml": halves, "server": server, "rule": None},
+                         lambda s=server: dataclasses.asdict(resolve_action(half_config, s, None))))
+    return cases
+
+
+PICK_CONFIG = S + '''
+[[server]]
+name = "home"
+zuliprc = "/x"
+
+[[rule]]
+match = "channel"
+channel = ["ops", "deploy-.*"]
+
+[[rule]]
+match = "topic"
+topic = "fail|broke"
+
+[[rule]]
+match = "topic"
+topic = "release"
+channel = "eng"
+priority = 1
+
+[[rule]]
+match = "keyword"
+keyword = "\\\\burgent\\\\b"
+
+[[rule]]
+match = "mention"
+
+[[rule]]
+match = "wildcard"
+server = "home"
+
+[[rule]]
+match = "alert_word"
+enabled = false
+
+[[rule]]
+match = "dm"
+
+[[rule]]
+match = "group_dm"
+priority = -1
+
+[[rule]]
+match = "keyword"
+keyword = "lunch"
+priority = 2
+server = "home"
+'''
+
+
+def pick_cases() -> list[dict]:
+    config = parse(PICK_CONFIG)
+
+    def channel(name="ops", topic="deploys", content="x", flags=(), server="work"):
+        return Message(server, "h", 1, "channel", 9, "Ada", content, frozenset(flags), 7, name,
+                       topic, ())
+
+    def dm(ids, content="x", server="work"):
+        return Message(server, "h", 1, "dm", 9, "Ada", content, frozenset(), None, None, None,
+                       tuple(ids))
+    messages = {
+        "plain_ops": channel(),
+        "ops_case": channel("OPS"),
+        "deploy_prod": channel("deploy-prod"),
+        "deploy_partial": channel("my-deploy-prod"),
+        "ops_suffix": channel("opsx"),
+        "topic_fail": channel("random", "build failed"),
+        "topic_in_ops": channel("ops", "it broke"),
+        "release_in_eng": channel("eng", "Release 2.0", flags=["mentioned"]),
+        "release_elsewhere": channel("other", "release"),
+        "urgent_word": channel("other", "t", "this is URGENT now"),
+        "urgent_part": channel("other", "t", "urgently"),
+        "mention_topic": channel("other", "it broke", flags=["mentioned"]),
+        "wildcard_work": channel("other", "t", flags=["wildcard_mentioned"]),
+        "wildcard_home": channel("other", "t", flags=["wildcard_mentioned"], server="home"),
+        "alert_word_disabled": channel("other", "t", flags=["has_alert_word"]),
+        "dm_one": dm([9]),
+        "dm_group": dm([3, 9]),
+        "dm_lunch_home": dm([9], "lunch?", "home"),
+        "dm_lunch_work": dm([9], "lunch?"),
+        "nothing": channel("other", "t"),
+    }
+    cases = []
+    for name, message in messages.items():
+        def build(message=message):
+            rule = pick_rule(config.rules, message)
+            return None if rule is None else rule.index
+        cases.append(run(name, {"toml": PICK_CONFIG, "message": message_dict(message)}, build))
+    return cases
+
+
 FIXTURES = {
+    "config": config_cases,
+    "action": action_cases,
+    "pick": pick_cases,
     "lower": lower_cases,
     "regex": regex_cases,
     "message": message_cases,

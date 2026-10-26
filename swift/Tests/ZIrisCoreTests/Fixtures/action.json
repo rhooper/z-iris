@@ -1,0 +1,352 @@
+[
+ {
+  "expected": {
+   "banner": "full",
+   "batch_window": 0,
+   "flash": "none",
+   "flash_color": "#00ff00",
+   "flash_seconds": 0.6,
+   "min_gap": 0,
+   "repeat": 1,
+   "repeat_boost": 0,
+   "repeat_every": 30,
+   "rule": null,
+   "rule_index": null,
+   "sound": "/sounds/chime.wav",
+   "stay": 0,
+   "sticky": false,
+   "volume": 38
+  },
+  "input": {
+   "rule": null,
+   "server": "work",
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 33\n\n[defaults]\nvolume = 50\nmaster_volume = 75\nflash_color = \"#00ff00\"\nrepeat = 1\n\n[[rule]]\nmatch = \"dm\"\nvolume = 90\nsound = \"ping\"\nbanner = \"off\"\nrepeat = 4\nflash_seconds = 1\n\n[[rule]]\nmatch = \"mention\"\nsound = \"none\"\n\n[[rule]]\nmatch = \"wildcard\"\nsound = \"/etc/hosts\"\nvolume = 1\n"
+  },
+  "name": "work rule=None"
+ },
+ {
+  "expected": {
+   "banner": "off",
+   "batch_window": 0,
+   "flash": "none",
+   "flash_color": "#00ff00",
+   "flash_seconds": 1,
+   "min_gap": 0,
+   "repeat": 4,
+   "repeat_boost": 0,
+   "repeat_every": 30,
+   "rule": "Direct message",
+   "rule_index": 0,
+   "sound": "/sounds/ping.wav",
+   "stay": 0,
+   "sticky": false,
+   "volume": 68
+  },
+  "input": {
+   "rule": 0,
+   "server": "work",
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 33\n\n[defaults]\nvolume = 50\nmaster_volume = 75\nflash_color = \"#00ff00\"\nrepeat = 1\n\n[[rule]]\nmatch = \"dm\"\nvolume = 90\nsound = \"ping\"\nbanner = \"off\"\nrepeat = 4\nflash_seconds = 1\n\n[[rule]]\nmatch = \"mention\"\nsound = \"none\"\n\n[[rule]]\nmatch = \"wildcard\"\nsound = \"/etc/hosts\"\nvolume = 1\n"
+  },
+  "name": "work rule=0"
+ },
+ {
+  "expected": {
+   "banner": "full",
+   "batch_window": 0,
+   "flash": "none",
+   "flash_color": "#00ff00",
+   "flash_seconds": 0.6,
+   "min_gap": 0,
+   "repeat": 1,
+   "repeat_boost": 0,
+   "repeat_every": 30,
+   "rule": "Mention",
+   "rule_index": 1,
+   "sound": "none",
+   "stay": 0,
+   "sticky": false,
+   "volume": 38
+  },
+  "input": {
+   "rule": 1,
+   "server": "work",
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 33\n\n[defaults]\nvolume = 50\nmaster_volume = 75\nflash_color = \"#00ff00\"\nrepeat = 1\n\n[[rule]]\nmatch = \"dm\"\nvolume = 90\nsound = \"ping\"\nbanner = \"off\"\nrepeat = 4\nflash_seconds = 1\n\n[[rule]]\nmatch = \"mention\"\nsound = \"none\"\n\n[[rule]]\nmatch = \"wildcard\"\nsound = \"/etc/hosts\"\nvolume = 1\n"
+  },
+  "name": "work rule=1"
+ },
+ {
+  "expected": {
+   "banner": "full",
+   "batch_window": 0,
+   "flash": "none",
+   "flash_color": "#00ff00",
+   "flash_seconds": 0.6,
+   "min_gap": 0,
+   "repeat": 1,
+   "repeat_boost": 0,
+   "repeat_every": 30,
+   "rule": "Wildcard mention",
+   "rule_index": 2,
+   "sound": "/etc/hosts",
+   "stay": 0,
+   "sticky": false,
+   "volume": 1
+  },
+  "input": {
+   "rule": 2,
+   "server": "work",
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 33\n\n[defaults]\nvolume = 50\nmaster_volume = 75\nflash_color = \"#00ff00\"\nrepeat = 1\n\n[[rule]]\nmatch = \"dm\"\nvolume = 90\nsound = \"ping\"\nbanner = \"off\"\nrepeat = 4\nflash_seconds = 1\n\n[[rule]]\nmatch = \"mention\"\nsound = \"none\"\n\n[[rule]]\nmatch = \"wildcard\"\nsound = \"/etc/hosts\"\nvolume = 1\n"
+  },
+  "name": "work rule=2"
+ },
+ {
+  "expected": {
+   "banner": "full",
+   "batch_window": 0,
+   "flash": "none",
+   "flash_color": "#00ff00",
+   "flash_seconds": 0.6,
+   "min_gap": 0,
+   "repeat": 1,
+   "repeat_boost": 0,
+   "repeat_every": 30,
+   "rule": null,
+   "rule_index": null,
+   "sound": "/sounds/chime.wav",
+   "stay": 0,
+   "sticky": false,
+   "volume": 12
+  },
+  "input": {
+   "rule": null,
+   "server": "home",
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 33\n\n[defaults]\nvolume = 50\nmaster_volume = 75\nflash_color = \"#00ff00\"\nrepeat = 1\n\n[[rule]]\nmatch = \"dm\"\nvolume = 90\nsound = \"ping\"\nbanner = \"off\"\nrepeat = 4\nflash_seconds = 1\n\n[[rule]]\nmatch = \"mention\"\nsound = \"none\"\n\n[[rule]]\nmatch = \"wildcard\"\nsound = \"/etc/hosts\"\nvolume = 1\n"
+  },
+  "name": "home rule=None"
+ },
+ {
+  "expected": {
+   "banner": "off",
+   "batch_window": 0,
+   "flash": "none",
+   "flash_color": "#00ff00",
+   "flash_seconds": 1,
+   "min_gap": 0,
+   "repeat": 4,
+   "repeat_boost": 0,
+   "repeat_every": 30,
+   "rule": "Direct message",
+   "rule_index": 0,
+   "sound": "/sounds/ping.wav",
+   "stay": 0,
+   "sticky": false,
+   "volume": 22
+  },
+  "input": {
+   "rule": 0,
+   "server": "home",
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 33\n\n[defaults]\nvolume = 50\nmaster_volume = 75\nflash_color = \"#00ff00\"\nrepeat = 1\n\n[[rule]]\nmatch = \"dm\"\nvolume = 90\nsound = \"ping\"\nbanner = \"off\"\nrepeat = 4\nflash_seconds = 1\n\n[[rule]]\nmatch = \"mention\"\nsound = \"none\"\n\n[[rule]]\nmatch = \"wildcard\"\nsound = \"/etc/hosts\"\nvolume = 1\n"
+  },
+  "name": "home rule=0"
+ },
+ {
+  "expected": {
+   "banner": "full",
+   "batch_window": 0,
+   "flash": "none",
+   "flash_color": "#00ff00",
+   "flash_seconds": 0.6,
+   "min_gap": 0,
+   "repeat": 1,
+   "repeat_boost": 0,
+   "repeat_every": 30,
+   "rule": "Mention",
+   "rule_index": 1,
+   "sound": "none",
+   "stay": 0,
+   "sticky": false,
+   "volume": 12
+  },
+  "input": {
+   "rule": 1,
+   "server": "home",
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 33\n\n[defaults]\nvolume = 50\nmaster_volume = 75\nflash_color = \"#00ff00\"\nrepeat = 1\n\n[[rule]]\nmatch = \"dm\"\nvolume = 90\nsound = \"ping\"\nbanner = \"off\"\nrepeat = 4\nflash_seconds = 1\n\n[[rule]]\nmatch = \"mention\"\nsound = \"none\"\n\n[[rule]]\nmatch = \"wildcard\"\nsound = \"/etc/hosts\"\nvolume = 1\n"
+  },
+  "name": "home rule=1"
+ },
+ {
+  "expected": {
+   "banner": "full",
+   "batch_window": 0,
+   "flash": "none",
+   "flash_color": "#00ff00",
+   "flash_seconds": 0.6,
+   "min_gap": 0,
+   "repeat": 1,
+   "repeat_boost": 0,
+   "repeat_every": 30,
+   "rule": "Wildcard mention",
+   "rule_index": 2,
+   "sound": "/etc/hosts",
+   "stay": 0,
+   "sticky": false,
+   "volume": 0
+  },
+  "input": {
+   "rule": 2,
+   "server": "home",
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 33\n\n[defaults]\nvolume = 50\nmaster_volume = 75\nflash_color = \"#00ff00\"\nrepeat = 1\n\n[[rule]]\nmatch = \"dm\"\nvolume = 90\nsound = \"ping\"\nbanner = \"off\"\nrepeat = 4\nflash_seconds = 1\n\n[[rule]]\nmatch = \"mention\"\nsound = \"none\"\n\n[[rule]]\nmatch = \"wildcard\"\nsound = \"/etc/hosts\"\nvolume = 1\n"
+  },
+  "name": "home rule=2"
+ },
+ {
+  "expected": {
+   "banner": "full",
+   "batch_window": 0,
+   "flash": "none",
+   "flash_color": "#00ff00",
+   "flash_seconds": 0.6,
+   "min_gap": 0,
+   "repeat": 1,
+   "repeat_boost": 0,
+   "repeat_every": 30,
+   "rule": null,
+   "rule_index": null,
+   "sound": "/sounds/chime.wav",
+   "stay": 0,
+   "sticky": false,
+   "volume": 38
+  },
+  "input": {
+   "rule": null,
+   "server": "elsewhere",
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 33\n\n[defaults]\nvolume = 50\nmaster_volume = 75\nflash_color = \"#00ff00\"\nrepeat = 1\n\n[[rule]]\nmatch = \"dm\"\nvolume = 90\nsound = \"ping\"\nbanner = \"off\"\nrepeat = 4\nflash_seconds = 1\n\n[[rule]]\nmatch = \"mention\"\nsound = \"none\"\n\n[[rule]]\nmatch = \"wildcard\"\nsound = \"/etc/hosts\"\nvolume = 1\n"
+  },
+  "name": "elsewhere rule=None"
+ },
+ {
+  "expected": {
+   "banner": "off",
+   "batch_window": 0,
+   "flash": "none",
+   "flash_color": "#00ff00",
+   "flash_seconds": 1,
+   "min_gap": 0,
+   "repeat": 4,
+   "repeat_boost": 0,
+   "repeat_every": 30,
+   "rule": "Direct message",
+   "rule_index": 0,
+   "sound": "/sounds/ping.wav",
+   "stay": 0,
+   "sticky": false,
+   "volume": 68
+  },
+  "input": {
+   "rule": 0,
+   "server": "elsewhere",
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 33\n\n[defaults]\nvolume = 50\nmaster_volume = 75\nflash_color = \"#00ff00\"\nrepeat = 1\n\n[[rule]]\nmatch = \"dm\"\nvolume = 90\nsound = \"ping\"\nbanner = \"off\"\nrepeat = 4\nflash_seconds = 1\n\n[[rule]]\nmatch = \"mention\"\nsound = \"none\"\n\n[[rule]]\nmatch = \"wildcard\"\nsound = \"/etc/hosts\"\nvolume = 1\n"
+  },
+  "name": "elsewhere rule=0"
+ },
+ {
+  "expected": {
+   "banner": "full",
+   "batch_window": 0,
+   "flash": "none",
+   "flash_color": "#00ff00",
+   "flash_seconds": 0.6,
+   "min_gap": 0,
+   "repeat": 1,
+   "repeat_boost": 0,
+   "repeat_every": 30,
+   "rule": "Mention",
+   "rule_index": 1,
+   "sound": "none",
+   "stay": 0,
+   "sticky": false,
+   "volume": 38
+  },
+  "input": {
+   "rule": 1,
+   "server": "elsewhere",
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 33\n\n[defaults]\nvolume = 50\nmaster_volume = 75\nflash_color = \"#00ff00\"\nrepeat = 1\n\n[[rule]]\nmatch = \"dm\"\nvolume = 90\nsound = \"ping\"\nbanner = \"off\"\nrepeat = 4\nflash_seconds = 1\n\n[[rule]]\nmatch = \"mention\"\nsound = \"none\"\n\n[[rule]]\nmatch = \"wildcard\"\nsound = \"/etc/hosts\"\nvolume = 1\n"
+  },
+  "name": "elsewhere rule=1"
+ },
+ {
+  "expected": {
+   "banner": "full",
+   "batch_window": 0,
+   "flash": "none",
+   "flash_color": "#00ff00",
+   "flash_seconds": 0.6,
+   "min_gap": 0,
+   "repeat": 1,
+   "repeat_boost": 0,
+   "repeat_every": 30,
+   "rule": "Wildcard mention",
+   "rule_index": 2,
+   "sound": "/etc/hosts",
+   "stay": 0,
+   "sticky": false,
+   "volume": 1
+  },
+  "input": {
+   "rule": 2,
+   "server": "elsewhere",
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\nvolume = 33\n\n[defaults]\nvolume = 50\nmaster_volume = 75\nflash_color = \"#00ff00\"\nrepeat = 1\n\n[[rule]]\nmatch = \"dm\"\nvolume = 90\nsound = \"ping\"\nbanner = \"off\"\nrepeat = 4\nflash_seconds = 1\n\n[[rule]]\nmatch = \"mention\"\nsound = \"none\"\n\n[[rule]]\nmatch = \"wildcard\"\nsound = \"/etc/hosts\"\nvolume = 1\n"
+  },
+  "name": "elsewhere rule=2"
+ },
+ {
+  "expected": {
+   "banner": "full",
+   "batch_window": 0,
+   "flash": "none",
+   "flash_color": "#ff3b30",
+   "flash_seconds": 0.6,
+   "min_gap": 0,
+   "repeat": 0,
+   "repeat_boost": 0,
+   "repeat_every": 30,
+   "rule": null,
+   "rule_index": null,
+   "sound": "/sounds/chime.wav",
+   "stay": 0,
+   "sticky": false,
+   "volume": 2
+  },
+  "input": {
+   "rule": null,
+   "server": "work",
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[server]]\nname = \"h\"\nzuliprc = \"/x\"\nvolume = 50\n[defaults]\nvolume = 5\nmaster_volume = 50\n"
+  },
+  "name": "halves work"
+ },
+ {
+  "expected": {
+   "banner": "full",
+   "batch_window": 0,
+   "flash": "none",
+   "flash_color": "#ff3b30",
+   "flash_seconds": 0.6,
+   "min_gap": 0,
+   "repeat": 0,
+   "repeat_boost": 0,
+   "repeat_every": 30,
+   "rule": null,
+   "rule_index": null,
+   "sound": "/sounds/chime.wav",
+   "stay": 0,
+   "sticky": false,
+   "volume": 1
+  },
+  "input": {
+   "rule": null,
+   "server": "h",
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[server]]\nname = \"h\"\nzuliprc = \"/x\"\nvolume = 50\n[defaults]\nvolume = 5\nmaster_volume = 50\n"
+  },
+  "name": "halves h"
+ }
+]

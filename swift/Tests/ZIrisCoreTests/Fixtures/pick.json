@@ -1,0 +1,481 @@
+[
+ {
+  "expected": 0,
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": "deploys"
+   },
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"deploy-.*\"]\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"fail|broke\"\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"release\"\nchannel = \"eng\"\npriority = 1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"\\\\burgent\\\\b\"\n\n[[rule]]\nmatch = \"mention\"\n\n[[rule]]\nmatch = \"wildcard\"\nserver = \"home\"\n\n[[rule]]\nmatch = \"alert_word\"\nenabled = false\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"group_dm\"\npriority = -1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"lunch\"\npriority = 2\nserver = \"home\"\n"
+  },
+  "name": "plain_ops"
+ },
+ {
+  "expected": 0,
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "OPS",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": "deploys"
+   },
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"deploy-.*\"]\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"fail|broke\"\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"release\"\nchannel = \"eng\"\npriority = 1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"\\\\burgent\\\\b\"\n\n[[rule]]\nmatch = \"mention\"\n\n[[rule]]\nmatch = \"wildcard\"\nserver = \"home\"\n\n[[rule]]\nmatch = \"alert_word\"\nenabled = false\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"group_dm\"\npriority = -1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"lunch\"\npriority = 2\nserver = \"home\"\n"
+  },
+  "name": "ops_case"
+ },
+ {
+  "expected": 0,
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "deploy-prod",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": "deploys"
+   },
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"deploy-.*\"]\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"fail|broke\"\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"release\"\nchannel = \"eng\"\npriority = 1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"\\\\burgent\\\\b\"\n\n[[rule]]\nmatch = \"mention\"\n\n[[rule]]\nmatch = \"wildcard\"\nserver = \"home\"\n\n[[rule]]\nmatch = \"alert_word\"\nenabled = false\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"group_dm\"\npriority = -1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"lunch\"\npriority = 2\nserver = \"home\"\n"
+  },
+  "name": "deploy_prod"
+ },
+ {
+  "expected": null,
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "my-deploy-prod",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": "deploys"
+   },
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"deploy-.*\"]\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"fail|broke\"\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"release\"\nchannel = \"eng\"\npriority = 1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"\\\\burgent\\\\b\"\n\n[[rule]]\nmatch = \"mention\"\n\n[[rule]]\nmatch = \"wildcard\"\nserver = \"home\"\n\n[[rule]]\nmatch = \"alert_word\"\nenabled = false\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"group_dm\"\npriority = -1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"lunch\"\npriority = 2\nserver = \"home\"\n"
+  },
+  "name": "deploy_partial"
+ },
+ {
+  "expected": null,
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "opsx",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": "deploys"
+   },
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"deploy-.*\"]\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"fail|broke\"\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"release\"\nchannel = \"eng\"\npriority = 1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"\\\\burgent\\\\b\"\n\n[[rule]]\nmatch = \"mention\"\n\n[[rule]]\nmatch = \"wildcard\"\nserver = \"home\"\n\n[[rule]]\nmatch = \"alert_word\"\nenabled = false\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"group_dm\"\npriority = -1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"lunch\"\npriority = 2\nserver = \"home\"\n"
+  },
+  "name": "ops_suffix"
+ },
+ {
+  "expected": 1,
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "random",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": "build failed"
+   },
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"deploy-.*\"]\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"fail|broke\"\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"release\"\nchannel = \"eng\"\npriority = 1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"\\\\burgent\\\\b\"\n\n[[rule]]\nmatch = \"mention\"\n\n[[rule]]\nmatch = \"wildcard\"\nserver = \"home\"\n\n[[rule]]\nmatch = \"alert_word\"\nenabled = false\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"group_dm\"\npriority = -1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"lunch\"\npriority = 2\nserver = \"home\"\n"
+  },
+  "name": "topic_fail"
+ },
+ {
+  "expected": 1,
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "ops",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": "it broke"
+   },
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"deploy-.*\"]\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"fail|broke\"\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"release\"\nchannel = \"eng\"\npriority = 1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"\\\\burgent\\\\b\"\n\n[[rule]]\nmatch = \"mention\"\n\n[[rule]]\nmatch = \"wildcard\"\nserver = \"home\"\n\n[[rule]]\nmatch = \"alert_word\"\nenabled = false\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"group_dm\"\npriority = -1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"lunch\"\npriority = 2\nserver = \"home\"\n"
+  },
+  "name": "topic_in_ops"
+ },
+ {
+  "expected": 2,
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "eng",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [
+     "mentioned"
+    ],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": "Release 2.0"
+   },
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"deploy-.*\"]\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"fail|broke\"\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"release\"\nchannel = \"eng\"\npriority = 1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"\\\\burgent\\\\b\"\n\n[[rule]]\nmatch = \"mention\"\n\n[[rule]]\nmatch = \"wildcard\"\nserver = \"home\"\n\n[[rule]]\nmatch = \"alert_word\"\nenabled = false\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"group_dm\"\npriority = -1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"lunch\"\npriority = 2\nserver = \"home\"\n"
+  },
+  "name": "release_in_eng"
+ },
+ {
+  "expected": null,
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "other",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": "release"
+   },
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"deploy-.*\"]\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"fail|broke\"\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"release\"\nchannel = \"eng\"\npriority = 1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"\\\\burgent\\\\b\"\n\n[[rule]]\nmatch = \"mention\"\n\n[[rule]]\nmatch = \"wildcard\"\nserver = \"home\"\n\n[[rule]]\nmatch = \"alert_word\"\nenabled = false\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"group_dm\"\npriority = -1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"lunch\"\npriority = 2\nserver = \"home\"\n"
+  },
+  "name": "release_elsewhere"
+ },
+ {
+  "expected": 3,
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "other",
+    "content": "this is URGENT now",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": "t"
+   },
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"deploy-.*\"]\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"fail|broke\"\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"release\"\nchannel = \"eng\"\npriority = 1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"\\\\burgent\\\\b\"\n\n[[rule]]\nmatch = \"mention\"\n\n[[rule]]\nmatch = \"wildcard\"\nserver = \"home\"\n\n[[rule]]\nmatch = \"alert_word\"\nenabled = false\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"group_dm\"\npriority = -1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"lunch\"\npriority = 2\nserver = \"home\"\n"
+  },
+  "name": "urgent_word"
+ },
+ {
+  "expected": null,
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "other",
+    "content": "urgently",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": "t"
+   },
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"deploy-.*\"]\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"fail|broke\"\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"release\"\nchannel = \"eng\"\npriority = 1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"\\\\burgent\\\\b\"\n\n[[rule]]\nmatch = \"mention\"\n\n[[rule]]\nmatch = \"wildcard\"\nserver = \"home\"\n\n[[rule]]\nmatch = \"alert_word\"\nenabled = false\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"group_dm\"\npriority = -1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"lunch\"\npriority = 2\nserver = \"home\"\n"
+  },
+  "name": "urgent_part"
+ },
+ {
+  "expected": 1,
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "other",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [
+     "mentioned"
+    ],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": "it broke"
+   },
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"deploy-.*\"]\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"fail|broke\"\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"release\"\nchannel = \"eng\"\npriority = 1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"\\\\burgent\\\\b\"\n\n[[rule]]\nmatch = \"mention\"\n\n[[rule]]\nmatch = \"wildcard\"\nserver = \"home\"\n\n[[rule]]\nmatch = \"alert_word\"\nenabled = false\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"group_dm\"\npriority = -1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"lunch\"\npriority = 2\nserver = \"home\"\n"
+  },
+  "name": "mention_topic"
+ },
+ {
+  "expected": null,
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "other",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [
+     "wildcard_mentioned"
+    ],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": "t"
+   },
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"deploy-.*\"]\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"fail|broke\"\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"release\"\nchannel = \"eng\"\npriority = 1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"\\\\burgent\\\\b\"\n\n[[rule]]\nmatch = \"mention\"\n\n[[rule]]\nmatch = \"wildcard\"\nserver = \"home\"\n\n[[rule]]\nmatch = \"alert_word\"\nenabled = false\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"group_dm\"\npriority = -1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"lunch\"\npriority = 2\nserver = \"home\"\n"
+  },
+  "name": "wildcard_work"
+ },
+ {
+  "expected": 5,
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "other",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [
+     "wildcard_mentioned"
+    ],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "home",
+    "topic": "t"
+   },
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"deploy-.*\"]\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"fail|broke\"\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"release\"\nchannel = \"eng\"\npriority = 1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"\\\\burgent\\\\b\"\n\n[[rule]]\nmatch = \"mention\"\n\n[[rule]]\nmatch = \"wildcard\"\nserver = \"home\"\n\n[[rule]]\nmatch = \"alert_word\"\nenabled = false\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"group_dm\"\npriority = -1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"lunch\"\npriority = 2\nserver = \"home\"\n"
+  },
+  "name": "wildcard_home"
+ },
+ {
+  "expected": null,
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "other",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [
+     "has_alert_word"
+    ],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": "t"
+   },
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"deploy-.*\"]\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"fail|broke\"\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"release\"\nchannel = \"eng\"\npriority = 1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"\\\\burgent\\\\b\"\n\n[[rule]]\nmatch = \"mention\"\n\n[[rule]]\nmatch = \"wildcard\"\nserver = \"home\"\n\n[[rule]]\nmatch = \"alert_word\"\nenabled = false\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"group_dm\"\npriority = -1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"lunch\"\npriority = 2\nserver = \"home\"\n"
+  },
+  "name": "alert_word_disabled"
+ },
+ {
+  "expected": 7,
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": null
+   },
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"deploy-.*\"]\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"fail|broke\"\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"release\"\nchannel = \"eng\"\npriority = 1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"\\\\burgent\\\\b\"\n\n[[rule]]\nmatch = \"mention\"\n\n[[rule]]\nmatch = \"wildcard\"\nserver = \"home\"\n\n[[rule]]\nmatch = \"alert_word\"\nenabled = false\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"group_dm\"\npriority = -1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"lunch\"\npriority = 2\nserver = \"home\"\n"
+  },
+  "name": "dm_one"
+ },
+ {
+  "expected": 8,
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [
+     3,
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": null
+   },
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"deploy-.*\"]\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"fail|broke\"\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"release\"\nchannel = \"eng\"\npriority = 1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"\\\\burgent\\\\b\"\n\n[[rule]]\nmatch = \"mention\"\n\n[[rule]]\nmatch = \"wildcard\"\nserver = \"home\"\n\n[[rule]]\nmatch = \"alert_word\"\nenabled = false\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"group_dm\"\npriority = -1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"lunch\"\npriority = 2\nserver = \"home\"\n"
+  },
+  "name": "dm_group"
+ },
+ {
+  "expected": 9,
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "lunch?",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "home",
+    "topic": null
+   },
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"deploy-.*\"]\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"fail|broke\"\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"release\"\nchannel = \"eng\"\npriority = 1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"\\\\burgent\\\\b\"\n\n[[rule]]\nmatch = \"mention\"\n\n[[rule]]\nmatch = \"wildcard\"\nserver = \"home\"\n\n[[rule]]\nmatch = \"alert_word\"\nenabled = false\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"group_dm\"\npriority = -1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"lunch\"\npriority = 2\nserver = \"home\"\n"
+  },
+  "name": "dm_lunch_home"
+ },
+ {
+  "expected": 7,
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": null,
+    "channel_name": null,
+    "content": "lunch?",
+    "dm_names": [],
+    "dm_user_ids": [
+     9
+    ],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "dm",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": null
+   },
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"deploy-.*\"]\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"fail|broke\"\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"release\"\nchannel = \"eng\"\npriority = 1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"\\\\burgent\\\\b\"\n\n[[rule]]\nmatch = \"mention\"\n\n[[rule]]\nmatch = \"wildcard\"\nserver = \"home\"\n\n[[rule]]\nmatch = \"alert_word\"\nenabled = false\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"group_dm\"\npriority = -1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"lunch\"\npriority = 2\nserver = \"home\"\n"
+  },
+  "name": "dm_lunch_work"
+ },
+ {
+  "expected": null,
+  "input": {
+   "message": {
+    "avatar_url": null,
+    "channel_id": 7,
+    "channel_name": "other",
+    "content": "x",
+    "dm_names": [],
+    "dm_user_ids": [],
+    "flags": [],
+    "host": "h",
+    "id": 1,
+    "kind": "channel",
+    "sender_id": 9,
+    "sender_name": "Ada",
+    "server": "work",
+    "topic": "t"
+   },
+   "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"/x\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"deploy-.*\"]\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"fail|broke\"\n\n[[rule]]\nmatch = \"topic\"\ntopic = \"release\"\nchannel = \"eng\"\npriority = 1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"\\\\burgent\\\\b\"\n\n[[rule]]\nmatch = \"mention\"\n\n[[rule]]\nmatch = \"wildcard\"\nserver = \"home\"\n\n[[rule]]\nmatch = \"alert_word\"\nenabled = false\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"group_dm\"\npriority = -1\n\n[[rule]]\nmatch = \"keyword\"\nkeyword = \"lunch\"\npriority = 2\nserver = \"home\"\n"
+  },
+  "name": "nothing"
+ }
+]
