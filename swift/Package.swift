@@ -6,6 +6,7 @@ let package = Package(
     platforms: [.macOS(.v26)],
     products: [
         .library(name: "ZIrisCore", targets: ["ZIrisCore"]),
+        .library(name: "ZulipKit", targets: ["ZulipKit"]),
     ],
     dependencies: [
         .package(url: "https://github.com/dduan/TOMLDecoder.git", exact: "0.4.5"),
@@ -15,6 +16,11 @@ let package = Package(
             name: "ZIrisCore",
             dependencies: ["TOMLDecoder"],
             resources: [.copy("Resources/emoji.json")]
+        ),
+        .target(name: "ZulipKit", dependencies: ["ZIrisCore"]),
+        .testTarget(
+            name: "ZulipKitTests",
+            dependencies: ["ZulipKit", "ZIrisCore"]
         ),
         .testTarget(
             name: "ZIrisCoreTests",
