@@ -13,6 +13,8 @@ final class FakeAPI: ZulipAPI, @unchecked Sendable {
     private(set) var registered = 0
     private(set) var calls = 0
     var registerFailures = 0
+    /// Your own messages, for GET /messages.
+    var own: [[String: Any]] = []
 
     init(_ script: [Result<[String: Any], Error>], unread: [[Int]?] = []) {
         self.script = script
@@ -30,7 +32,7 @@ final class FakeAPI: ZulipAPI, @unchecked Sendable {
             }
             var reply: [String: Any] = [
                 "result": "success", "queue_id": "q\(registered)", "last_event_id": -1,
-                "subscriptions": [Any](), "user_topics": [Any](),
+                "subscriptions": [["stream_id": 7, "name": "python"], ["stream_id": 8, "name": "ops"]], "user_topics": [Any](),
             ]
             if !unread.isEmpty, let ids = unread.removeFirst() {
                 reply["unread_msgs"] = ["pms": [Any](), "streams": [Any](), "huddles": [Any](), "mentions": ids]
@@ -53,7 +55,9 @@ final class FakeAPI: ZulipAPI, @unchecked Sendable {
 
     func deregister(queueID: String) async throws -> JSONObject { JSONObject(["result": "success"]) }
     func profile() async throws -> JSONObject { JSONObject(["result": "success", "user_id": 5]) }
-    func messages(_ parameters: [String: any Sendable]) async throws -> JSONObject { JSONObject([:]) }
+    func messages(_ parameters: [String: any Sendable]) async throws -> JSONObject {
+        JSONObject(["result": "success", "messages": lock.withLock { own }])
+    }
     func streams() async throws -> JSONObject { JSONObject([:]) }
 
     var counts: (registered: Int, calls: Int) { lock.withLock { (registered, calls) } }
@@ -214,5 +218,80 @@ private func start(_ api: FakeAPI, _ sink: Sink, _ statuses: Statuses = Statuses
         var missing = registered["unread_msgs"] as! [String: Any]
         missing["old_unreads_missing"] = true
         #expect(unreadIDs(["unread_msgs": missing]) == nil)
+    }
+}
+
+private let quiet = try! parseConfig(
+    "[[server]]\nname = \"w\"\nzuliprc = \"/x\"\n[defaults]\nnotify_channel_messages = false\n", sounds: ["chime": "/c.wav"]
+)
+
+private func channelEvent(_ id: Int, eventID: Int, topic: String) -> [String: Any] {
+    ["id": eventID, "type": "message", "flags": [Any](), "message": [
+        "id": id, "type": "stream", "stream_id": 7, "display_recipient": "python", "subject": topic,
+        "sender_id": 9, "sender_full_name": "Ada", "content": "hi",
+    ] as [String: Any]]
+}
+
+private func ownMessage(_ id: Int, topic: String, hoursAgo: Double = 1) -> [String: Any] {
+    ["id": id, "type": "stream", "stream_id": 7, "display_recipient": "python", "subject": topic,
+     "sender_id": 5, "sender_full_name": "Me", "content": "mine", "flags": ["read"],
+     "timestamp": Int(Date().timeIntervalSince1970 - hoursAgo * 3600)]
+}
+
+private func startJoined(_ api: FakeAPI, _ sink: Sink, _ store: Conversations) -> Task<Void, Never> {
+    let stream = EventStream(
+        server: "w", makeClient: { api }, sink: sink, config: { quiet }, status: { _ in },
+        sleep: { _ in try await Task.sleep(for: .milliseconds(1)) }, conversations: store
+    )
+    return Task { await stream.run() }
+}
+
+@Suite struct ConversationStreamTests {
+    @Test func ownMessagesAreFetchedAndJoined() async throws {
+        let api = FakeAPI([ok([channelEvent(1, eventID: 0, topic: "c"), channelEvent(2, eventID: 1, topic: "A")])])
+        api.own = [ownMessage(100, topic: "a"), ownMessage(101, topic: "b"), ownMessage(102, topic: "old", hoursAgo: 100)]
+        let store = Conversations(file: nil, hours: { 48 })
+        let sink = Sink()
+        let task = startJoined(api, sink, store)
+        try await waitUntil { api.counts.calls >= 2 }
+        task.cancel()
+        #expect(sink.log == ["submit 2"])
+        #expect(store.isJoined(TopicKey(server: "w", channelID: 7, topic: "b")))
+        #expect(!store.isJoined(TopicKey(server: "w", channelID: 7, topic: "old")))
+        #expect(store.own(102)?.topic == "old")  // still yours, for reactions
+    }
+
+    @Test func reactionEventsReachTheSink() async throws {
+        let api = FakeAPI([ok([[
+            "id": 0, "type": "reaction", "op": "add", "message_id": 100, "user_id": 9,
+            "user": ["user_id": 9, "full_name": "Ada"], "emoji_name": "tada", "emoji_code": "1f389",
+            "reaction_type": "unicode_emoji",
+        ]])])
+        api.own = [ownMessage(100, topic: "a")]
+        let sink = Sink()
+        let task = startJoined(api, sink, Conversations(file: nil, hours: { 48 }))
+        try await waitUntil { sink.log.count >= 1 }
+        task.cancel()
+        #expect(sink.log == ["submit 100"])
+    }
+
+    @Test func movesFollowTheTopic() async throws {
+        let api = FakeAPI([ok([
+            ["id": 0, "type": "update_message", "message_id": 100, "message_ids": [100], "stream_id": 7,
+             "orig_subject": "a", "subject": "renamed", "propagate_mode": "change_all"],
+            channelEvent(1, eventID: 1, topic: "renamed"),
+            ["id": 2, "type": "update_message", "message_id": 100, "message_ids": [100], "stream_id": 7,
+             "new_stream_id": 8, "propagate_mode": "change_all"],
+        ])])
+        api.own = [ownMessage(100, topic: "a")]
+        let store = Conversations(file: nil, hours: { 48 })
+        let sink = Sink()
+        let task = startJoined(api, sink, store)
+        try await waitUntil { api.counts.calls >= 2 }
+        task.cancel()
+        #expect(sink.log == ["submit 1"])
+        #expect(!store.isJoined(TopicKey(server: "w", channelID: 7, topic: "a")))
+        #expect(store.isJoined(TopicKey(server: "w", channelID: 8, topic: "renamed")))
+        #expect(store.own(100)?.topic == "renamed" && store.own(100)?.channelName == "ops")
     }
 }

@@ -174,12 +174,13 @@ func run(_ options: Options, _ config: Config) -> Int32 {
         : MenuBar(settings: settings, pause: pause,
                   icon: resource("z-iris-menubarTemplate.png").path,
                   editRules: { editor.show() })
+    let conversations = Conversations(file: Conversations.defaultFile, hours: { settings.config.joinedHours })
     for server in config.servers {
         let stream = EventStream(
             server: server.name, makeClient: { try ZulipClient(zuliprc: server.zuliprc) }, sink: engine,
             config: { settings.config },
             status: { text in Task { @MainActor in menu?.status(server.name, text) } },
-            onClient: { clients.set(server.name, $0) }
+            onClient: { clients.set(server.name, $0) }, conversations: conversations
         )
         Task.detached { await stream.run() }
     }

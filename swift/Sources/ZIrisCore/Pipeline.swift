@@ -1,3 +1,5 @@
+import Foundation
+
 // Turn raw Zulip events into notifications.
 
 public struct Notification: Sendable, Equatable {
@@ -51,6 +53,20 @@ public struct Pipeline: Sendable {
         self.conversations = conversations
     }
 
+    /// One of your messages, sent now or at `time`: kept so reactions to it
+    /// can be traced, and a channel message joins its topic.
+    public func recordOwn(_ message: Message, at time: Date? = nil) {
+        guard let conversations else { return }
+        let key = topicKey(message)
+        conversations.recordOwn(OwnMessage(
+            id: message.id, kind: message.kind, place: key, snippet: plainBody(message, limit: 80),
+            channelName: message.channelName, topic: message.topic, dmUserIDs: message.dmUserIDs
+        ))
+        if let key {
+            if let time { conversations.join(key, at: time) } else { conversations.join(key) }
+        }
+    }
+
     private func topicKey(_ message: Message) -> TopicKey? {
         guard message.kind == .channel, let channelID = message.channelID else { return nil }
         return TopicKey(server: server, channelID: channelID, topic: message.topic ?? "")
@@ -69,11 +85,7 @@ public struct Pipeline: Sendable {
         }
         let key = topicKey(message)
         if message.senderID == selfID {
-            conversations.recordOwn(OwnMessage(
-                id: message.id, kind: message.kind, place: key, snippet: plainBody(message, limit: 80),
-                channelName: message.channelName, topic: message.topic, dmUserIDs: message.dmUserIDs
-            ))
-            if let key { conversations.join(key) }
+            recordOwn(message)
             return nil
         }
         let notification = evaluate(message).notification

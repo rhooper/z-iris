@@ -109,7 +109,13 @@ public final class Conversations: @unchecked Sendable {
     }
 
     public func join(_ key: TopicKey) {
-        lock.withLock { joined[key] = now() }
+        join(key, at: now())
+    }
+
+    /// Join as of a past moment (a message fetched at startup); a later
+    /// activity already recorded stands.
+    public func join(_ key: TopicKey, at time: Date) {
+        lock.withLock { joined[key] = max(joined[key] ?? time, time) }
         save()
     }
 
@@ -138,13 +144,15 @@ public final class Conversations: @unchecked Sendable {
 
     /// One of your messages moved (a topic renamed, or moved to another
     /// channel): a joined topic follows it.
-    public func move(messageID: Int, to key: TopicKey) {
+    public func move(messageID: Int, to key: TopicKey, channelName: String? = nil, topic: String? = nil) {
         lock.withLock {
             guard var message = own[messageID] else { return }
             if let old = message.place, let last = joined.removeValue(forKey: old) {
                 joined[key] = last
             }
             message.place = key
+            message.channelName = channelName ?? message.channelName
+            message.topic = topic ?? message.topic
             own[messageID] = message
         }
         save()

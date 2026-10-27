@@ -6,6 +6,7 @@ import ZIrisCore
 
 public let eventTypes = [
     "message", "subscription", "user_topic", "muted_topics", "update_message_flags", "delete_message",
+    "reaction", "update_message",
 ]
 
 /// Where a stream sends what it hears. Engine is one.
@@ -56,11 +57,13 @@ public actor EventStream {
     private let status: @Sendable (String) -> Void
     private let sleep: @Sendable (Double) async throws -> Void
     private let onClient: @Sendable (any ZulipAPI) -> Void
+    private let conversations: Conversations?
 
     /// - Parameters:
     ///   - makeClient: a new client for each session (reads the zuliprc).
     ///   - status: the server's status line for the menubar.
     ///   - onClient: told each new client, for the media fetcher.
+    ///   - conversations: the topics you are in, shared by every server.
     public init(
         server: String,
         makeClient: @escaping @Sendable () throws -> any ZulipAPI,
@@ -68,7 +71,8 @@ public actor EventStream {
         config: @escaping @Sendable () -> Config,
         status: @escaping @Sendable (String) -> Void,
         sleep: @escaping @Sendable (Double) async throws -> Void = { try await Task.sleep(for: .seconds($0)) },
-        onClient: @escaping @Sendable (any ZulipAPI) -> Void = { _ in }
+        onClient: @escaping @Sendable (any ZulipAPI) -> Void = { _ in },
+        conversations: Conversations? = nil
     ) {
         self.server = server
         self.makeClient = makeClient
@@ -77,6 +81,7 @@ public actor EventStream {
         self.status = status
         self.sleep = sleep
         self.onClient = onClient
+        self.conversations = conversations
     }
 
     /// Stream until the task is cancelled, whatever happens.
@@ -113,8 +118,17 @@ public actor EventStream {
         }
         var pipeline = Pipeline(
             server: server, host: client.credentials.host, selfID: selfID,
-            mutes: try MuteState(register: registered.value), config: config
+            mutes: try MuteState(register: registered.value), config: config, conversations: conversations
         )
+        var channelNames: [Int: String] = [:]
+        for case let subscription as [String: Any] in (registered["subscriptions"] as? [Any]) ?? [] {
+            if let id = subscription["stream_id"].flatMap(jsonInt), let name = subscription["name"] as? String {
+                channelNames[id] = name
+            }
+        }
+        if conversations != nil {
+            await fetchOwnMessages(client, pipeline: pipeline, selfID: selfID)
+        }
         guard let queueID = registered["queue_id"] as? String,
               var lastEventID = (registered["last_event_id"] as? NSNumber)?.intValue
         else { throw StreamError(description: "register reply has no queue") }
@@ -146,12 +160,56 @@ public actor EventStream {
                 if let id = (event["id"] as? NSNumber)?.intValue {
                     lastEventID = max(lastEventID, id)
                 }
+                switch event["type"] as? String {
+                case "reaction":
+                    if let reaction = ReactionEvent(event), let notification = pipeline.handleReaction(reaction, now: Date()) {
+                        await sink.submit(notification)
+                    }
+                    continue
+                case "update_message":
+                    if let conversations { follow(event, conversations, channelNames) }
+                default:
+                    break
+                }
                 if let notification = pipeline.handle(event) {
                     await sink.submit(notification)
                 } else if event["type"] as? String != "message", let read = ReadEvent(event) {
                     await sink.handle(server: server, read)
                 }
             }
+        }
+    }
+
+    /// Your recent messages, so their topics are joined and reactions to them
+    /// can be traced after a restart. A failure leaves them out.
+    private func fetchOwnMessages(_ client: any ZulipAPI, pipeline: Pipeline, selfID: Int) async {
+        guard let reply = try? await client.messages([
+            "anchor": "newest", "num_before": 200, "num_after": 0, "apply_markdown": false,
+            "narrow": [["operator": "sender", "operand": "me"]],
+        ]), reply.succeeded else { return }
+        for case let raw as [String: Any] in (reply["messages"] as? [Any]) ?? [] {
+            let event: [String: Any] = ["message": raw, "flags": raw["flags"] as? [String] ?? []]
+            guard let message = try? Message(server: server, host: client.credentials.host, selfID: selfID, event: event),
+                  let timestamp = raw["timestamp"].flatMap(jsonInt)
+            else { continue }
+            pipeline.recordOwn(message, at: Date(timeIntervalSince1970: Double(timestamp)))
+        }
+    }
+
+    /// Your messages moved to another topic or channel: their joined topic follows.
+    private func follow(_ event: [String: Any], _ conversations: Conversations, _ channelNames: [Int: String]) {
+        let newChannel = event["new_stream_id"].flatMap(jsonInt)
+        let newTopic = event["subject"] as? String
+        guard newChannel != nil || newTopic != nil else { return }  // an edit of the text
+        let ids = (event["message_ids"] as? [Any])?.compactMap(jsonInt) ?? event["message_id"].flatMap(jsonInt).map { [$0] } ?? []
+        for id in ids {
+            guard let own = conversations.own(id), let old = own.place else { continue }
+            let topic = newTopic ?? own.topic ?? old.topic
+            let channelID = newChannel ?? old.channelID
+            conversations.move(
+                messageID: id, to: TopicKey(server: server, channelID: channelID, topic: topic),
+                channelName: newChannel == nil ? own.channelName : channelNames[channelID], topic: topic
+            )
         }
     }
 }
