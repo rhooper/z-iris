@@ -6,7 +6,7 @@ import ZIrisCore
 
 public let eventTypes = [
     "message", "subscription", "user_topic", "muted_topics", "update_message_flags", "delete_message",
-    "reaction", "update_message",
+    "reaction", "update_message", "realm_user",
 ]
 
 /// Where a stream sends what it hears. Engine is one.
@@ -126,6 +126,13 @@ public actor EventStream {
                 channelNames[id] = name
             }
         }
+        // Reaction events from newer servers name the reactor only by id.
+        var userNames: [Int: String] = [:]
+        for case let user as [String: Any] in (registered["realm_users"] as? [Any]) ?? [] {
+            if let id = user["user_id"].flatMap(jsonInt), let name = user["full_name"] as? String {
+                userNames[id] = name
+            }
+        }
         if conversations != nil {
             await fetchOwnMessages(client, pipeline: pipeline, selfID: selfID)
         }
@@ -162,8 +169,19 @@ public actor EventStream {
                 }
                 switch event["type"] as? String {
                 case "reaction":
-                    if let reaction = ReactionEvent(event), let notification = pipeline.handleReaction(reaction, now: Date()) {
-                        await sink.submit(notification)
+                    if var reaction = ReactionEvent(event) {
+                        if event["user"] == nil, let name = userNames[reaction.userID] {
+                            reaction.userName = name
+                        }
+                        if let notification = pipeline.handleReaction(reaction, now: Date()) {
+                            await sink.submit(notification)
+                        }
+                    }
+                    continue
+                case "realm_user":
+                    if let person = event["person"] as? [String: Any], let id = person["user_id"].flatMap(jsonInt),
+                       let name = person["full_name"] as? String {
+                        userNames[id] = name  // a new user, or a renamed one
                     }
                     continue
                 case "update_message":

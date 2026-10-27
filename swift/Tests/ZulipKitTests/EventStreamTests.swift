@@ -33,6 +33,7 @@ final class FakeAPI: ZulipAPI, @unchecked Sendable {
             var reply: [String: Any] = [
                 "result": "success", "queue_id": "q\(registered)", "last_event_id": -1,
                 "subscriptions": [["stream_id": 7, "name": "python"], ["stream_id": 8, "name": "ops"]], "user_topics": [Any](),
+                "realm_users": [["user_id": 9, "full_name": "Ada Lovelace"], ["user_id": 11, "full_name": "Cy"]],
             ]
             if !unread.isEmpty, let ids = unread.removeFirst() {
                 reply["unread_msgs"] = ["pms": [Any](), "streams": [Any](), "huddles": [Any](), "mentions": ids]
@@ -66,11 +67,16 @@ final class FakeAPI: ZulipAPI, @unchecked Sendable {
 final class Sink: EventSink, @unchecked Sendable {
     private let lock = NSLock()
     private var seen: [String] = []
+    private var shownTitles: [String] = []
 
     var log: [String] { lock.withLock { seen } }
+    var titles: [String] { lock.withLock { shownTitles } }
 
     func submit(_ notification: ZIrisCore.Notification) async {
-        lock.withLock { seen.append("submit \(notification.message.id)") }
+        lock.withLock {
+            seen.append("submit \(notification.message.id)")
+            shownTitles.append(notificationTitle(notification))
+        }
     }
 
     func handle(server: String, _ event: ReadEvent) async {
@@ -273,6 +279,25 @@ private func startJoined(_ api: FakeAPI, _ sink: Sink, _ store: Conversations) -
         try await waitUntil { sink.log.count >= 1 }
         task.cancel()
         #expect(sink.log == ["submit 100"])
+    }
+
+    @Test func reactorsAreNamedFromTheUserList() async throws {
+        // Newer servers send only user_id; names come from the register and realm_user updates.
+        let api = FakeAPI([ok([
+            ["id": 0, "type": "reaction", "op": "add", "message_id": 100, "user_id": 9, "emoji_name": "tada",
+             "emoji_code": "1f389", "reaction_type": "unicode_emoji"],
+            ["id": 1, "type": "realm_user", "op": "update", "person": ["user_id": 11, "full_name": "Cyrus"]],
+            ["id": 2, "type": "reaction", "op": "add", "message_id": 101, "user_id": 11, "emoji_name": "tada",
+             "emoji_code": "1f389", "reaction_type": "unicode_emoji"],
+        ])])
+        api.own = [ownMessage(100, topic: "a"), ownMessage(101, topic: "b")]
+        let sink = Sink()
+        let task = startJoined(api, sink, Conversations(file: nil, hours: { 48 }))
+        try await waitUntil { sink.log.count >= 2 }
+        task.cancel()
+        #expect(sink.titles == ["Ada Lovelace reacted 🎉 to your message in #python > a",
+                                "Cyrus reacted 🎉 to your message in #python > b"])
+        #expect(eventTypes.contains("realm_user"))
     }
 
     @Test func movesFollowTheTopic() async throws {
