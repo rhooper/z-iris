@@ -2,8 +2,8 @@ import AppKit
 import ZIrisCore
 
 // The menubar item (menubar.py): a template icon (◌ beside it while paused),
-// the config's state, one status line per server, Pause, Reload config, Open
-// config file and Quit. The rules editor arrives with the SwiftUI window.
+// the config's state, one status line per server, Pause, Edit rules…, Reload
+// config, Open config file and Quit.
 
 private let pausedTitle = "◌"
 private let activeTitle = "◉"
@@ -32,9 +32,14 @@ public final class MenuBar: NSObject {
     private var serverItems: [String: NSMenuItem] = [:]
     private var timer: Timer?
 
-    /// - Parameter icon: the template image's path, or nil for the text title.
-    public init(settings: Settings, pause: PauseFlag, icon: String?) {
+    private let editRules: (() -> Void)?
+
+    /// - Parameters:
+    ///   - icon: the template image's path, or nil for the text title.
+    ///   - editRules: opens the rules editor.
+    public init(settings: Settings, pause: PauseFlag, icon: String?, editRules: (() -> Void)? = nil) {
         self.settings = settings
+        self.editRules = editRules
         self.pause = pause
         let image = icon.flatMap { NSImage(contentsOfFile: $0) }
         image?.isTemplate = true
@@ -52,6 +57,7 @@ public final class MenuBar: NSObject {
         }
         menu.addItem(.separator())
         for entry in [pauseItem,
+                      NSMenuItem(title: "Edit rules…", action: #selector(openEditor), keyEquivalent: ","),
                       NSMenuItem(title: "Reload config", action: #selector(reloadConfig), keyEquivalent: ""),
                       NSMenuItem(title: "Open config file", action: #selector(openConfig), keyEquivalent: "")] {
             entry.target = self
@@ -84,6 +90,10 @@ public final class MenuBar: NSObject {
 
     private func showConfigError(_ error: String?) {
         errorItem.title = error.map { "Config problem: \($0.prefix(80))" } ?? "Config OK"
+    }
+
+    @objc private func openEditor() {
+        editRules?()
     }
 
     @objc private func reloadConfig() {

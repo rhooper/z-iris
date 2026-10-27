@@ -7,7 +7,7 @@ import ZulipKit
 
 // z-iris: the menubar app, or a command (__main__.py).
 //   z-iris [--config PATH] [--dry-run | --headless]
-//   z-iris probe | normalize [--dir DIR] [--no-backup]
+//   z-iris probe | edit | normalize [--dir DIR] [--no-backup]
 //   z-iris flash MODE [#rrggbb] [seconds] | play FILE [volume] [device]
 
 let defaultConfigPath = ("~/.config/z-iris/config.toml" as NSString).expandingTildeInPath
@@ -56,7 +56,7 @@ func parse(_ arguments: [String]) -> Options? {
             options.directory = arguments[index + 1]
             index += 1
         case "--no-backup": options.backup = false
-        case "probe", "normalize" where options.command == nil:
+        case "probe", "normalize", "edit" where options.command == nil:
             options.command = argument
         case "flash", "play" where options.command == nil:
             options.command = argument
@@ -164,8 +164,15 @@ func run(_ options: Options, _ config: Config) -> Int32 {
         log = { print("[dry-run] engine \($0)") }
     }
     let engine = Engine(output: output, config: { settings.config }, isPaused: { pause.isPaused }, log: log)
+    let editor = EditorWindow {
+        EditorModel(configPath: configPath, settings: settings,
+                    builtinSounds: resource("sounds", repository: "src/z_iris/sounds"),
+                    player: SoundPlayer(), flasher: Flasher())
+    }
     let menu = (options.dryRun || options.headless) ? nil
-        : MenuBar(settings: settings, pause: pause, icon: resource("z-iris-menubarTemplate.png", repository: "src/z_iris/static/z-iris-menubarTemplate.png").path)
+        : MenuBar(settings: settings, pause: pause,
+                  icon: resource("z-iris-menubarTemplate.png", repository: "src/z_iris/static/z-iris-menubarTemplate.png").path,
+                  editRules: { editor.show() })
     for server in config.servers {
         let stream = EventStream(
             server: server.name, makeClient: { try ZulipClient(zuliprc: server.zuliprc) }, sink: engine,
@@ -208,7 +215,7 @@ func command(_ work: @escaping @Sendable () async -> Int32) -> Never {
 }
 
 guard let options = parse(Array(CommandLine.arguments.dropFirst())) else {
-    print("usage: z-iris [--config PATH] [--dry-run | --headless] | probe | normalize [--dir DIR] [--no-backup] | flash MODE [#rrggbb] [seconds] | play FILE [volume] [device]")
+    print("usage: z-iris [--config PATH] [--dry-run | --headless] | probe | edit | normalize [--dir DIR] [--no-backup] | flash MODE [#rrggbb] [seconds] | play FILE [volume] [device]")
     exit(2)
 }
 switch options.command {
@@ -238,5 +245,18 @@ do {
 }
 if options.command == "probe" {
     command { await probe(config) }
+}
+if options.command == "edit" {
+    // The editor alone, as `z-iris edit` opened the web editor; quits with its window.
+    let settings = Settings(config, path: options.config, sounds: { soundLibrary(for: options.config) })
+    let app = NSApplication.shared
+    app.setActivationPolicy(.regular)
+    let editor = EditorWindow {
+        EditorModel(configPath: options.config, settings: settings,
+                    builtinSounds: resource("sounds", repository: "src/z_iris/sounds"), player: SoundPlayer(), flasher: Flasher())
+    }
+    editor.show()
+    NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: nil, queue: .main) { _ in exit(0) }
+    app.run()
 }
 exit(run(options, config))
