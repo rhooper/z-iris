@@ -17,6 +17,7 @@ private let builtIn: [String: TOMLValue] = [
     "flash": .string("none"), "flash_color": .string("#ff3b30"), "flash_seconds": .float(0.6),
     "repeat": .integer(0), "repeat_every": .integer(30), "repeat_boost": .integer(0),
     "min_gap": .integer(0), "batch_window": .integer(0), "sticky": .bool(false), "stay": .integer(0),
+    "summarize": .bool(false),
 ]
 
 enum EditorPane: Hashable {
@@ -299,10 +300,22 @@ private struct BehaviourSections: View {
             NumberField(title: "Repeat boost (% points)", value: field(model, $fields, "repeat_boost").integer, inherited: describe(inherited("repeat_boost")), range: 0...100)
             NumberField(title: "Minimum gap (seconds)", value: field(model, $fields, "min_gap").integer, inherited: describe(inherited("min_gap")), range: 0...3600)
             NumberField(title: "Batch window (seconds)", value: field(model, $fields, "batch_window").integer, inherited: describe(inherited("batch_window")), range: 0...300)
+            Picker("Summarize batches", selection: Binding(get: {
+                switch fields["summarize"] { case .bool(true)?: "on"; case .bool(false)?: "off"; default: isRule ? "" : "off" }
+            }, set: { choice in
+                fields["summarize"] = choice.isEmpty ? nil : .bool(choice == "on")
+                model.changed()
+            })) {
+                if isRule { Text("(default: \(describe(inherited("summarize"))))").tag("") }
+                Text("on").tag("on")
+                Text("off").tag("off")
+            }
+            .disabled(!ModelSummarizer.available)
+            .help(ModelSummarizer.available ? "" : "Needs Apple Intelligence, which is off or not ready on this Mac.")
         } header: {
             Text("Repeat")
         } footer: {
-            Text("Repeats play until you read the message, each louder by the boost. The minimum gap skips sound and flash if this rule played that recently; the batch window turns a burst into one summary banner.")
+            Text("Repeats play until you read the message, each louder by the boost. The minimum gap skips sound and flash if this rule played that recently; the batch window turns a burst into one summary banner, which Summarize batches rewrites in a sentence on this Mac (Apple Intelligence; nothing is sent anywhere).")
         }
     }
 }

@@ -8,13 +8,13 @@ public let ruleFields = [
     "description", "match", "channel", "topic", "keyword", "server", "sound",
     "volume", "banner", "priority", "enabled", "flash", "flash_color",
     "flash_seconds", "repeat", "repeat_every", "repeat_boost", "min_gap",
-    "batch_window", "sticky", "stay",
+    "batch_window", "sticky", "stay", "summarize",
 ]
 public let focusFields = ["mode", "quiet_hours", "quiet_mode"]
 public let defaultFields = [
     "sound", "volume", "master_volume", "notify_channel_messages", "flash",
     "flash_color", "flash_seconds", "repeat", "repeat_every", "repeat_boost",
-    "min_gap", "batch_window", "sticky", "stay",
+    "min_gap", "batch_window", "sticky", "stay", "summarize",
 ]
 
 /// What the editor may change. Absent parts are left alone.

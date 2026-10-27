@@ -17,9 +17,13 @@ sound = "chime"
 volume = 60
 # Percent, scales everything. Optional.
 # master_volume = 100
-# Phase 1 notifies for DMs and mentions. Set true to also notify for every
+# By default only DMs and mentions notify. Set true to also notify for every
 # unmuted channel message, which is noisy on a busy server.
 notify_channel_messages = false
+# Hold a burst of messages for this many seconds into one summary banner, and
+# have Apple's on-device model rewrite it as one sentence. Optional.
+# batch_window = 60
+# summarize = true
 
 [output]
 # Fetch notification images from hosts other than your Zulip server. Off by

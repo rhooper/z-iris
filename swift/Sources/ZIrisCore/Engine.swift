@@ -327,6 +327,7 @@ public actor Engine {
         }
         var heading = stripped(latest)
         heading.summary = summary(batch.held)
+        heading.batch = batch.held.map(\.message)
         say(heading, "batch: summary \(pythonRepr(heading.summary))")
         output.banner(heading)
     }

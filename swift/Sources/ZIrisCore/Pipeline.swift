@@ -7,6 +7,8 @@ public struct Notification: Sendable, Equatable {
     public var action: Action
     /// A batch summary's heading, e.g. "3 new in #ops".
     public var summary: String?
+    /// A summary's held messages, for a written summary.
+    public var batch: [Message] = []
 
     public init(message: Message, url: String, reason: String, action: Action, summary: String? = nil) {
         self.message = message

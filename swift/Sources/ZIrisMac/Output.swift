@@ -7,6 +7,20 @@ import ZulipKit
 // clears run in order on one worker, so a slow avatar never delays a sound
 // and a clear never overtakes the alert it clears.
 
+/// The work's result, or nil when it takes longer than seconds.
+func withTimeout<T: Sendable>(_ seconds: Double, _ work: @escaping @Sendable () async -> T?) async -> T? {
+    await withTaskGroup(of: T?.self) { group in
+        group.addTask { await work() }
+        group.addTask {
+            try? await Task.sleep(for: .seconds(seconds))
+            return nil
+        }
+        let first = await group.next() ?? nil
+        group.cancelAll()
+        return first
+    }
+}
+
 /// One task that runs jobs in submission order, with a bounded backlog.
 final class BannerWorker: @unchecked Sendable {
     private let continuation: AsyncStream<@Sendable () async -> Void>.Continuation
@@ -53,6 +67,8 @@ public final class RealOutput: EngineOutput, @unchecked Sendable {
     private let images: (@Sendable (Message) async -> MessageImages)?
     private let player: SoundPlayer
     private let flasher: Flasher?
+    private let summarizer: (any Summarizer)?
+    private let summaryTimeout: Double
     private let worker = BannerWorker()
 
     /// - Parameters:
@@ -60,8 +76,11 @@ public final class RealOutput: EngineOutput, @unchecked Sendable {
     ///   - images: the avatar and the message's picture for a banner.
     public init(
         config: @escaping @Sendable () -> Config, notifier: any Notifying, priority: PriorityLink?,
-        images: (@Sendable (Message) async -> MessageImages)?, player: SoundPlayer, flasher: Flasher?
+        images: (@Sendable (Message) async -> MessageImages)?, player: SoundPlayer, flasher: Flasher?,
+        summarizer: (any Summarizer)? = nil, summaryTimeout: Double = 10
     ) {
+        self.summarizer = summarizer
+        self.summaryTimeout = summaryTimeout
         self.config = config
         self.notifier = notifier
         self.priority = priority
@@ -118,9 +137,21 @@ public final class RealOutput: EngineOutput, @unchecked Sendable {
         // Sticky stays until read; stay= for that many seconds; both need z-iris priority.
         let persistent = (action.sticky || action.stay > 0) ? priority : nil
         let group = bannerGroup(message)
-        await (persistent ?? notifier).show(
+        let target: any Notifying = persistent ?? notifier
+        await target.show(
             title: title, body: notificationBody(notification), url: notification.url, image: image, group: group, sender: sender
         )
+        if notification.summary != nil, action.summarize, action.banner == "full", let summarizer, !notification.batch.isEmpty {
+            // The model's sentence replaces the body in place (same id), if it
+            // answers in time; otherwise the plain summary stays.
+            let batch = notification.batch, url = notification.url, timeout = summaryTimeout, picture = image
+            Task.detached { [worker] in
+                guard let text = await withTimeout(timeout, { await summarizer.summarize(batch) }) else { return }
+                worker.submit {
+                    await target.show(title: title, body: text, url: url, image: picture, group: group, sender: nil)
+                }
+            }
+        }
         if let persistent, !action.sticky {
             let seconds = action.stay
             Task.detached { [worker] in

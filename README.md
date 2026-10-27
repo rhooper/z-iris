@@ -125,6 +125,12 @@ messages (and latest mentions) through the rules as edited, without saving.
   sounded, the banner shows but sound and flash are skipped.
 - `batch_window`: the first message plays; later ones are held and become one
   silent summary banner such as "3 new in #ops".
+- `summarize = true` (in `[defaults]` or a rule): that summary banner is
+  rewritten a moment later as one sentence about what the held messages say,
+  by Apple's on-device model ("Lunch at 11:45, pad thai with no peanuts;
+  offsite moved to Thursday"). Nothing leaves the Mac. It needs Apple
+  Intelligence turned on; without it, or if the model is slow, the plain
+  summary stays.
 - `repeat`, `repeat_every`, `repeat_boost`: extra sounds, each louder, until the
   message is read anywhere, deleted, the count runs out, or you pause.
 

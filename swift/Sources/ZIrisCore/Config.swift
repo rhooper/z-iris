@@ -40,6 +40,8 @@ private let behaviourSettings: [BehaviourSetting] = [
     BehaviourSetting(key: "sticky", check: { value, label throws(ConfigError) in .flag(try bool(value, label)) }, builtIn: .flag(false)),
     // Seconds on screen; 0 is a normal banner.
     BehaviourSetting(key: "stay", check: integer(0, 3600), builtIn: .integer(0)),
+    // A batch summary's text from the on-device model (new in the Swift version).
+    BehaviourSetting(key: "summarize", check: { value, label throws(ConfigError) in .flag(try bool(value, label)) }, builtIn: .flag(false)),
 ]
 
 /// An int the way Python's isinstance(value, int) sees TOML values: bool is not one.
@@ -232,6 +234,8 @@ public struct Action: Sendable, Equatable {
     public var sticky = false
     /// Seconds a persistent alert stays; 0 is a normal banner.
     public var stay = 0
+    /// Replace a batch summary's text with one written by the on-device model.
+    public var summarize = false
     /// Which rule, for per-rule state (labels can repeat).
     public var ruleIndex: Int?
 
@@ -276,6 +280,7 @@ public func resolveAction(_ config: Config, server: String, rule: Rule?) -> Acti
         case ("batch_window", .integer(let number)): action.batchWindow = number
         case ("sticky", .flag(let flag)): action.sticky = flag
         case ("stay", .integer(let number)): action.stay = number
+        case ("summarize", .flag(let flag)): action.summarize = flag
         default: assertionFailure("behaviour \(key) has the wrong type")
         }
     }

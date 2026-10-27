@@ -155,7 +155,9 @@ func run(_ options: Options, _ config: Config) -> Int32 {
             // Sticky alerts come from z-iris-priority.app; it falls back to our banners.
             priority: inBundle ? PriorityLink(fallback: banners) : nil,
             images: { await resolver.images(for: $0) }, player: SoundPlayer(),
-            flasher: options.headless ? nil : Flasher()
+            flasher: options.headless ? nil : Flasher(),
+            // Only used for rules with summarize = true; quiet when the model is unavailable.
+            summarizer: ModelSummarizer()
         )
     }
     var log: (@Sendable (String) -> Void)?

@@ -105,6 +105,49 @@ private func priorityLink(_ child: FakeChild, fallback: FakeFallback) throws -> 
     }
 }
 
+struct FakeSummarizer: Summarizer {
+    var reply: String?
+    var delay = 0.0
+    func summarize(_ messages: [Message]) async -> String? {
+        try? await Task.sleep(for: .seconds(delay))
+        return reply.map { "\($0) (\(messages.count))" }
+    }
+}
+
+@Suite struct SummaryOutputTests {
+    private func summary(summarize: Bool = true, banner: String = "full") -> ZIrisCore.Notification {
+        var n = note(3, banner: banner, summary: "3 new from Ada")
+        n.action.summarize = summarize
+        n.batch = [note(1).message, note(2).message, note(3).message]
+        return n
+    }
+
+    private func run(_ summarizer: FakeSummarizer?, _ notification: ZIrisCore.Notification, timeout: Double = 1) async -> [(String, String)] {
+        let banners = FakeFallback()
+        let out = RealOutput(config: { config }, notifier: banners, priority: nil, images: nil, player: SoundPlayer(),
+                             flasher: nil, summarizer: summarizer, summaryTimeout: timeout)
+        out.banner(notification)
+        await out.drain()
+        try? await Task.sleep(for: .milliseconds(300))
+        await out.drain()
+        return banners.shown.map { ($0.group ?? "", $0.body) }
+    }
+
+    @Test func theModelsSentenceReplacesTheSummaryInPlace() async {
+        let shown = await run(FakeSummarizer(reply: "Ada on deploys"), summary())
+        #expect(shown.map(\.1) == ["hi there", "Ada on deploys (3)"])
+        #expect(shown[0].0 == shown[1].0)
+    }
+
+    @Test func otherwiseThePlainSummaryStays() async {
+        #expect(await run(FakeSummarizer(reply: "x"), summary(summarize: false)).count == 1)
+        #expect(await run(FakeSummarizer(reply: nil), summary()).count == 1)
+        #expect(await run(nil, summary()).count == 1)
+        #expect(await run(FakeSummarizer(reply: "x"), summary(banner: "title")).count == 1)
+        #expect(await run(FakeSummarizer(reply: "late", delay: 2), summary(), timeout: 0.1).count == 1)
+    }
+}
+
 final class Lines: @unchecked Sendable {
     private let lock = NSLock()
     private var lines: [String] = []
