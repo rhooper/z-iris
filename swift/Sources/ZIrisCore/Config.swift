@@ -190,6 +190,12 @@ public struct ServerConfig: Sendable, Equatable {
     public var name: String
     public var zuliprc: String
     public var volume = 100
+
+    public init(name: String, zuliprc: String, volume: Int = 100) {
+        self.name = name
+        self.zuliprc = zuliprc
+        self.volume = volume
+    }
 }
 
 public struct Config: Sendable, Equatable {
