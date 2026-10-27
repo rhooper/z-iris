@@ -77,7 +77,7 @@ reloads while z-iris runs (menubar: Reload config). `config.example.toml` has
 one sample per kind.
 
 - `match`: `channel`, `topic`, `keyword`, `mention`, `wildcard`, `alert_word`,
-  `dm` or `group_dm`. `mention` is @you only and `wildcard` is @all, @everyone,
+  `dm` or `group_dm`; `conversation` and `reaction` are described below. `mention` is @you only and `wildcard` is @all, @everyone,
   @channel or @topic; `alert_word` is your own Zulip alert words. Topic and
   keyword values are case-insensitive regular expressions, written as Python's
   `re` reads them (as the first version was in Python).
@@ -133,6 +133,60 @@ messages (and latest mentions) through the rules as edited, without saving.
   summary stays.
 - `repeat`, `repeat_every`, `repeat_boost`: extra sounds, each louder, until the
   message is read anywhere, deleted, the count runs out, or you pause.
+
+## Conversations you're in
+
+Post in a channel topic and you have joined it: from then on every message
+there alerts, even with `notify_channel_messages = false` and through
+`mentions_and_dms` focus and quiet hours, until the topic has been quiet for
+`joined_hours` (default 48, up to 720). A personal @-mention joins its topic
+too (`join_on_mention = false` turns that off), and so does any message
+matched by a rule with `join = true`. Muted topics stay muted. z-iris reads
+your last 200 messages when it connects, and remembers joined topics in
+`~/Library/Application Support/z-iris/joined.json`, so they survive a restart;
+a topic renamed or moved stays joined.
+
+- A joined topic's message keeps the settings of the rule it matched (or
+  `[defaults]`), stays on screen until read (`sticky`) and always shows a
+  banner, even where its rule is silent; sound stays as that rule has it.
+- A `match = "conversation"` rule is layered on top: its settings win for
+  joined topics it covers (its optional `channel`, `topic` regular expression
+  and `server`), such as `sticky = false` or a sound of its own.
+- `group_after` (default 3, 1 to 20; in `[defaults]` or a rule): the first
+  alerts of a joined topic show one by one; past that many unread, they give
+  way to one "5 new in #python > onboarding kristy" alert, updated as more
+  arrive (with `summarize`, rewritten in a sentence) and cleared once the
+  topic is read anywhere. A topic's alerts stack together in Notification
+  Center.
+
+## Reactions
+
+Someone else's reaction to one of your messages shows a banner, without
+sound: "Ada reacted 👍 to your message in #python > onboarding kristy", with
+the start of your message below. Reactions to the same message within a
+minute update one alert ("Ada and 2 others reacted 👍🎉"). Removing a
+reaction, and your own reactions, never notify; reactions do not get through
+focus. `[defaults] reactions = false` turns them off.
+
+- A `match = "reaction"` rule gives reactions a sound and settings; `emoji =
+  ["tada", "+1"]` (Zulip's emoji names) limits it to those, and `channel`,
+  `topic` and `server` to reactions on messages there. A `[defaults] sound`
+  never rings for reactions; a reaction rule's sound does.
+- A channel, topic or conversation rule can carry its own reaction settings,
+  for reactions on your messages in the places it covers:
+
+      [[rule]]
+      match = "channel"
+      channel = "python"
+      sound = "ping"
+
+      [rule.reaction]
+      sound = "soft"
+      volume = 40
+
+  Settings it leaves out come from its rule. It ranks as a reaction rule
+  with its rule's priority. The editor shows it as "Reactions to your messages
+  here" on that rule.
 
 ## Sticky alerts
 

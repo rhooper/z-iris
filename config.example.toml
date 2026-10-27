@@ -24,6 +24,13 @@ notify_channel_messages = false
 # have Apple's on-device model rewrite it as one sentence. Optional.
 # batch_window = 60
 # summarize = true
+# Topics you post in (or are mentioned in) are joined: their messages alert
+# until the topic has been quiet this many hours. Reactions to your messages
+# show a quiet banner. A joined topic's alerts past group_after become one.
+# join_on_mention = true
+# joined_hours = 48
+# reactions = true
+# group_after = 3
 
 [output]
 # Fetch notification images from hosts other than your Zulip server. Off by
@@ -48,12 +55,19 @@ notify_channel_messages = false
 #   stay:   seconds to keep it on screen (1 to 3600), then it goes; also by
 #           z-iris-priority.app. macOS banners otherwise fade after ~5 s
 #   server: limit the rule to one [[server]] name
+#   join:   true makes a matching message join its topic
+#
+# Two kinds never compete with the rules above: "conversation" settings are
+# layered on top for topics you joined, and "reaction" rules (optionally
+# limited by emoji names) decide how reactions to your messages notify. A
+# channel, topic or conversation rule may carry [rule.reaction] settings for
+# reactions in its channels.
 #
 # [[rule]]
 # description = "outage"
 # match = "keyword"
 # keyword = '\b(outage|sev[12])\b'   # regular expression, case-insensitive
-# sound = "~/Sounds/klaxon.wav"
+# sound = "urgent"
 # volume = 90
 #
 # [[rule]]
@@ -69,3 +83,25 @@ notify_channel_messages = false
 # channel = "ci-bots"
 # sound = "none"
 # banner = "off"
+#
+# [[rule]]
+# description = "python conversations"
+# match = "conversation"
+# channel = "python"
+# sticky = false                        # fade instead of staying until read
+#
+# [[rule]]
+# description = "celebrations"
+# match = "reaction"
+# emoji = ["tada", "heart"]
+# sound = "rise"
+#
+# [[rule]]
+# match = "channel"
+# channel = "releases"
+# join = true                           # every message here joins its topic
+# sound = "ping"
+#
+# [rule.reaction]                       # reactions to your messages in #releases
+# sound = "soft"
+# volume = 40
