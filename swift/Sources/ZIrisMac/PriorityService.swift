@@ -20,6 +20,8 @@ public protocol AlertCenter: Sendable {
     /// A time-sensitive alert without sound (z-iris plays it).
     func add(identifier: String, title: String, body: String, attachment: String?, thread: String?) async throws
     func delivered() async -> [String]
+    /// The delivered alerts in one thread.
+    func delivered(inThread thread: String) async -> [String]
     func remove(_ identifiers: [String]) async
 }
 
@@ -67,6 +69,10 @@ public struct UserNotificationAlerts: AlertCenter {
 
     public func delivered() async -> [String] {
         await center.deliveredNotifications().map(\.request.identifier)
+    }
+
+    public func delivered(inThread thread: String) async -> [String] {
+        await center.deliveredNotifications().filter { $0.request.content.threadIdentifier == thread }.map(\.request.identifier)
     }
 
     public func remove(_ identifiers: [String]) async {
@@ -124,6 +130,10 @@ public final class PriorityService: @unchecked Sendable {
                 return bad("groups must be a list of strings")
             }
             await clear(names)
+            return ["ok": true]
+        case "clear_thread":
+            guard let thread = request["thread"] as? String else { return bad("clear_thread needs a thread string") }
+            await clearThread(thread)
             return ["ok": true]
         case "clear_server":
             return await clearServer(request)
@@ -207,6 +217,16 @@ public final class PriorityService: @unchecked Sendable {
         }
         await clear(doomed)
         return ["ok": true]
+    }
+
+    /// Every alert in a thread: one was clicked, so the rest are seen too.
+    public func clearThread(_ thread: String) async {
+        guard !thread.isEmpty else { return }
+        let alerts = await center.delivered(inThread: thread)
+        if !alerts.isEmpty {
+            await center.remove(alerts)
+        }
+        urls.drop(alerts)
     }
 
     public func clicked(_ group: String) {

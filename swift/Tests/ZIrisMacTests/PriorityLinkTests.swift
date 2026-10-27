@@ -153,11 +153,13 @@ private let ada = Sender(handle: "zulip:w:9", name: "Ada \"x\"\n🎉", avatar: "
         await h.link.clear("z-iris-w-1")
         h.link.clearServer("w", keep: [5, 2])
         h.link.clearGroups(["z-iris-w-1", "z-iris-w-2"])
+        h.link.clearThread("w:dm:9")
         let sent = child.requests.dropFirst().map { NSDictionary(dictionary: $0) }
         #expect(sent == [
             NSDictionary(dictionary: ["op": "clear", "groups": ["z-iris-w-1"]]),
             NSDictionary(dictionary: ["op": "clear_server", "server": "w", "keep": [2, 5], "keep_groups": [String]()]),
             NSDictionary(dictionary: ["op": "clear", "groups": ["z-iris-w-1", "z-iris-w-2"]]),
+            NSDictionary(dictionary: ["op": "clear_thread", "thread": "w:dm:9"]),
         ])
         #expect(h.fallback.shown.isEmpty)
     }

@@ -210,6 +210,10 @@ public final class PriorityLink: Notifying, @unchecked Sendable {
     }
 
     /// keepGroups: conversation summaries still showing for unread topics.
+    public func clearThread(_ thread: String) {
+        clear(["op": "clear_thread", "thread": thread])
+    }
+
     public func clearServer(_ server: String, keep: Set<Int>, keepGroups: Set<String> = []) {
         clear(["op": "clear_server", "server": server, "keep": keep.sorted(), "keep_groups": keepGroups.sorted()])
     }

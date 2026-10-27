@@ -31,6 +31,7 @@ final class Clicks: NSObject, UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         activity.touch()
         service.clicked(response.notification.request.identifier)
+        await service.clearThread(response.notification.request.content.threadIdentifier)
     }
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification)

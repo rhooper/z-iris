@@ -148,12 +148,17 @@ func run(_ options: Options, _ config: Config) -> Int32 {
     if options.dryRun {
         output = DryRunOutput(player: config.player)
     } else {
-        let banners = BannerNotifier(urls: URLStore(url: bannerURLs))
+        // A clicked banner clears its thread in z-iris priority too; the link
+        // needs the banners as its fallback, so it is filled in after.
+        final class LinkBox: @unchecked Sendable { var link: PriorityLink? }  // set once, before any click
+        let box = LinkBox()
+        let banners = BannerNotifier(urls: URLStore(url: bannerURLs), clickedThread: { box.link?.clearThread($0) })
         let resolver = ImageResolver(clients: { clients.get($0) }, externalImages: { settings.config.externalImages })
+        // Sticky alerts come from z-iris-priority.app; it falls back to our banners.
+        box.link = inBundle ? PriorityLink(fallback: banners) : nil
         output = RealOutput(
             config: { settings.config }, notifier: banners,
-            // Sticky alerts come from z-iris-priority.app; it falls back to our banners.
-            priority: inBundle ? PriorityLink(fallback: banners) : nil,
+            priority: box.link,
             images: { await resolver.images(for: $0) }, player: SoundPlayer(),
             flasher: options.headless ? nil : Flasher(),
             // Only used for rules with summarize = true; quiet when the model is unavailable.

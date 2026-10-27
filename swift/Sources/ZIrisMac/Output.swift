@@ -142,7 +142,7 @@ public final class RealOutput: EngineOutput, @unchecked Sendable {
         let persistent = (action.sticky || action.stay > 0) ? priority : nil
         let group = notification.group ?? bannerGroup(message)
         let target: any Notifying = persistent ?? notifier
-        let thread = notification.conversation.map(conversationThread)
+        let thread = messageThread(message)
         await target.show(
             title: title, body: notificationBody(notification), url: notification.url, image: image, group: group,
             sender: sender, thread: thread
@@ -224,11 +224,6 @@ public final class RealOutput: EngineOutput, @unchecked Sendable {
     public func drain() async {
         await worker.drain()
     }
-}
-
-/// macOS's thread for a joined topic's alerts.
-func conversationThread(_ key: TopicKey) -> String {
-    "\(key.server):channel:\(key.channelID):\(key.topic)"
 }
 
 /// The summary alert's id: one per joined topic.

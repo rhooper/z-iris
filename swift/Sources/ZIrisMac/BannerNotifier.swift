@@ -39,12 +39,15 @@ public final class BannerNotifier: NSObject, Notifying, UNUserNotificationCenter
     private var asking: Task<Bool, Never>?
     private var state: String?
     private var commsWarned = false
+    private let clickedThread: @Sendable (String) -> Void
 
     public init(
         urls: URLStore, opener: @escaping @Sendable (String) -> Void = openURL,
         center: UNUserNotificationCenter = .current(), entitled: Bool = hasCommunicationEntitlement,
-        authorizationTimeout: Double = 10, recheck: Double = 300
+        authorizationTimeout: Double = 10, recheck: Double = 300,
+        clickedThread: @escaping @Sendable (String) -> Void = { _ in }
     ) {
+        self.clickedThread = clickedThread
         self.center = center
         self.urls = urls
         self.opener = opener
@@ -169,6 +172,15 @@ public final class BannerNotifier: NSObject, Notifying, UNUserNotificationCenter
     ) async {
         if let url = urls.pop(response.notification.request.identifier) {
             opener(url)
+        }
+        // The rest of the thread is seen too: here, and in z-iris priority.
+        let thread = response.notification.request.content.threadIdentifier
+        if !thread.isEmpty {
+            let mates = await center.deliveredNotifications()
+                .filter { $0.request.content.threadIdentifier == thread }.map(\.request.identifier)
+            center.removeDeliveredNotifications(withIdentifiers: mates)
+            urls.drop(mates)
+            clickedThread(thread)
         }
     }
 

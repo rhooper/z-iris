@@ -5,7 +5,7 @@ import ZIrisCore
 
 /// A notification center in memory.
 final class FakeAlerts: AlertCenter, @unchecked Sendable {
-    struct Sent { var identifier, title, body: String; var attachment: String? }
+    struct Sent { var identifier, title, body: String; var attachment: String?; var thread: String? }
 
     private let lock = NSLock()
     private var status: String
@@ -36,11 +36,17 @@ final class FakeAlerts: AlertCenter, @unchecked Sendable {
     }
     func add(identifier: String, title: String, body: String, attachment: String?, thread: String?) async throws {
         lock.withLock {
-            _sent.append(Sent(identifier: identifier, title: title, body: body, attachment: attachment))
+            _sent.append(Sent(identifier: identifier, title: title, body: body, attachment: attachment, thread: thread))
             _delivered.append(identifier)
         }
     }
     func delivered() async -> [String] { delivered }
+    func delivered(inThread thread: String) async -> [String] {
+        lock.withLock {
+            let threads = Dictionary(_sent.map { ($0.identifier, $0.thread) }) { $1 }
+            return _delivered.filter { threads[$0] == thread }
+        }
+    }
     func remove(_ identifiers: [String]) async {
         lock.withLock {
             _cleared += identifiers
@@ -169,6 +175,22 @@ private func service(_ dir: URL, _ alerts: FakeAlerts = FakeAlerts(), opened: Li
         #expect(alerts.cleared == [summaries[0]])  // after a restart nothing is kept: no summary outlives its topic
         _ = await svc.handle(["op": "clear_server", "server": "w", "keep": [Int]()])
         #expect(alerts.cleared == [summaries[0], summaries[1]])
+    }
+
+    @Test func aThreadClearsTogether() async {
+        let alerts = FakeAlerts()
+        let svc = service(folder(), alerts)
+        for (group, thread) in [("z-iris-w-1", "w:channel:7:t"), ("z-iris-w-2", "w:channel:7:t"), ("z-iris-w-3", "w:dm:9")] {
+            var request = show
+            request["group"] = group
+            request["thread"] = thread
+            _ = await svc.handle(request)
+        }
+        await svc.clearThread("w:channel:7:t")
+        #expect(alerts.cleared == ["z-iris-w-1", "z-iris-w-2"])
+        #expect(NSDictionary(dictionary: await svc.handle(["op": "clear_thread", "thread": "w:dm:9"])) == ["ok": true])
+        #expect(alerts.cleared == ["z-iris-w-1", "z-iris-w-2", "z-iris-w-3"])
+        #expect(await svc.handle(["op": "clear_thread"])["ok"] as? Bool == false)
     }
 
     @Test func clearServerLeavesSummariesOfServersSharingItsPrefix() async {

@@ -42,6 +42,7 @@ private func priorityLink(_ child: FakeChild, fallback: FakeFallback) throws -> 
         #expect((shown.title, shown.body, shown.group) == ("Ada", "hi there", "z-iris-w-1"))
         #expect(shown.image == "/c/pic.png")
         #expect(shown.sender?.avatar == "/c/av.png" && shown.sender?.picture == "/c/pic.png")
+        #expect(banners.threads == ["w:dm:9"])  // every alert carries its thread, so a click clears the rest
     }
 
     @Test func titleOnlyHasNoTextOrPictureAndASummaryNoSender() async {

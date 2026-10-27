@@ -108,22 +108,27 @@ private func handle(_ message: Message, _ userID: Int) -> String {
     "zulip:\(message.server):\(userID)"
 }
 
+/// The macOS thread for a message's alerts: its topic, or its DM group.
+/// Alerts in one thread stack together and a click clears them all.
+public func messageThread(_ message: Message) -> String {
+    message.kind == .channel
+        ? "\(message.server):channel:\(message.channelID.map(String.init) ?? "None"):\(message.topic ?? "None")"
+        : "\(message.server):dm:" + message.dmUserIDs.map(String.init).joined(separator: ",")
+}
+
 /// The sender for a message's notification. nil when there is no face to
 /// show (a one-to-one message without an avatar): the plain notification.
 public func senderFor(_ message: Message, title: String, images: MessageImages) -> Sender? {
     let senderHandle = handle(message, message.senderID)
-    let dmConversation = "\(message.server):dm:" + message.dmUserIDs.map(String.init).joined(separator: ",")
+    let conversation = messageThread(message)
     if message.kind == .dm, message.dmUserIDs.count > 1 {
         let names = message.dmNames.isEmpty ? Array(repeating: "", count: message.dmUserIDs.count) : message.dmNames
         let members = zip(message.dmUserIDs, names).map { Sender.Member(handle: handle(message, $0), name: $1) }
         return Sender(handle: senderHandle, name: message.senderName, avatar: images.avatar,
-                      picture: images.picture, conversation: dmConversation,
+                      picture: images.picture, conversation: conversation,
                       groupName: groupName, members: members)
     }
     guard images.avatar != nil else { return nil }
-    let conversation = message.kind == .channel
-        ? "\(message.server):channel:\(message.channelID.map(String.init) ?? "None"):\(message.topic ?? "None")"
-        : dmConversation
     return Sender(handle: senderHandle, name: title, avatar: images.avatar,
                   picture: images.picture, conversation: conversation)
 }
