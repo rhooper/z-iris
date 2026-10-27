@@ -148,7 +148,9 @@ a topic renamed or moved stays joined.
 
 - A joined topic's message keeps the settings of the rule it matched (or
   `[defaults]`), stays on screen until read (`sticky`) and always shows a
-  banner, even where its rule is silent; sound stays as that rule has it.
+  banner, even where its rule is silent; sound stays as that rule has it,
+  at most once a minute per topic (`min_gap = 60`). A personal @-mention
+  there is handled as a mention, as anywhere else.
 - A `match = "conversation"` rule is layered on top: its settings win for
   joined topics it covers (its optional `channel`, `topic` regular expression
   and `server`), such as `sticky = false` or a sound of its own.
@@ -166,10 +168,11 @@ sound: "Ada reacted 👍 to your message in #python > onboarding kristy", with
 the start of your message below. Reactions to the same message within a
 minute update one alert ("Ada and 2 others reacted 👍🎉"). Removing a
 reaction, and your own reactions, never notify; reactions do not get through
-focus. `[defaults] reactions = false` turns them off.
+focus, and they do not stay on screen, repeat or flash unless a reaction rule
+says so. `[defaults] reactions = false` turns them off.
 
 - A `match = "reaction"` rule gives reactions a sound and settings; `emoji =
-  ["tada", "+1"]` (Zulip's emoji names) limits it to those, and `channel`,
+  ["tada", "+1"]` (Zulip's emoji names, not their aliases) limits it to those, and `channel`,
   `topic` and `server` to reactions on messages there. A `[defaults] sound`
   never rings for reactions; a reaction rule's sound does.
 - A channel, topic or conversation rule can carry its own reaction settings,
