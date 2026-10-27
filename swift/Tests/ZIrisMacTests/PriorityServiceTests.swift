@@ -161,6 +161,16 @@ private func service(_ dir: URL, _ alerts: FakeAlerts = FakeAlerts(), opened: Li
         #expect(alerts.cleared == ["z-iris-w-1", "z-iris-a.b-3"])
     }
 
+    @Test func clearServerClearsSummariesNotKept() async {
+        let summaries = ["z-iris-conversation-w-7-abc", "z-iris-conversation-w-8-def", "z-iris-conversation-wx-1-a"]
+        let alerts = FakeAlerts(delivered: summaries)
+        let svc = service(folder(), alerts)
+        _ = await svc.handle(["op": "clear_server", "server": "w", "keep": [Int](), "keep_groups": [summaries[1]]])
+        #expect(alerts.cleared == [summaries[0]])  // after a restart nothing is kept: no summary outlives its topic
+        _ = await svc.handle(["op": "clear_server", "server": "w", "keep": [Int]()])
+        #expect(alerts.cleared == [summaries[0], summaries[1]])
+    }
+
     @Test(arguments: [0, 1, 2, 3, 4, 5, 6])
     func malformedRequestsReplyNotOK(_ index: Int) async {
         let requests: [Any] = [[String: Any](), ["op": "show"], ["op": "nope"], ["op": "clear", "groups": "z-iris-w-1"],

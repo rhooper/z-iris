@@ -71,6 +71,9 @@ public final class RealOutput: EngineOutput, @unchecked Sendable {
     private let summarizer: (any Summarizer)?
     private let summaryTimeout: Double
     private let worker = BannerWorker()
+    private let lock = NSLock()
+    /// Conversation summaries showing, so a reconnect clears only stale ones.
+    private var summaries: Set<String> = []
 
     /// - Parameters:
     ///   - priority: sticky alerts; nil without z-iris priority.
@@ -173,6 +176,7 @@ public final class RealOutput: EngineOutput, @unchecked Sendable {
         var summary = latest
         summary.summary = "\(unread.count) new in #\(message.channelName ?? "") > \(message.topic ?? "")"
         summary.group = conversationGroup(key)
+        lock.withLock { _ = summaries.insert(conversationGroup(key)) }
         summary.batch = unread.map(\.message)
         if summary.action.banner == "off" {
             summary.action.banner = "full"
@@ -188,6 +192,7 @@ public final class RealOutput: EngineOutput, @unchecked Sendable {
 
     public func clearConversation(_ key: TopicKey) {
         let group = conversationGroup(key)
+        lock.withLock { _ = summaries.remove(group) }
         worker.submit { [self] in
             await notifier.clear(group)
             priority?.clearGroups([group])
@@ -211,7 +216,8 @@ public final class RealOutput: EngineOutput, @unchecked Sendable {
 
     public func clearUnlessUnread(server: String, unread: Set<Int>) {
         guard let priority else { return }
-        worker.submit { priority.clearServer(server, keep: unread) }
+        let live = lock.withLock { summaries }
+        worker.submit { priority.clearServer(server, keep: unread, keepGroups: live) }
     }
 
     /// Wait until every banner submitted so far has been shown.

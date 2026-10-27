@@ -186,7 +186,12 @@ public final class PriorityService: @unchecked Sendable {
         else { return bad("clear_server needs a server string and a list of ids") }
         let kept = Set(keep.compactMap(jsonInt))
         let prefix = "z-iris-\(server)-"
+        // Conversation summaries z-iris no longer tracks (it restarted, or
+        // the topic was read) go too; older z-iris sends no keep_groups.
+        let summaries = "z-iris-conversation-\(server)-"
+        let keptGroups = Set((request["keep_groups"] as? [Any])?.compactMap { $0 as? String } ?? [])
         let doomed = await center.delivered().filter { identifier in
+            if identifier.hasPrefix(summaries) { return !keptGroups.contains(identifier) }
             guard identifier.hasPrefix(prefix) else { return false }
             let digits = identifier.dropFirst(prefix.count)
             guard !digits.isEmpty, digits.allSatisfy({ $0.isASCII && $0.isNumber }), let id = Int(digits) else { return false }

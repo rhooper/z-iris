@@ -209,8 +209,9 @@ public final class PriorityLink: Notifying, @unchecked Sendable {
         clear(["op": "clear", "groups": groups])
     }
 
-    public func clearServer(_ server: String, keep: Set<Int>) {
-        clear(["op": "clear_server", "server": server, "keep": keep.sorted()])
+    /// keepGroups: conversation summaries still showing for unread topics.
+    public func clearServer(_ server: String, keep: Set<Int>, keepGroups: Set<String> = []) {
+        clear(["op": "clear_server", "server": server, "keep": keep.sorted(), "keep_groups": keepGroups.sorted()])
     }
 
     private func clear(_ body: [String: Any]) {

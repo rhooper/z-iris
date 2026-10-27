@@ -172,6 +172,20 @@ struct FakeSummarizer: Summarizer {
         #expect(summary.sender == nil)
         #expect(banners.cleared == ["z-iris-w-1", "z-iris-w-2", "z-iris-w-3", group])
     }
+
+    @Test func reconnectKeepsOnlyLiveSummaries() async throws {
+        let banners = FakeFallback()
+        let child = FakeChild()
+        let out = output(priority: try priorityLink(child, fallback: banners), fallback: banners)
+        let group = "z-iris-conversation-w-7-8efd86fb78a5"
+        out.conversationSummary(key, [joined(1), joined(2), joined(3), joined(4)])
+        out.clearUnlessUnread(server: "w", unread: [4])
+        out.clearConversation(key)
+        out.clearUnlessUnread(server: "w", unread: [])
+        await out.drain()
+        let servers = child.requests.filter { $0["op"] as? String == "clear_server" }
+        #expect(servers.map { $0["keep_groups"] as? [String] } == [[group], []])
+    }
 }
 
 final class Lines: @unchecked Sendable {
