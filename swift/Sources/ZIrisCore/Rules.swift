@@ -155,6 +155,62 @@ public struct Rule: Sendable, Equatable {
     }
 }
 
+extension Rule {
+    /// Whether this rule's server, channel patterns and topic pattern accept a
+    /// place. A direct message matches only a rule with no place conditions.
+    func accepts(server: String, channelName: String?, topic: String?, isDM: Bool) -> Bool {
+        if let rule = self.server, rule != server { return false }
+        if isDM { return channels.isEmpty && pattern == nil }
+        if !channels.isEmpty, !inChannels(channelName) { return false }
+        if let pattern, pattern.search(topic ?? "") == nil { return false }
+        return true
+    }
+}
+
+private func first(_ rules: [Rule]) -> Rule? {
+    rules.min { a, b in (-a.priority, a.index) < (-b.priority, b.index) }
+}
+
+/// The conversation rule for a message in a joined topic: its settings are
+/// layered on top of whatever rule the message matched.
+public func conversationRule(_ rules: [Rule], _ message: Message) -> Rule? {
+    first(rules.filter {
+        $0.enabled && $0.kind == .conversation
+            && $0.accepts(server: message.server, channelName: message.channelName, topic: message.topic, isDM: false)
+    })
+}
+
+/// Where a message that was reacted to is.
+public struct ReactionPlace: Sendable, Equatable {
+    public var server: String
+    public var channelName: String?
+    public var topic: String?
+    public var isDM: Bool
+
+    public init(server: String, channelName: String?, topic: String?, isDM: Bool) {
+        self.server = server
+        self.channelName = channelName
+        self.topic = topic
+        self.isDM = isDM
+    }
+}
+
+/// The reaction rule for a reaction: a reaction rule, or the [rule.reaction]
+/// of a channel, topic or conversation rule covering the place (with its
+/// parent, which the sub-rule inherits from).
+public func pickReactionRule(_ rules: [Rule], place: ReactionPlace, emoji: String) -> (rule: Rule, parent: Rule?)? {
+    var candidates: [(rule: Rule, parent: Rule?)] = []
+    for rule in rules where rule.enabled {
+        let accepted = rule.accepts(server: place.server, channelName: place.channelName, topic: place.topic, isDM: place.isDM)
+        if rule.kind == .reaction, accepted, rule.emoji.isEmpty || rule.emoji.contains(emoji) {
+            candidates.append((rule, nil))
+        } else if let sub = rule.reactionRule, [.channel, .topic, .conversation].contains(rule.kind), accepted {
+            candidates.append((sub, rule))
+        }
+    }
+    return candidates.min { a, b in (-a.rule.priority, a.rule.index) < (-b.rule.priority, b.rule.index) }
+}
+
 public func pickRule(_ rules: [Rule], _ message: Message) -> Rule? {
     rules.filter { $0.enabled && $0.matches(message) }
         .min { a, b in (-a.priority, a.kind.rank, a.index) < (-b.priority, b.kind.rank, b.index) }

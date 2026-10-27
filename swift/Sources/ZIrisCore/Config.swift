@@ -258,12 +258,26 @@ public struct Action: Sendable, Equatable {
     }
 }
 
+/// The conversation layer's own built-ins, above [defaults]: a joined topic's
+/// alert stays until read unless a conversation rule says otherwise.
+public let conversationBuiltIns: Behaviour = ["sticky": .flag(true)]
+
 /// Combine a rule with the defaults. Volume is rule x server x master.
 public func resolveAction(_ config: Config, server: String, rule: Rule?) -> Action {
+    resolveAction(config, server: server, rule: rule, layer: nil, layerBuiltIns: [:])
+}
+
+/// A rule's action with a layer on top: the layer's built-ins override
+/// [defaults] and the rule for their keys, layerSound replaces the sound,
+/// then the layer rule's own settings win (a conversation rule over the
+/// matched rule, or a reaction sub-rule over its parent).
+public func resolveAction(
+    _ config: Config, server: String, rule: Rule?, layer: Rule?, layerBuiltIns: Behaviour, layerSound: String? = nil
+) -> Action {
     let serverVolume = config.servers.first { $0.name == server }?.volume ?? 100
-    let base = rule?.volume ?? config.volume
-    var sound = rule?.sound ?? config.sound
-    let banner = rule?.banner ?? "full"
+    let base = layer?.volume ?? rule?.volume ?? config.volume
+    var sound = layer?.sound ?? layerSound ?? rule?.sound ?? config.sound
+    let banner = layer?.banner ?? rule?.banner ?? "full"
     // Python's round() rounds halves to even.
     let final = Int((Double(base * serverVolume * config.masterVolume) / 10000).rounded(.toNearestOrEven))
     if let path = config.sounds[sound] {
@@ -277,7 +291,11 @@ public func resolveAction(_ config: Config, server: String, rule: Rule?) -> Acti
     if let rule {
         merged.merge(rule.behaviour) { $1 }
     }
-    var action = Action(sound: sound, volume: final, banner: banner, rule: rule?.label, ruleIndex: rule?.index)
+    merged.merge(layerBuiltIns) { $1 }
+    if let layer {
+        merged.merge(layer.behaviour) { $1 }
+    }
+    var action = Action(sound: sound, volume: final, banner: banner, rule: (rule ?? layer)?.label, ruleIndex: (rule ?? layer)?.index)
     for (key, value) in merged {
         switch (key, value) {
         case ("flash", .text(let text)): action.flash = text
