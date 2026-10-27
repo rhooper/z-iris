@@ -90,6 +90,14 @@ private let t0 = Date(timeIntervalSince1970: 1_000_000)
         #expect(dm?.action.sound == "/p.wav")
     }
 
+    @Test func reactionsNeverStickRepeatOrFlashUnlessTheirRuleSays() throws {
+        let (p, _) = pipeline(config("[defaults]\nsticky = true\nrepeat = 2\nflash = \"screen\"\n"))
+        let n = p.handleReaction(try #require(ReactionEvent(reaction())), now: t0)
+        #expect(n?.action.sticky == false && n?.action.repeat == 0 && n?.action.flash == "none" && n?.action.stay == 0)
+        let (ruled, _) = pipeline(config("[[rule]]\nmatch = \"reaction\"\nsticky = true\n"))
+        #expect(ruled.handleReaction(try #require(ReactionEvent(reaction())), now: t0)?.action.sticky == true)
+    }
+
     @Test func reactionsOff() throws {
         let (p, _) = pipeline(config("[defaults]\nreactions = false\n"))
         #expect(p.handleReaction(try #require(ReactionEvent(reaction())), now: t0) == nil)

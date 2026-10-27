@@ -78,7 +78,7 @@ extension Pipeline {
         let place = ReactionPlace(server: server, channelName: own.channelName, topic: own.topic, isDM: own.kind == .dm)
         let picked = pickReactionRule(config.rules, place: place, emoji: event.emojiName)
         let action = resolveAction(config, server: server, rule: picked?.parent, layer: picked?.rule,
-                                   layerBuiltIns: [:], layerSound: "none")
+                                   layerBuiltIns: reactionBuiltIns, layerSound: "none")
         let burst = bursts.add(messageID: own.id, name: event.userName, emoji: event.emoji, now: now)
         let who = switch burst.names.count {
         case 1: burst.names[0]

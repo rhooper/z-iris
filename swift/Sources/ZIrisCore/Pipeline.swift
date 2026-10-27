@@ -105,7 +105,8 @@ public struct Pipeline: Sendable {
             return Verdict(notification: nil, why: reason)
         }
         let config = config()
-        if let key = topicKey(message), conversations?.isJoined(key) == true {
+        // A personal mention keeps its own handling, as anywhere else.
+        if !message.isMention, let key = topicKey(message), conversations?.isJoined(key) == true {
             return joined(message, key, config)
         }
         if let rule = pickRule(config.rules, message) {

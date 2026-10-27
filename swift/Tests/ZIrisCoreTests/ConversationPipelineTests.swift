@@ -75,6 +75,29 @@ private let kristy = TopicKey(server: "work", channelID: 7, topic: "Onboarding K
         #expect(p.handle(event(id: 2, topic: "lunch")) == nil)  // still silenced elsewhere
     }
 
+    @Test func aMentionInAJoinedTopicIsStillAMention() throws {
+        var (p, store) = pipeline(config("""
+        [[rule]]
+        match = "channel"
+        channel = "python"
+        sound = "none"
+        banner = "off"
+        """))
+        store.join(kristy)
+        let nGot = p.handle(event(id: 1, flags: ["mentioned"]))
+        let n = try #require(nGot)
+        #expect(n.reason == "mention" && n.action.sound == "/c.wav" && n.conversation == nil)
+    }
+
+    @Test func aBusyJoinedTopicDoesNotRingForEveryMessage() throws {
+        var (p, store) = pipeline(config(""))
+        store.join(kristy)
+        #expect(p.handle(event(id: 1))?.action.minGap == 60)
+        var (own, ownStore) = pipeline(config("[[rule]]\nmatch = \"conversation\"\nmin_gap = 0\n"))
+        ownStore.join(kristy)
+        #expect(own.handle(event(id: 1))?.action.minGap == 0)
+    }
+
     @Test func conversationRuleLayersOnTop() throws {
         var (p, store) = pipeline(config("""
         [[rule]]

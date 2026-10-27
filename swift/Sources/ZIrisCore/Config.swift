@@ -259,8 +259,16 @@ public struct Action: Sendable, Equatable {
 }
 
 /// The conversation layer's own built-ins, above [defaults]: a joined topic's
-/// alert stays until read unless a conversation rule says otherwise.
-public let conversationBuiltIns: Behaviour = ["sticky": .flag(true)]
+/// alert stays until read, and a busy one sounds at most once a minute,
+/// unless a conversation rule says otherwise.
+public let conversationBuiltIns: Behaviour = ["sticky": .flag(true), "min_gap": .integer(60)]
+
+/// Reactions' built-ins, above [defaults] and a sub-rule's parent: nothing
+/// clears a reaction's alert (your own message is never unread), so it fades
+/// and never repeats or flashes unless a reaction rule says so.
+public let reactionBuiltIns: Behaviour = [
+    "sticky": .flag(false), "stay": .integer(0), "repeat": .integer(0), "flash": .text("none"),
+]
 
 /// Combine a rule with the defaults. Volume is rule x server x master.
 public func resolveAction(_ config: Config, server: String, rule: Rule?) -> Action {
