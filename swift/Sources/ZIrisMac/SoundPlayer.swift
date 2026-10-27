@@ -10,6 +10,7 @@ public final class SoundPlayer: @unchecked Sendable {
     private let engine = AVAudioEngine()
     private let lock = NSLock()
     private let leadIn = 0.12
+    private var playing = 0
 
     /// - Parameter device: an output device's name to pin, or nil for the
     ///   system default.
@@ -31,10 +32,17 @@ public final class SoundPlayer: @unchecked Sendable {
             let file = try AVAudioFile(forReading: URL(fileURLWithPath: path))
             let player = AVAudioPlayerNode()
             try lock.withLock {
+                playing += 1
                 engine.attach(player)
                 engine.connect(player, to: engine.mainMixerNode, format: file.processingFormat)
                 if !engine.isRunning {
-                    try engine.start()
+                    do {
+                        try engine.start()
+                    } catch {
+                        engine.detach(player)
+                        playing -= 1
+                        throw error
+                    }
                 }
             }
             player.volume = Float(volume) / 100
@@ -49,6 +57,9 @@ public final class SoundPlayer: @unchecked Sendable {
                     self.lock.withLock {
                         player.stop()
                         self.engine.detach(player)
+                        self.playing -= 1
+                        // Let the output device sleep between sounds, as sox exiting did.
+                        if self.playing == 0 { self.engine.stop() }
                     }
                 }
             }

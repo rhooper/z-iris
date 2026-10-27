@@ -198,15 +198,25 @@ func run(_ options: Options, _ config: Config) -> Int32 {
 // Line by line, as Python's print(flush=True): dry runs are read as they happen.
 setvbuf(stdout, nil, _IOLBF, 0)
 
+/// Run an async command and exit with its status. The top level stays
+/// synchronous: with a top-level await, main.swift becomes an async main whose
+/// app.run() sits inside one main-queue job, and nothing else queued to the
+/// main actor or main queue (menu updates, flashes, clicks) would ever run.
+func command(_ work: @escaping @Sendable () async -> Int32) -> Never {
+    Task { exit(await work()) }
+    dispatchMain()
+}
+
 guard let options = parse(Array(CommandLine.arguments.dropFirst())) else {
     print("usage: z-iris [--config PATH] [--dry-run | --headless] | probe | normalize [--dir DIR] [--no-backup] | flash MODE [#rrggbb] [seconds] | play FILE [volume] [device]")
     exit(2)
 }
 switch options.command {
 case "flash":
-    exit(await MainActor.run { flash(options.rest) })
+    exit(flash(options.rest))
 case "play":
-    exit(await play(options.rest))
+    let rest = options.rest
+    command { await play(rest) }
 case "normalize":
     let directory = options.directory.map { URL(fileURLWithPath: ($0 as NSString).expandingTildeInPath) }
         ?? URL(fileURLWithPath: options.config).deletingLastPathComponent().appendingPathComponent("sounds")
@@ -227,6 +237,6 @@ do {
     exit(2)
 }
 if options.command == "probe" {
-    exit(await probe(config))
+    command { await probe(config) }
 }
-exit(await MainActor.run { run(options, config) })
+exit(run(options, config))
