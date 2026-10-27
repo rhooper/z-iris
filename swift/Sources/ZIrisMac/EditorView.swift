@@ -11,13 +11,14 @@ private let kinds: [(String, String)] = [
     ("wildcard", "Wildcard mention (@all, @everyone, @channel, @topic)"),
     ("alert_word", "Alert word (your Zulip alert words)"), ("channel", "Channel"),
     ("group_dm", "Group DM"), ("dm", "Direct message"),
+    ("conversation", "Conversation you're in (topics you joined)"), ("reaction", "Reaction to your message"),
 ]
 private let flashModes = ["none", "screen", "top", "bottom", "left", "right"]
 private let builtIn: [String: TOMLValue] = [
     "flash": .string("none"), "flash_color": .string("#ff3b30"), "flash_seconds": .float(0.6),
     "repeat": .integer(0), "repeat_every": .integer(30), "repeat_boost": .integer(0),
     "min_gap": .integer(0), "batch_window": .integer(0), "sticky": .bool(false), "stay": .integer(0),
-    "summarize": .bool(false),
+    "summarize": .bool(false), "group_after": .integer(3),
 ]
 
 enum EditorPane: Hashable {
@@ -300,6 +301,7 @@ private struct BehaviourSections: View {
             NumberField(title: "Repeat boost (% points)", value: field(model, $fields, "repeat_boost").integer, inherited: describe(inherited("repeat_boost")), range: 0...100)
             NumberField(title: "Minimum gap (seconds)", value: field(model, $fields, "min_gap").integer, inherited: describe(inherited("min_gap")), range: 0...3600)
             NumberField(title: "Batch window (seconds)", value: field(model, $fields, "batch_window").integer, inherited: describe(inherited("batch_window")), range: 0...300)
+            NumberField(title: "Group after (alerts)", value: field(model, $fields, "group_after").integer, inherited: describe(inherited("group_after")), range: 1...20)
             Picker("Summarize batches", selection: Binding(get: {
                 switch fields["summarize"] { case .bool(true)?: "on"; case .bool(false)?: "off"; default: isRule ? "" : "off" }
             }, set: { choice in
@@ -315,7 +317,7 @@ private struct BehaviourSections: View {
         } header: {
             Text("Repeat")
         } footer: {
-            Text("Repeats play until you read the message, each louder by the boost. The minimum gap skips sound and flash if this rule played that recently; the batch window turns a burst into one summary banner, which Summarize batches rewrites in a sentence on this Mac (Apple Intelligence; nothing is sent anywhere).")
+            Text("Repeats play until you read the message, each louder by the boost. The minimum gap skips sound and flash if this rule played that recently; the batch window turns a burst into one summary banner, which Summarize batches rewrites in a sentence on this Mac (Apple Intelligence; nothing is sent anywhere). In a topic you joined, past Group after unread alerts they become one summary alert.")
         }
     }
 }
@@ -381,13 +383,18 @@ private struct RuleEditor: View {
                 Picker("Matches", selection: field(model, $rule.fields, "match").choice(empty: "\u{0}")) {
                     ForEach(kinds, id: \.0) { Text($0.1).tag($0.0) }
                 }
-                if match == "channel" || match == "topic" {
+                if ["channel", "topic", "conversation", "reaction"].contains(match) {
                     LabeledContent(match == "channel" ? "Channels" : "Channels (optional)") {
                         ChannelTokens(model: model, channels: field(model, $rule.fields, "channel"))
                     }
                 }
-                if match == "topic" {
-                    TextField("Topic (regular expression)", text: field(model, $rule.fields, "topic").text)
+                if ["topic", "conversation", "reaction"].contains(match) {
+                    TextField(match == "topic" ? "Topic (regular expression)" : "Topic (regular expression, optional)",
+                              text: field(model, $rule.fields, "topic").text)
+                }
+                if match == "reaction" {
+                    TextField("Emoji (names, comma separated)", text: emoji, prompt: Text("any emoji"))
+                        .help("Zulip's emoji names, like tada, +1. Empty: any emoji.")
                 }
                 if match == "keyword" {
                     TextField("Keyword (regular expression)", text: field(model, $rule.fields, "keyword").text)
@@ -398,6 +405,11 @@ private struct RuleEditor: View {
                 }
                 TextField("Priority", value: field(model, $rule.fields, "priority").integer, format: .number, prompt: Text("0"))
                     .help("Higher beats the usual most-specific order.")
+                if match != "conversation", match != "reaction" {
+                    Toggle("Join this rule's topics", isOn: Binding(get: { rule.fields["join"] == .bool(true) },
+                                                                   set: { rule.fields["join"] = $0 ? .bool(true) : nil; model.changed() }))
+                        .help("A message this rule matches joins its topic: later messages there alert until it has been quiet for a while.")
+                }
             }
             Section {
                 SoundPicker(model: model, sound: field(model, $rule.fields, "sound").choice(), volume: volume, allowDefault: true)
@@ -415,6 +427,9 @@ private struct RuleEditor: View {
                 Text("Without its own volume a rule uses the default rule's. The master volume scales both.")
             }
             BehaviourSections(model: model, fields: $rule.fields, isRule: true)
+            if ["channel", "topic", "conversation"].contains(match) {
+                ReactionSection(model: model, fields: $rule.fields, volume: volume)
+            }
             Section {
                 Button("Delete rule", role: .destructive, action: onDelete)
             }
@@ -426,6 +441,72 @@ private struct RuleEditor: View {
         if case .integer(let v)? = rule.fields["volume"] { return v }
         if case .integer(let v)? = model.defaults["volume"] { return v }
         return 60
+    }
+
+    private var emoji: Binding<String> {
+        Binding(get: {
+            guard case .array(let items)? = rule.fields["emoji"] else { return "" }
+            return items.compactMap { if case .string(let s) = $0 { s } else { nil } }.joined(separator: ", ")
+        }, set: { text in
+            let names = text.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+            rule.fields["emoji"] = names.isEmpty ? nil : .array(names.map(TOMLValue.string))
+            model.changed()
+        })
+    }
+}
+
+/// A rule's [rule.reaction]: reactions to your messages in the rule's place.
+private struct ReactionSection: View {
+    let model: EditorModel
+    @Binding var fields: [String: TOMLValue]
+    let volume: Int
+
+    private var sub: [String: TOMLValue]? {
+        guard case .table(let keys)? = fields["reaction"] else { return nil }
+        return Dictionary(keys) { $1 }
+    }
+
+    private func set(_ key: String, _ value: TOMLValue?) {
+        var table = sub ?? [:]
+        table[key] = value
+        fields["reaction"] = .table(ruleFields.compactMap { name in table[name].map { (name, $0) } })
+        model.changed()
+    }
+
+    private var subVolume: Int { if case .integer(let v)? = sub?["volume"] { v } else { volume } }
+
+    var body: some View {
+        Section {
+            if let sub {
+                SoundPicker(model: model, sound: Binding(get: { if case .string(let s)? = sub["sound"] { s } else { "" } },
+                                                         set: { set("sound", $0.isEmpty ? nil : .string($0)) }),
+                            volume: subVolume, allowDefault: true)
+                Toggle("Own volume", isOn: Binding(get: { sub["volume"] != nil }, set: { set("volume", $0 ? .integer(subVolume) : nil) }))
+                if sub["volume"] != nil {
+                    Slider(value: Binding(get: { Double(subVolume) }, set: { set("volume", .integer(Int($0))) }),
+                           in: 0...100, step: 1) { Text("Volume \(subVolume)%") }
+                }
+                Picker("Desktop notification", selection: Binding(get: { if case .string(let s)? = sub["banner"] { s } else { "" } },
+                                                                 set: { set("banner", $0.isEmpty ? nil : .string($0)) })) {
+                    Text("show (default)").tag("")
+                    Text("title only").tag("title")
+                    Text("off").tag("off")
+                }
+                Button("Remove reaction settings", role: .destructive) {
+                    fields["reaction"] = nil
+                    model.changed()
+                }
+            } else {
+                Button("Add reaction settings") {
+                    fields["reaction"] = .table([])
+                    model.changed()
+                }
+            }
+        } header: {
+            Text("Reactions to your messages here")
+        } footer: {
+            Text("Someone reacting to a message you wrote in this rule's channels. Unset settings come from this rule; without one, a reaction is a quiet banner.")
+        }
     }
 }
 
@@ -468,6 +549,13 @@ private struct GeneralEditor: View {
     private func setHours(_ list: [String]) {
         model.focus["quiet_hours"] = .array(list.map(TOMLValue.string))
         model.changed(immediately: true)
+    }
+
+    private var joinedHours: Int { if case .integer(let v)? = model.defaults["joined_hours"] { v } else { 48 } }
+
+    /// A [defaults] switch that is on unless the file says false.
+    private func flag(_ key: String) -> Binding<Bool> {
+        Binding(get: { model.defaults[key] != .bool(false) }, set: { model.defaults[key] = .bool($0); model.changed() })
     }
 
     private func time(_ text: Substring) -> Date {
@@ -518,6 +606,18 @@ private struct GeneralEditor: View {
                 Text("Focus and quiet hours")
             } footer: {
                 Text("Focus applies right away until you turn it off. Quiet hours are local time and may cross midnight, like 22:00 to 07:00.")
+            }
+            Section {
+                Toggle("Join topics where you're mentioned", isOn: flag("join_on_mention"))
+                Stepper("Stay joined for \(joinedHours) hours of quiet", value: Binding(get: { joinedHours }, set: {
+                    model.defaults["joined_hours"] = .integer($0)
+                    model.changed()
+                }), in: 1...720)
+                Toggle("Notify reactions to your messages", isOn: flag("reactions"))
+            } header: {
+                Text("Conversations you're in")
+            } footer: {
+                Text("A topic you post in (or are mentioned in) is joined: its messages alert, even through focus, until it has been quiet this long.")
             }
         }
         .formStyle(.grouped)
