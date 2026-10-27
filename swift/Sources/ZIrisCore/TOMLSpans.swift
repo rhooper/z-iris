@@ -11,6 +11,20 @@ public enum TOMLValue: Sendable, Equatable {
     case float(Double)
     case bool(Bool)
     case array([TOMLValue])
+    /// A sub-table, keys in order (a rule's [rule.reaction]).
+    case table([(String, TOMLValue)])
+
+    public static func == (lhs: TOMLValue, rhs: TOMLValue) -> Bool {
+        switch (lhs, rhs) {
+        case let (.string(a), .string(b)): a == b
+        case let (.integer(a), .integer(b)): a == b
+        case let (.float(a), .float(b)): a == b
+        case let (.bool(a), .bool(b)): a == b
+        case let (.array(a), .array(b)): a == b
+        case let (.table(a), .table(b)): a.map(\.0) == b.map(\.0) && a.map(\.1) == b.map(\.1)
+        default: false
+        }
+    }
 
     /// The value as tomlkit writes a new one.
     var rendered: String {
@@ -20,6 +34,7 @@ public enum TOMLValue: Sendable, Equatable {
         case .float(let number): return pythonRepr(number)
         case .bool(let flag): return flag ? "true" : "false"
         case .array(let items): return "[" + items.map(\.rendered).joined(separator: ", ") + "]"
+        case .table(let keys): return "{" + keys.map { " \($0.0) = \($0.1.rendered)" }.joined(separator: ",") + " }"
         }
     }
 }

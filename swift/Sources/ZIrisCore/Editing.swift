@@ -4,17 +4,19 @@ import TOMLDecoder
 // Edit the config file's rules and volumes while keeping its comments. The
 // output is byte for byte what editing.py (tomlkit) writes.
 
+/// "reaction" is the rule's [rule.reaction] sub-table, written after it.
 public let ruleFields = [
-    "description", "match", "channel", "topic", "keyword", "server", "sound",
-    "volume", "banner", "priority", "enabled", "flash", "flash_color",
+    "description", "match", "channel", "topic", "keyword", "emoji", "server", "sound",
+    "volume", "banner", "priority", "enabled", "join", "flash", "flash_color",
     "flash_seconds", "repeat", "repeat_every", "repeat_boost", "min_gap",
-    "batch_window", "sticky", "stay", "summarize",
+    "batch_window", "sticky", "stay", "summarize", "group_after", "reaction",
 ]
 public let focusFields = ["mode", "quiet_hours", "quiet_mode"]
 public let defaultFields = [
     "sound", "volume", "master_volume", "notify_channel_messages", "flash",
     "flash_color", "flash_seconds", "repeat", "repeat_every", "repeat_boost",
-    "min_gap", "batch_window", "sticky", "stay", "summarize",
+    "min_gap", "batch_window", "sticky", "stay", "summarize", "join_on_mention",
+    "joined_hours", "reactions", "group_after",
 ]
 
 /// What the editor may change. Absent parts are left alone.
@@ -76,6 +78,7 @@ func tomlValue(_ value: Any) -> TOMLValue {
     case let number as Double: .float(number)
     case let text as String: .string(text)
     case let list as [Any]: .array(list.map(tomlValue))
+    case let table as [String: Any]: .table(ruleFields.compactMap { key in table[key].map { (key, tomlValue($0)) } })
     default: .string(String(describing: value))
     }
 }
@@ -89,6 +92,7 @@ private extension TOMLValue {
         case .float(let number): number != 0
         case .bool(let flag): flag
         case .array(let items): !items.isEmpty
+        case .table(let keys): !keys.isEmpty
         }
     }
 
@@ -225,6 +229,23 @@ private func blank(_ value: TOMLValue?) -> Bool {
     return value == .string("")
 }
 
+/// A rule's keys as written: in ruleFields order, without blanks or defaults.
+private func ruleKeys(_ raw: [String: TOMLValue]) -> [(String, TOMLValue)] {
+    var keys: [(String, TOMLValue)] = []
+    for key in ruleFields where key != "reaction" {
+        var value = raw[key]
+        if key == "channel", case .array(let items)? = value {
+            let kept = items.filter(\.truthy)
+            value = kept.count == 1 ? kept[0] : (kept.isEmpty ? nil : .array(kept))
+        }
+        if blank(value) || (key == "priority" && value?.number == 0) || (key == "enabled" && value == .bool(true)) {
+            continue
+        }
+        keys.append((key, value!))
+    }
+    return keys
+}
+
 /// New config text with the payload applied, validated by the real parser
 /// before it is returned. `sounds` is the sound library for that check.
 public func applyEdit(_ text: String, payload: EditPayload, sounds: [String: String]) throws -> String {
@@ -280,19 +301,13 @@ public func applyEdit(_ text: String, payload: EditPayload, sounds: [String: Str
             return a.offset < b.offset
         }.map(\.element)
         for raw in ordered {
-            var keys: [(String, TOMLValue)] = []
-            for key in ruleFields {
-                var value = raw[key]
-                if key == "channel", case .array(let items)? = value {
-                    let kept = items.filter(\.truthy)
-                    value = kept.count == 1 ? kept[0] : (kept.isEmpty ? nil : .array(kept))
+            spans.append(path: ["rule"], isArray: true, keys: ruleKeys(raw))
+            if case .table(let sub)? = raw["reaction"] {
+                let keys = ruleKeys(Dictionary(sub) { $1 })
+                if !keys.isEmpty {
+                    spans.append(path: ["rule", "reaction"], isArray: false, keys: keys)
                 }
-                if blank(value) || (key == "priority" && value?.number == 0) || (key == "enabled" && value == .bool(true)) {
-                    continue
-                }
-                keys.append((key, value!))
             }
-            spans.append(path: ["rule"], isArray: true, keys: keys)
         }
     }
 

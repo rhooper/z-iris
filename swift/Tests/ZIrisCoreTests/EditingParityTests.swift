@@ -40,6 +40,7 @@ private func plain(_ value: TOMLValue) -> Any {
     case .float(let number): number
     case .bool(let flag): flag
     case .array(let items): items.map(plain)
+    case .table(let keys): Dictionary(keys.map { ($0.0, plain($0.1)) }) { $1 }
     }
 }
 
