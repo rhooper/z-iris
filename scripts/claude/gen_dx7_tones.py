@@ -6,7 +6,7 @@ character is the modulation depth (index) changing over the note. These are
 small two- and three-operator versions of famous factory presets, short enough
 for a notification.
 
-Date: 2026-10-20
+Date: 2026-10-20 (shrill patches an octave lower 2026-10-27)
 Usage: python3 scripts/claude/gen_dx7_tones.py [name ...]   (from the repo root)
 Then: (cd swift && swift run z-iris normalize --dir Resources/sounds --no-backup)
 """
@@ -100,12 +100,12 @@ def write(name: str, track: list[float]) -> None:
 
 
 def epiano() -> list[float]:
-    """E.PIANO 1: a soft 1:1 body plus the 14:1 "tine" ping. E5 then B5."""
+    """E.PIANO 1: a soft 1:1 body plus the 14:1 "tine" ping. E4 then B4."""
     voice = dict(mod_ratio=1.0, index=1.6, index_decay=0.35, index_floor=0.3,
                  amp_decay=0.45, tine_ratio=14.0, tine_index=2.2, tine_level=0.35)
     track: list[float] = []
-    place(track, note(659.3, 0.9, **voice), 0.0)
-    place(track, note(987.8, 0.9, **voice), 0.16, 0.8)
+    place(track, note(329.6, 0.9, **voice), 0.0)
+    place(track, note(493.9, 0.9, **voice), 0.16, 0.8)
     return track
 
 
@@ -123,17 +123,17 @@ def bells() -> list[float]:
     """TUB BELLS: an inharmonic 3.5:1 modulator, a slow index fall, a long ring
     and a slightly detuned second carrier for the beating."""
     track: list[float] = []
-    place(track, note(784.0, 1.6, mod_ratio=3.5, index=3.5, index_decay=0.5,
+    place(track, note(392.0, 1.6, mod_ratio=3.5, index=3.5, index_decay=0.5,
                       amp_decay=0.6, detune=1.5), 0.0)
     return track
 
 
 def marimba() -> list[float]:
-    """A wooden strike: a 4:1 modulator whose depth dies in 40 ms. G5 then C6."""
+    """A wooden strike: a 4:1 modulator whose depth dies in 40 ms. G4 then C5."""
     voice = dict(mod_ratio=4.0, index=3.0, index_decay=0.04, amp_decay=0.12)
     track: list[float] = []
-    place(track, note(784.0, 0.4, **voice), 0.0)
-    place(track, note(1046.5, 0.4, **voice), 0.11)
+    place(track, note(392.0, 0.4, **voice), 0.0)
+    place(track, note(523.3, 0.4, **voice), 0.11)
     return track
 
 
@@ -155,19 +155,19 @@ def brass() -> list[float]:
                  index_attack=0.06, attack=0.04, amp_decay=0.35, detune=0.8,
                  vibrato=0.004)
     track: list[float] = []
-    for freq in (523.3, 659.3, 784.0):
+    for freq in (261.6, 329.6, 392.0):  # C4 major, an octave below the old C5
         place(track, note(freq, 0.55, **voice), 0.0, 0.33)
     return track
 
 
 def vibe() -> list[float]:
     """VIBE 1: a bright 4:1 strike with a quick index fall, a long ring and the
-    motor tremolo. C6 then E6."""
+    motor tremolo. C5 then E5."""
     voice = dict(mod_ratio=4.0, index=1.5, index_decay=0.15, index_floor=0.2,
                  amp_decay=0.9, tremolo=0.3)
     track: list[float] = []
-    place(track, note(1046.5, 1.3, **voice), 0.0)
-    place(track, note(1318.5, 1.2, **voice), 0.12, 0.8)
+    place(track, note(523.3, 1.3, **voice), 0.0)  # C5 then E5, an octave down
+    place(track, note(659.3, 1.2, **voice), 0.12, 0.8)
     return track
 
 
@@ -210,18 +210,18 @@ def steel_drum() -> list[float]:
 
 
 def flute() -> list[float]:
-    """FLUTE 1: a soft 1:1 voice that breathes in, with vibrato. One A5."""
+    """FLUTE 1: a soft 1:1 voice that breathes in, with vibrato. One A4."""
     track: list[float] = []
-    place(track, note(880.0, 0.7, mod_ratio=1.0, index=0.8, index_decay=0.3, index_floor=0.5,
+    place(track, note(440.0, 0.7, mod_ratio=1.0, index=0.8, index_decay=0.3, index_floor=0.5,
                       index_attack=0.06, attack=0.06, amp_decay=1.5, vibrato=0.006), 0.0)
     return track
 
 
 def organ() -> list[float]:
     """E.ORGAN 1: carriers at 1, 2 and 4 times the note, like drawbars, with
-    almost no modulation. A C5 and G5 chord."""
+    almost no modulation. A C4 and G4 chord."""
     track: list[float] = []
-    for freq in (523.3, 784.0):
+    for freq in (261.6, 392.0):
         for ratio, gain in ((1.0, 0.5), (2.0, 0.3), (4.0, 0.15)):
             place(track, note(freq, 0.6, mod_ratio=1.0, index=0.15, index_decay=1.0,
                               carrier_ratio=ratio, attack=0.01, amp_decay=5.0), 0.0, gain)
@@ -239,11 +239,11 @@ def strings() -> list[float]:
 
 
 def orch_chime() -> list[float]:
-    """ORCH-CHIME: an inharmonic 1.41:1 chime with a long ring. G5 then D6."""
+    """ORCH-CHIME: an inharmonic 1.41:1 chime with a long ring. G4 then D5."""
     voice = dict(mod_ratio=1.41, index=3.0, index_decay=0.8, amp_decay=1.0)
     track: list[float] = []
-    place(track, note(784.0, 1.4, **voice), 0.0)
-    place(track, note(1174.7, 1.2, **voice), 0.2, 0.8)
+    place(track, note(392.0, 1.4, **voice), 0.0)
+    place(track, note(587.3, 1.2, **voice), 0.2, 0.8)
     return track
 
 
