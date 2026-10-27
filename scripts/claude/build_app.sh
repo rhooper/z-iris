@@ -21,6 +21,7 @@ case "$(basename "$dest")" in
 	*) echo "refusing: destination must be a path ending in .app (got $dest)" >&2; exit 1 ;;
 esac
 priority="$(dirname "$dest")/z-iris-priority.app"
+version="0.2.0"
 main_id="${Z_IRIS_BUNDLE_ID:-ca.toybox.z-iris}"
 main_profile="${Z_IRIS_PROFILE:-}"
 priority_profile="${Z_IRIS_PRIORITY_PROFILE:-}"
@@ -61,7 +62,8 @@ sign() {
 		value="$(/usr/libexec/PlistBuddy -c "Print :Entitlements:$key" "$work/$(basename "$file").plist")"
 		/usr/libexec/PlistBuddy -c "Add :$key string $value" "$merged"
 	done
-	codesign --force --options runtime -s "$identity" -i "$id" --entitlements "$merged" "$app"
+	# Hardened runtime and a secure timestamp: notarization needs both.
+	codesign --force --options runtime --timestamp -s "$identity" -i "$id" --entitlements "$merged" "$app"
 }
 
 # bundle app id name executable extra-plist-keys
@@ -82,8 +84,8 @@ bundle() {
 	<key>CFBundleExecutable</key><string>$executable</string>
 	<key>CFBundleIconFile</key><string>z-iris</string>
 	<key>CFBundlePackageType</key><string>APPL</string>
-	<key>CFBundleVersion</key><string>0.2.0</string>
-	<key>CFBundleShortVersionString</key><string>0.2.0</string>
+	<key>CFBundleVersion</key><string>$version</string>
+	<key>CFBundleShortVersionString</key><string>$version</string>
 	<key>LSMinimumSystemVersion</key><string>26.0</string>
 	<key>LSUIElement</key><true/>
 	<key>NSHighResolutionCapable</key><true/>

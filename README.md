@@ -19,7 +19,10 @@ macOS 26 or later on Apple silicon. Written in Swift. MIT licensed.
 
 ## Build and install
 
-There is no signed release yet. Build from source with Xcode 27's toolchain:
+Download `z-iris-<version>-macos-arm64.zip` from the
+[releases](https://github.com/rhooper/z-iris/releases) and move both apps,
+`z-iris.app` and `z-iris-priority.app`, to `~/Applications`. Or build from
+source with Xcode 27's toolchain:
 
 ```sh
 cd swift && swift test && cd ..
@@ -27,8 +30,9 @@ scripts/claude/build_app.sh          # z-iris.app and z-iris-priority.app in ~/A
 ```
 
 Keep the two apps side by side; z-iris priority shows the alerts that stay on
-screen. Signed ad hoc, notifications are plain; sender faces and time-sensitive
-alerts need development profiles (see Sender faces).
+screen. Built from source and signed ad hoc, notifications are plain; sender
+faces and time-sensitive alerts need development profiles (see Sender faces).
+`scripts/claude/build_release.sh` makes the signed, notarized release zip.
 
 1. Create `~/.config/z-iris/config.toml` from
    [`config.example.toml`](config.example.toml), pointing `zuliprc` at a
