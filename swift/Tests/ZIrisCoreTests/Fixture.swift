@@ -2,7 +2,8 @@ import Foundation
 import Testing
 import ZIrisCore
 
-/// One case from a fixture file written by scripts/claude/gen_fixtures.py.
+/// One case from a fixture file. The fixtures are what the retired Python
+/// version did, frozen (its generator, gen_fixtures.py, is in git history).
 struct Fixture: CustomTestStringConvertible, Sendable {
     let name: String
     nonisolated(unsafe) let input: [String: Any]
@@ -18,7 +19,7 @@ struct Fixture: CustomTestStringConvertible, Sendable {
         guard let url = Bundle.module.url(forResource: file, withExtension: "json", subdirectory: "Fixtures"),
               let data = try? Data(contentsOf: url),
               let cases = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]]
-        else { fatalError("missing fixture \(file).json; run scripts/claude/gen_fixtures.py") }
+        else { fatalError("missing fixture \(file).json") }
         return cases.map {
             Fixture(
                 name: $0["name"] as! String,

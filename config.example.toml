@@ -22,7 +22,6 @@ volume = 60
 notify_channel_messages = false
 
 [output]
-player = ["play", "-q"]
 # Fetch notification images from hosts other than your Zulip server. Off by
 # default: the sender of a message could learn your IP address and when you are
 # online. Server uploads, server avatars and Gravatar always work.
