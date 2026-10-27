@@ -191,7 +191,15 @@ public final class PriorityService: @unchecked Sendable {
         let summaries = "z-iris-conversation-\(server)-"
         let keptGroups = Set((request["keep_groups"] as? [Any])?.compactMap { $0 as? String } ?? [])
         let doomed = await center.delivered().filter { identifier in
-            if identifier.hasPrefix(summaries) { return !keptGroups.contains(identifier) }
+            if identifier.hasPrefix(summaries) {
+                // The rest must be exactly "<channel id>-<digest>": a server
+                // named "w-x" shares the prefix of "w".
+                let rest = identifier.dropFirst(summaries.count).split(separator: "-", omittingEmptySubsequences: false)
+                guard rest.count == 2, !rest[0].isEmpty, rest[0].allSatisfy({ $0.isASCII && $0.isNumber }),
+                      rest[1].count == 12, rest[1].allSatisfy({ $0.isASCII && $0.isHexDigit })
+                else { return false }
+                return !keptGroups.contains(identifier)
+            }
             guard identifier.hasPrefix(prefix) else { return false }
             let digits = identifier.dropFirst(prefix.count)
             guard !digits.isEmpty, digits.allSatisfy({ $0.isASCII && $0.isNumber }), let id = Int(digits) else { return false }

@@ -162,13 +162,21 @@ private func service(_ dir: URL, _ alerts: FakeAlerts = FakeAlerts(), opened: Li
     }
 
     @Test func clearServerClearsSummariesNotKept() async {
-        let summaries = ["z-iris-conversation-w-7-abc", "z-iris-conversation-w-8-def", "z-iris-conversation-wx-1-a"]
+        let summaries = ["z-iris-conversation-w-7-8efd86fb78a5", "z-iris-conversation-w-8-0123456789ab", "z-iris-conversation-wx-1-0123456789ab"]
         let alerts = FakeAlerts(delivered: summaries)
         let svc = service(folder(), alerts)
         _ = await svc.handle(["op": "clear_server", "server": "w", "keep": [Int](), "keep_groups": [summaries[1]]])
         #expect(alerts.cleared == [summaries[0]])  // after a restart nothing is kept: no summary outlives its topic
         _ = await svc.handle(["op": "clear_server", "server": "w", "keep": [Int]()])
         #expect(alerts.cleared == [summaries[0], summaries[1]])
+    }
+
+    @Test func clearServerLeavesSummariesOfServersSharingItsPrefix() async {
+        let other = "z-iris-conversation-w-x-7-8efd86fb78a5"  // server "w-x"
+        let alerts = FakeAlerts(delivered: [other, "z-iris-conversation-w-7-8efd86fb78a5"])
+        let svc = service(folder(), alerts)
+        _ = await svc.handle(["op": "clear_server", "server": "w", "keep": [Int]()])
+        #expect(alerts.cleared == ["z-iris-conversation-w-7-8efd86fb78a5"])
     }
 
     @Test(arguments: [0, 1, 2, 3, 4, 5, 6])
