@@ -11,6 +11,8 @@ public struct Notification: Sendable, Equatable {
     public var batch: [Message] = []
     /// The joined topic, for a message in a conversation you are in.
     public var conversation: TopicKey?
+    /// The banner's group when it is not the message's own (reactions).
+    public var group: String?
 
     public init(message: Message, url: String, reason: String, action: Action, summary: String? = nil) {
         self.message = message
@@ -37,6 +39,7 @@ public struct Pipeline: Sendable {
     public let config: @Sendable () -> Config
     /// The topics you are in; nil leaves conversations out entirely.
     public let conversations: Conversations?
+    let bursts = ReactionBursts()
 
     public init(server: String, host: String, selfID: Int, mutes: MuteState,
                 config: @escaping @Sendable () -> Config, conversations: Conversations? = nil) {
@@ -66,8 +69,10 @@ public struct Pipeline: Sendable {
         }
         let key = topicKey(message)
         if message.senderID == selfID {
-            conversations.recordOwn(OwnMessage(id: message.id, kind: message.kind, place: key,
-                                               snippet: plainBody(message, limit: 80)))
+            conversations.recordOwn(OwnMessage(
+                id: message.id, kind: message.kind, place: key, snippet: plainBody(message, limit: 80),
+                channelName: message.channelName, topic: message.topic, dmUserIDs: message.dmUserIDs
+            ))
             if let key { conversations.join(key) }
             return nil
         }

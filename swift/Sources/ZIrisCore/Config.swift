@@ -268,15 +268,15 @@ public func resolveAction(_ config: Config, server: String, rule: Rule?) -> Acti
 }
 
 /// A rule's action with a layer on top: the layer's built-ins override
-/// [defaults] and the rule for their keys, layerSound replaces the sound,
-/// then the layer rule's own settings win (a conversation rule over the
+/// [defaults] and the rule for their keys, layerSound replaces the
+/// [defaults] sound (not the rule's), then the layer rule's own settings win (a conversation rule over the
 /// matched rule, or a reaction sub-rule over its parent).
 public func resolveAction(
     _ config: Config, server: String, rule: Rule?, layer: Rule?, layerBuiltIns: Behaviour, layerSound: String? = nil
 ) -> Action {
     let serverVolume = config.servers.first { $0.name == server }?.volume ?? 100
     let base = layer?.volume ?? rule?.volume ?? config.volume
-    var sound = layer?.sound ?? layerSound ?? rule?.sound ?? config.sound
+    var sound = layer?.sound ?? rule?.sound ?? layerSound ?? config.sound
     let banner = layer?.banner ?? rule?.banner ?? "full"
     // Python's round() rounds halves to even.
     let final = Int((Double(base * serverVolume * config.masterVolume) / 10000).rounded(.toNearestOrEven))

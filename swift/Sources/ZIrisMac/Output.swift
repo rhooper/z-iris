@@ -136,7 +136,7 @@ public final class RealOutput: EngineOutput, @unchecked Sendable {
         }
         // Sticky stays until read; stay= for that many seconds; both need z-iris priority.
         let persistent = (action.sticky || action.stay > 0) ? priority : nil
-        let group = bannerGroup(message)
+        let group = notification.group ?? bannerGroup(message)
         let target: any Notifying = persistent ?? notifier
         await target.show(
             title: title, body: notificationBody(notification), url: notification.url, image: image, group: group, sender: sender

@@ -29,12 +29,21 @@ public struct OwnMessage: Sendable, Equatable {
     public var place: TopicKey?
     /// The start of its text, for a reaction's banner.
     public var snippet: String
+    /// Its channel's name and its topic as written, for a reaction's title
+    /// and rules; the people in it, for a direct message's link.
+    public var channelName: String?
+    public var topic: String?
+    public var dmUserIDs: [Int]
 
-    public init(id: Int, kind: Message.Kind, place: TopicKey?, snippet: String) {
+    public init(id: Int, kind: Message.Kind, place: TopicKey?, snippet: String,
+                channelName: String? = nil, topic: String? = nil, dmUserIDs: [Int] = []) {
         self.id = id
         self.kind = kind
         self.place = place
         self.snippet = snippet
+        self.channelName = channelName
+        self.topic = topic
+        self.dmUserIDs = dmUserIDs
     }
 }
 

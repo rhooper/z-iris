@@ -95,7 +95,7 @@ private let python = ReactionPlace(server: "w", channelName: "python", topic: "o
         #expect(reaction.sound == "none")  // [defaults] sound = bell does not ring
         let sub = try #require(channelRule.reactionRule)
         let subAction = resolveAction(c, server: "w", rule: channelRule, layer: sub, layerBuiltIns: [:], layerSound: "none")
-        #expect(subAction.sound == "none" && subAction.volume == 20)
+        #expect(subAction.sound == "/p.wav" && subAction.volume == 20)  // the parent's sound, as the spec says
         var ringing = sub
         ringing.sound = "soft"
         #expect(resolveAction(c, server: "w", rule: channelRule, layer: ringing, layerBuiltIns: [:], layerSound: "none").sound == "/s.wav")
