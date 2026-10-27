@@ -9,6 +9,8 @@ public struct Notification: Sendable, Equatable {
     public var summary: String?
     /// A summary's held messages, for a written summary.
     public var batch: [Message] = []
+    /// The joined topic, for a message in a conversation you are in.
+    public var conversation: TopicKey?
 
     public init(message: Message, url: String, reason: String, action: Action, summary: String? = nil) {
         self.message = message
@@ -33,14 +35,22 @@ public struct Pipeline: Sendable {
     public var mutes: MuteState
     /// The current config; it changes when the file is reloaded.
     public let config: @Sendable () -> Config
+    /// The topics you are in; nil leaves conversations out entirely.
+    public let conversations: Conversations?
 
     public init(server: String, host: String, selfID: Int, mutes: MuteState,
-                config: @escaping @Sendable () -> Config) {
+                config: @escaping @Sendable () -> Config, conversations: Conversations? = nil) {
         self.server = server
         self.host = host
         self.selfID = selfID
         self.mutes = mutes
         self.config = config
+        self.conversations = conversations
+    }
+
+    private func topicKey(_ message: Message) -> TopicKey? {
+        guard message.kind == .channel, let channelID = message.channelID else { return nil }
+        return TopicKey(server: server, channelID: channelID, topic: message.topic ?? "")
     }
 
     public mutating func handle(_ event: [String: Any]) -> Notification? {
@@ -51,7 +61,26 @@ public struct Pipeline: Sendable {
         guard let message = try? Message(server: server, host: host, selfID: selfID, event: event) else {
             return nil
         }
-        return evaluate(message).notification
+        guard let conversations else {
+            return evaluate(message).notification
+        }
+        let key = topicKey(message)
+        if message.senderID == selfID {
+            conversations.recordOwn(OwnMessage(id: message.id, kind: message.kind, place: key,
+                                               snippet: plainBody(message, limit: 80)))
+            if let key { conversations.join(key) }
+            return nil
+        }
+        let notification = evaluate(message).notification
+        if let key, blocked(message, mutes: mutes, selfID: selfID) == nil {
+            let config = config()
+            if (message.isMention && config.joinOnMention) || pickRule(config.rules, message)?.join == true {
+                conversations.join(key)
+            } else {
+                conversations.touch(key)
+            }
+        }
+        return notification
     }
 
     public func evaluate(_ message: Message) -> Verdict {
@@ -59,6 +88,9 @@ public struct Pipeline: Sendable {
             return Verdict(notification: nil, why: reason)
         }
         let config = config()
+        if let key = topicKey(message), conversations?.isJoined(key) == true {
+            return joined(message, key, config)
+        }
         if let rule = pickRule(config.rules, message) {
             let action = resolveAction(config, server: server, rule: rule)
             let silent = action.banner == "off" && (action.sound == "none" || action.volume == 0)
@@ -80,5 +112,19 @@ public struct Pipeline: Sendable {
             action: resolveAction(config, server: server, rule: nil)
         )
         return Verdict(notification: notification, why: decision.reason)
+    }
+
+    /// A message in a topic you are in: its own rule's action with the
+    /// conversation layer on top. It always shows, even where the rule is silent.
+    private func joined(_ message: Message, _ key: TopicKey, _ config: Config) -> Verdict {
+        let rule = pickRule(config.rules, message)
+        var action = resolveAction(config, server: server, rule: rule, layer: conversationRule(config.rules, message),
+                                   layerBuiltIns: conversationBuiltIns)
+        if action.banner == "off" {
+            action.banner = "full"
+        }
+        var notification = Notification(message: message, url: narrowURL(message), reason: "conversation", action: action)
+        notification.conversation = key
+        return Verdict(notification: notification, why: "conversation", ruleIndex: rule?.index)
     }
 }

@@ -58,7 +58,7 @@ public func localMinutes() -> Int {
 
 private func personal(_ notification: Notification) -> Bool {
     let message = notification.message
-    return message.kind == .dm || message.isMention || message.isWildcardMention
+    return message.kind == .dm || message.isMention || message.isWildcardMention || notification.conversation != nil
 }
 
 func audible(_ notification: Notification) -> Bool {
