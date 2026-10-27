@@ -348,20 +348,50 @@ private struct ChannelTokens: View {
                 }
             }
             HStack {
-                TextField("Add a channel or pattern", text: $entry).onSubmit(add)
+                TextField("Channel", text: $entry, prompt: Text("channel name or pattern, like ops-.*"))
+                    .labelsHidden()
+                    .frame(minWidth: 220)
+                    .onSubmit(add)
+                    .textInputSuggestions {
+                        ForEach(typed.prefix(12), id: \.self) { Text("#\($0)").textInputCompletion($0) }
+                    }
+                Button("Add", action: add).disabled(trimmed.isEmpty || pattern == nil)
                 Menu("Channels") {
-                    ForEach(model.channels.filter { entry.isEmpty || $0.localizedCaseInsensitiveContains(entry) }.prefix(30), id: \.self) { name in
+                    ForEach(typed, id: \.self) { name in
                         Button(name) { entry = name; add() }
                     }
                 }
                 .fixedSize()
             }
+            if !trimmed.isEmpty {
+                Text(matchSummary).font(.caption).foregroundStyle(pattern == nil ? Color.red : Color.secondary)
+            }
+        }
+    }
+
+    private var trimmed: String { entry.trimmingCharacters(in: .whitespaces) }
+
+    /// Channels whose names contain what is typed, busiest first: all of them, not a sample.
+    private var typed: [String] {
+        trimmed.isEmpty ? model.channels : model.channels.filter { $0.localizedCaseInsensitiveContains(trimmed) }
+    }
+
+    /// The entry as the rule will read it: a pattern for the whole channel name.
+    private var pattern: PyRegex? { try? PyRegex(trimmed) }
+
+    private var matchSummary: String {
+        guard let pattern else { return "Not a valid pattern." }
+        let hits = model.channels.filter { pattern.fullMatch($0) }
+        switch hits.count {
+        case 0: return model.channels.isEmpty ? "Channels are still loading." : "Matches no channel you can see."
+        case 1...4: return "Matches " + hits.map { "#\($0)" }.joined(separator: ", ") + "."
+        default: return "Matches " + hits.prefix(3).map { "#\($0)" }.joined(separator: ", ") + " and \(hits.count - 3) more."
         }
     }
 
     private func add() {
-        let name = entry.trimmingCharacters(in: .whitespaces)
-        guard !name.isEmpty, !names.contains(name) else { return }
+        let name = trimmed
+        guard !name.isEmpty, pattern != nil, !names.contains(name) else { return }
         set(names + [name])
         entry = ""
     }
@@ -398,9 +428,12 @@ private struct RuleEditor: View {
                 if match == "keyword" {
                     TextField("Keyword (regular expression)", text: field(model, $rule.fields, "keyword").text)
                 }
-                Picker("Server", selection: field(model, $rule.fields, "server").choice()) {
-                    Text("any").tag("")
-                    ForEach(model.servers, id: \.self) { Text($0).tag($0) }
+                // One server: nothing to choose, unless the rule already names one.
+                if model.servers.count > 1 || rule.fields["server"] != nil {
+                    Picker("Server", selection: field(model, $rule.fields, "server").choice()) {
+                        Text("any").tag("")
+                        ForEach(model.servers, id: \.self) { Text($0).tag($0) }
+                    }
                 }
                 TextField("Priority", value: field(model, $rule.fields, "priority").integer, format: .number, prompt: Text("0"))
                     .help("Higher beats the usual most-specific order.")
