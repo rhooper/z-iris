@@ -31,7 +31,7 @@ extension Dictionary where Key == String, Value == Any {
 
 /// An integer from JSON. JSONSerialization gives NSNumber, and a Bool also
 /// bridges to Int, so refuse booleans and floating point numbers.
-func jsonInt(_ value: Any) -> Int? {
+public func jsonInt(_ value: Any) -> Int? {
     guard let number = value as? NSNumber, CFGetTypeID(number) != CFBooleanGetTypeID(),
           !"df".contains(String(cString: number.objCType))
     else { return nil }
