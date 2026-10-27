@@ -1142,6 +1142,13 @@ def editing_cases() -> list[dict]:
                        lambda text=text, payload=payload: edit_parse(
                            lambda: apply_edit(text, payload)))
             cases.append(case)
+        # What the editor sends when nothing was changed: its whole state.
+        def roundtrip(text=text):
+            state = read_editable(text)
+            payload = {"servers": state["servers"], "defaults": state["defaults"],
+                       "focus": state["focus"], "rules": state["rules"]}
+            return edit_parse(lambda: apply_edit(text, payload))
+        cases.append(run(f"roundtrip {text_name}", {"op": "roundtrip", "text": text}, roundtrip))
         for old, new in (("ping", "chime"), ("sos", "bell"), ("missing", "x")):
             cases.append(run(f"replace {text_name} {old}",
                              {"op": "replace", "text": text, "old": old, "new": new},

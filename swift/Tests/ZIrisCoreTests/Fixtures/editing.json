@@ -299,6 +299,14 @@
   "name": "apply commented invalid_rule"
  },
  {
+  "expected": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\nmaster_volume = 50\nnotify_channel_messages = false\n\n[focus]\nmode = \"off\"\nquiet_hours = []\nquiet_mode = \"silent\"\n\n[[rule]]\ndescription = \"Pages\"\nmatch = \"keyword\"\nkeyword = \"page me\"\nsound = \"sos\"\npriority = 5\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n[[rule]]\ndescription = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n",
+  "input": {
+   "op": "roundtrip",
+   "text": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"ping\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n"
+  },
+  "name": "roundtrip commented"
+ },
+ {
   "expected": "# z-iris config\n[[server]]\nname = \"work\"   # the work server\nzuliprc = \"~/.zuliprc\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"~/.zuliprc-home\"\nvolume = 50\n\n[defaults]\nsound = \"chime\"  # my sound\nvolume = 30\nflash = \"top\"\n\n# before rules\n[[rule]]\ndescription = \"Pages\"   # important\nmatch = \"keyword\"\nkeyword = \"page me\"\npriority = 5\n# inside a rule\nsound = \"sos\"\n\n# between rules\n[[rule]]\nname = \"Old\"\nmatch = \"channel\"\nchannel = \"ops\"\n\n[[rule]]\nmatch = \"mention\"\nenabled = false\n\n# trailing comment\n",
   "input": {
    "new": "chime",
@@ -605,6 +613,14 @@
   "name": "apply minimal invalid_rule"
  },
  {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n\n[defaults]\nsound = \"chime\"\nvolume = 60\nmaster_volume = 100\nnotify_channel_messages = false\n\n[focus]\nmode = \"off\"\nquiet_hours = []\nquiet_mode = \"silent\"\n",
+  "input": {
+   "op": "roundtrip",
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "roundtrip minimal"
+ },
+ {
   "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n",
   "input": {
    "new": "chime",
@@ -909,6 +925,14 @@
   },
   "message": "rule number 1: a channel rule needs channel",
   "name": "apply no_newline invalid_rule"
+ },
+ {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1\nsound = \"chime\"\nmaster_volume = 100\nnotify_channel_messages = false\n\n[focus]\nmode = \"off\"\nquiet_hours = []\nquiet_mode = \"silent\"\n",
+  "input": {
+   "op": "roundtrip",
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1"
+  },
+  "name": "roundtrip no_newline"
  },
  {
   "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n[defaults]\nvolume = 1",
@@ -1230,6 +1254,14 @@
   "name": "apply focus_after_rules invalid_rule"
  },
  {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n\n[defaults]\nvolume=40\nsound = \"chime\"\nmaster_volume = 80\nnotify_channel_messages = false\n\n[focus]\nquiet_hours = [\"22:00-07:00\"]  # nights\nmode = \"off\"\nquiet_mode = \"silent\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n\n[[rule]]\nmatch = \"dm\"\n",
+  "input": {
+   "op": "roundtrip",
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n"
+  },
+  "name": "roundtrip focus_after_rules"
+ },
+ {
   "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 80\n\n[defaults]\nvolume=40\n\n[[rule]]\nmatch = \"dm\"\n\n[[rule]]\nmatch = \"channel\"\nchannel = [\"ops\", \"dev\"]\n# c\n\n[focus]\nquiet_hours = [\n  \"22:00-07:00\",\n]  # nights\nmode = \"off\"\n",
   "input": {
    "new": "chime",
@@ -1539,6 +1571,14 @@
   "name": "apply mixed_server_volumes invalid_rule"
  },
  {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\nsound = \"chime\"\nvolume = 60\nnotify_channel_messages = false\n\n[focus]\nmode = \"off\"\nquiet_hours = []\nquiet_mode = \"silent\"\n",
+  "input": {
+   "op": "roundtrip",
+   "text": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n"
+  },
+  "name": "roundtrip mixed_server_volumes"
+ },
+ {
   "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\nvolume = 50\n\n[[server]]\nname = \"home\"\nzuliprc = \"y\"\n\n[defaults]\nmaster_volume = 80\n",
   "input": {
    "new": "chime",
@@ -1843,6 +1883,14 @@
   },
   "message": "rule number 1: a channel rule needs channel",
   "name": "apply crlf_and_literals invalid_rule"
+ },
+ {
+  "expected": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = \"ping\"\r\nvolume = 60\nmaster_volume = 100\nnotify_channel_messages = false\n\n[focus]\nmode = \"off\"\nquiet_hours = []\nquiet_mode = \"silent\"\n",
+  "input": {
+   "op": "roundtrip",
+   "text": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = 'ping'\r\n"
+  },
+  "name": "roundtrip crlf_and_literals"
  },
  {
   "expected": "[[server]]\r\nname = 'work'\r\nzuliprc = 'x'\r\n\r\n[defaults]\r\nsound = \"chime\"\r\n",
@@ -2155,6 +2203,14 @@
   "name": "apply rules_first invalid_rule"
  },
  {
+  "expected": "[[server]]\nname = \"work\"\nzuliprc = \"x\"\n\n[defaults]\nsound = \"chime\"\nvolume = 60\nmaster_volume = 100\nnotify_channel_messages = false\n\n[focus]\nmode = \"off\"\nquiet_hours = []\nquiet_mode = \"silent\"\n\n[[rule]]\nmatch = \"dm\"\n",
+  "input": {
+   "op": "roundtrip",
+   "text": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n"
+  },
+  "name": "roundtrip rules_first"
+ },
+ {
   "expected": "[[rule]]\nmatch = \"dm\"\n[rule.extra]\nx = 1\n\n[[server]]\nname = \"work\"\nzuliprc = \"x\"\n",
   "input": {
    "new": "chime",
@@ -2459,6 +2515,14 @@
   },
   "message": "rule number 1: a channel rule needs channel",
   "name": "apply quoted_keys invalid_rule"
+ },
+ {
+  "expected": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\nvolume = 60\nmaster_volume = 100\nnotify_channel_messages = false\n\n[focus]\nmode = \"off\"\nquiet_hours = []\nquiet_mode = \"silent\"\n",
+  "input": {
+   "op": "roundtrip",
+   "text": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"ping\"   # q\n"
+  },
+  "name": "roundtrip quoted_keys"
  },
  {
   "expected": "[[server]]\n\"name\" = \"work\"\nzuliprc = \"x\"\n\n[defaults]\n\"sound\" = \"chime\"   # q\n",

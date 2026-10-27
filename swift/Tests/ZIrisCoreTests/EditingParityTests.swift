@@ -74,6 +74,9 @@ private func plain(_ editable: EditableConfig) -> [String: Any] {
             }
             let got = try applyEdit(text, payload: edit, sounds: fixtureSounds)
             #expect(got == fixture.expected as! String, "\(got.debugDescription)\nwant \((fixture.expected as! String).debugDescription)")
+        case "roundtrip":
+            let got = try applyEdit(text, payload: EditPayload(state: try readEditable(text)), sounds: fixtureSounds)
+            #expect(got == fixture.expected as! String, "\(got.debugDescription)\nwant \((fixture.expected as! String).debugDescription)")
         case "replace":
             let got = try replaceSound(text, old: input["old"] as! String, new: input["new"] as! String)
             #expect(got == fixture.expected as! String, "\(got.debugDescription)\nwant \((fixture.expected as! String).debugDescription)")

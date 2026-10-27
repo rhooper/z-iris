@@ -34,12 +34,27 @@ public struct EditPayload: Sendable {
     }
 }
 
+extension EditPayload {
+    /// The editor's whole state, as it sends it on every save.
+    public init(state editable: EditableConfig) {
+        self.init(defaults: editable.defaults, focus: editable.focus,
+                  servers: editable.servers.map { ($0, nil) }, rules: editable.rules)
+    }
+}
+
 /// The parts of the config the editor may show. Never includes zuliprc paths.
 public struct EditableConfig: Sendable, Equatable {
     public var servers: [String]
     public var defaults: [String: TOMLValue]
     public var focus: [String: TOMLValue]
     public var rules: [[String: TOMLValue]]
+
+    public init(servers: [String], defaults: [String: TOMLValue], focus: [String: TOMLValue], rules: [[String: TOMLValue]]) {
+        self.servers = servers
+        self.defaults = defaults
+        self.focus = focus
+        self.rules = rules
+    }
 }
 
 private func document(_ text: String) throws(EditingError) -> [String: Any] {
