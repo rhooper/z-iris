@@ -244,8 +244,11 @@ mentions read `@Name`, spoilers are hidden and emoji shortcodes become emoji.
 
 ## Sound loudness
 
-Every sound is stored at the same loudness, so 60% means the same level for any
-of them. For files you dropped into the sounds folder by hand, run
+Every sound is stored at the same loudness as you hear it, so 60% means the
+same level for any of them: −13 LUFS over its loudest 400 ms (ITU-R BS.1770,
+the measure behind EBU R 128), which counts high tones for more than low ones
+and brief blips for less than held notes. A sound whose peak would clip stays
+a little quieter. For files you dropped into the sounds folder by hand, run
 `z-iris normalize` (`--no-backup` skips keeping originals); it is safe to run
 twice.
 

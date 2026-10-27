@@ -4,34 +4,30 @@ import ZIrisCore
 // Measuring and rewriting sounds with AVAudioFile, in place of sox's stat
 // and vol effects.
 
-/// Peak and RMS as sox's stat effect reports them: over every sample of every
-/// channel, the peak being the largest sample (not the largest magnitude).
-public func soundLevels(_ url: URL) -> (peak: Double, rms: Double)? {
+/// A sound's largest sample magnitude and its momentary loudness (LUFS).
+public func soundMeasure(_ url: URL) -> (peak: Double, loudness: Double)? {
     guard let file = try? AVAudioFile(forReading: url),
           let buffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat, frameCapacity: 65536)
     else { return nil }
-    var peak = -Double.infinity
-    var squares = 0.0
-    var count = 0
+    var channels = [[Double]](repeating: [], count: Int(file.processingFormat.channelCount))
+    var peak = 0.0
     do {
         while file.framePosition < file.length {
             try file.read(into: buffer)
-            guard let channels = buffer.floatChannelData, buffer.frameLength > 0 else { break }
-            for channel in 0..<Int(buffer.format.channelCount) {
-                let samples = UnsafeBufferPointer(start: channels[channel], count: Int(buffer.frameLength))
-                for sample in samples {
+            guard let data = buffer.floatChannelData, buffer.frameLength > 0 else { break }
+            for channel in channels.indices {
+                for sample in UnsafeBufferPointer(start: data[channel], count: Int(buffer.frameLength)) {
                     let value = Double(sample)
-                    peak = max(peak, value)
-                    squares += value * value
+                    peak = max(peak, abs(value))
+                    channels[channel].append(value)
                 }
-                count += samples.count
             }
         }
     } catch {
         return nil
     }
-    guard count > 0 else { return nil }
-    return (peak, (squares / Double(count)).squareRoot())
+    guard channels.contains(where: { !$0.isEmpty }) else { return nil }
+    return (peak, momentaryLoudness(channels, rate: file.processingFormat.sampleRate))
 }
 
 public struct LoudnessError: Error, CustomStringConvertible {
@@ -42,7 +38,7 @@ public struct LoudnessError: Error, CustomStringConvertible {
 /// returns the gain used.
 @discardableResult
 public func writeNormalized(_ source: URL, to destination: URL) throws -> Double {
-    let gain = soundLevels(source).map { gainFor(peak: $0.peak, rms: $0.rms) } ?? 1
+    let gain = soundMeasure(source).map { gainFor(peak: $0.peak, loudness: $0.loudness) } ?? 1
     do {
         let input = try AVAudioFile(forReading: source)
         let format = input.processingFormat
@@ -78,8 +74,8 @@ public func writeNormalized(_ source: URL, to destination: URL) throws -> Double
 /// changed. The original is copied into originals (when given) first; a file
 /// already at the target loudness is left alone.
 public func normalizeFile(_ url: URL, originals: URL?) throws -> (URL, Bool) {
-    guard let measured = soundLevels(url) else { return (url, false) }
-    let gain = gainFor(peak: measured.peak, rms: measured.rms)
+    guard let measured = soundMeasure(url) else { return (url, false) }
+    let gain = gainFor(peak: measured.peak, loudness: measured.loudness)
     if url.pathExtension.lowercased() == "wav", withinTolerance(gain) {
         return (url, false)
     }

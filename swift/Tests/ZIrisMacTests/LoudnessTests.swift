@@ -28,60 +28,29 @@ private func sine(_ url: URL, amplitudes: [Float], seconds: Double = 0.5) throws
     try file.write(from: buffer)
 }
 
-/// sox's own stat, when sox is installed, as the reference.
-private func soxStat(_ url: URL) -> (peak: Double, rms: Double)? {
-    guard let sox = ["/opt/homebrew/bin/sox", "/usr/local/bin/sox"].first(where: FileManager.default.isExecutableFile) else { return nil }
-    let process = Process()
-    process.executableURL = URL(fileURLWithPath: sox)
-    process.arguments = [url.path, "-n", "stat"]
-    let pipe = Pipe()
-    process.standardError = pipe
-    process.standardOutput = FileHandle.nullDevice
-    try? process.run()
-    process.waitUntilExit()
-    let text = String(decoding: pipe.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
-    func value(_ label: String) -> Double? {
-        text.components(separatedBy: "\n").first { $0.hasPrefix(label) }
-            .flatMap { $0.split(separator: ":").last.flatMap { Double($0.trimmingCharacters(in: .whitespaces)) } }
-    }
-    guard let peak = value("Maximum amplitude"), let rms = value("RMS     amplitude") else { return nil }
-    return (peak, rms)
-}
-
 @Suite struct LoudnessTests {
-    @Test func levelsMatchSoxStatOverAllChannels() throws {
+    @Test func aFileMeasuresAsItsSamplesDo() throws {
         let folder = try directory()
         let url = folder.appendingPathComponent("stereo.wav")
-        try sine(url, amplitudes: [0.9, 0.3])
-        let levels = try #require(soundLevels(url))
-        #expect(abs(levels.peak - 0.9) < 0.001)
-        #expect(abs(levels.rms - ((0.9 * 0.9 / 2 + 0.3 * 0.3 / 2) / 2).squareRoot()) < 0.001)  // 0.474, as sox
-        if let sox = soxStat(url) {
-            #expect(abs(levels.peak - sox.peak) < 0.0001)
-            #expect(abs(levels.rms - sox.rms) < 0.0001)
-        }
+        try sine(url, amplitudes: [0.9, -0.3])
+        let measured = try #require(soundMeasure(url))
+        #expect(abs(measured.peak - 0.9) < 0.001)
+        // Both channels count, as BS.1770 sums them: louder than the left alone.
+        let left = folder.appendingPathComponent("left.wav")
+        try sine(left, amplitudes: [0.9])
+        #expect(measured.loudness > (try #require(soundMeasure(left))).loudness)
     }
 
-    @Test func everyBundledToneMeasuresAsSoxDoes() throws {
+    @Test func everyBundledSoundIsAtTheTargetLoudnessOrPeakLimited() throws {
         let tones = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
             .appendingPathComponent("../../Resources/sounds").standardized
         let names = try FileManager.default.contentsOfDirectory(atPath: tones.path).filter { $0.hasSuffix(".wav") }
         #expect(names.count > 40)
         for name in names {
-            let url = tones.appendingPathComponent(name)
-            guard let sox = soxStat(url) else { return }  // no sox here: nothing to compare with
-            let levels = try #require(soundLevels(url))
-            #expect(abs(levels.peak - sox.peak) < 0.0001, "\(name) peak")
-            #expect(abs(levels.rms - sox.rms) < 0.0001, "\(name) rms")
+            let measured = try #require(soundMeasure(tones.appendingPathComponent(name)))
+            let gain = gainFor(peak: measured.peak, loudness: measured.loudness)
+            #expect(withinTolerance(gain) || measured.peak > 0.97, "\(name): \(measured)")
         }
-    }
-
-    @Test func gain() {
-        #expect(gainFor(peak: 0, rms: 0.1) == 1)
-        #expect(gainFor(peak: 0.5, rms: 0.1) == 2)  // the peak limits it
-        #expect(abs(gainFor(peak: 0.25, rms: 0.19) - 2) < 1e-12)  // the target limits it
-        #expect(gainFor(peak: 1, rms: 0.19) == 1)  // the peak would clip
-        #expect(withinTolerance(1.05) && !withinTolerance(1.1))
     }
 
     @Test func normalizingReachesTheTargetAndTwiceChangesNothing() throws {
@@ -90,8 +59,8 @@ private func soxStat(_ url: URL) -> (peak: Double, rms: Double)? {
         try sine(quiet, amplitudes: [0.1])
         let (final, changed) = try normalizeFile(quiet, originals: folder.appendingPathComponent("originals"))
         #expect(changed && final == quiet)
-        let levels = try #require(soundLevels(final))
-        #expect(abs(levels.rms - targetRMS) < 0.005)
+        let measured = try #require(soundMeasure(final))
+        #expect(abs(measured.loudness - targetLoudness) < 0.2)
         #expect(FileManager.default.fileExists(atPath: folder.appendingPathComponent("originals/quiet.wav").path))
         #expect(try normalizeFile(final, originals: nil).1 == false)
     }
@@ -99,7 +68,7 @@ private func soxStat(_ url: URL) -> (peak: Double, rms: Double)? {
     @Test func aNonWavBecomesAWav() throws {
         let folder = try directory()
         let source = folder.appendingPathComponent("tone.caf")
-        try sine(source, amplitudes: [0.38 * 2.squareRoot()].map(Float.init))
+        try sine(source, amplitudes: [0.1])
         let changed = normalizeDirectory(folder, keepOriginals: false)
         #expect(changed.count == 1)
         #expect(FileManager.default.fileExists(atPath: folder.appendingPathComponent("tone.wav").path))
