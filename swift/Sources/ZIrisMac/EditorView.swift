@@ -393,8 +393,7 @@ private struct RuleEditor: View {
                               text: field(model, $rule.fields, "topic").text)
                 }
                 if match == "reaction" {
-                    TextField("Emoji (names, comma separated)", text: emoji, prompt: Text("any emoji"))
-                        .help("Zulip's emoji names, like tada, +1. Empty: any emoji.")
+                    EmojiField(model: model, fields: $rule.fields).id(rule.id)
                 }
                 if match == "keyword" {
                     TextField("Keyword (regular expression)", text: field(model, $rule.fields, "keyword").text)
@@ -442,16 +441,33 @@ private struct RuleEditor: View {
         if case .integer(let v)? = model.defaults["volume"] { return v }
         return 60
     }
+}
 
-    private var emoji: Binding<String> {
-        Binding(get: {
-            guard case .array(let items)? = rule.fields["emoji"] else { return "" }
-            return items.compactMap { if case .string(let s) = $0 { s } else { nil } }.joined(separator: ", ")
-        }, set: { text in
-            let names = text.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
-            rule.fields["emoji"] = names.isEmpty ? nil : .array(names.map(TOMLValue.string))
-            model.changed()
-        })
+/// A reaction rule's emoji names. The text is kept as typed (a trailing
+/// comma included) and only parsed into the rule.
+private struct EmojiField: View {
+    let model: EditorModel
+    @Binding var fields: [String: TOMLValue]
+    @State private var text: String
+
+    init(model: EditorModel, fields: Binding<[String: TOMLValue]>) {
+        self.model = model
+        _fields = fields
+        var names: [String] = []
+        if case .array(let items)? = fields.wrappedValue["emoji"] {
+            names = items.compactMap { if case .string(let s) = $0 { s } else { nil } }
+        }
+        _text = State(initialValue: names.joined(separator: ", "))
+    }
+
+    var body: some View {
+        TextField("Emoji (names, comma separated)", text: $text, prompt: Text("any emoji"))
+            .help("Zulip's emoji names, like tada, +1. Empty: any emoji.")
+            .onChange(of: text) {
+                let names = text.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+                fields["emoji"] = names.isEmpty ? nil : .array(names.map(TOMLValue.string))
+                model.changed()
+            }
     }
 }
 
