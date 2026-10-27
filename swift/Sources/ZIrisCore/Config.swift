@@ -41,6 +41,8 @@ private let behaviourSettings: [BehaviourSetting] = [
     // Seconds on screen; 0 is a normal banner.
     BehaviourSetting(key: "stay", check: integer(0, 3600), builtIn: .integer(0)),
     // A batch summary's text from the on-device model (new in the Swift version).
+    // Alerts of a joined conversation before they collapse into one summary.
+    BehaviourSetting(key: "group_after", check: integer(1, 20), builtIn: .integer(3)),
     BehaviourSetting(key: "summarize", check: { value, label throws(ConfigError) in .flag(try bool(value, label)) }, builtIn: .flag(false)),
 ]
 
@@ -215,6 +217,12 @@ public struct Config: Sendable, Equatable {
     public var focus = FocusConfig()
     /// Sound names to files.
     public var sounds: [String: String] = [:]
+    /// A personal mention joins its topic.
+    public var joinOnMention = true
+    /// Hours of quiet before a joined topic is left.
+    public var joinedHours = 48
+    /// Reactions to your messages notify.
+    public var reactions = true
 }
 
 public struct Action: Sendable, Equatable {
@@ -236,6 +244,8 @@ public struct Action: Sendable, Equatable {
     public var stay = 0
     /// Replace a batch summary's text with one written by the on-device model.
     public var summarize = false
+    /// A joined conversation's alerts before they collapse into one summary.
+    public var groupAfter = 3
     /// Which rule, for per-rule state (labels can repeat).
     public var ruleIndex: Int?
 
@@ -281,6 +291,7 @@ public func resolveAction(_ config: Config, server: String, rule: Rule?) -> Acti
         case ("sticky", .flag(let flag)): action.sticky = flag
         case ("stay", .integer(let number)): action.stay = number
         case ("summarize", .flag(let flag)): action.summarize = flag
+        case ("group_after", .integer(let number)): action.groupAfter = number
         default: assertionFailure("behaviour \(key) has the wrong type")
         }
     }
@@ -313,6 +324,11 @@ private func sound(_ value: Any?, _ label: String, _ sounds: [String: String]) t
     }
     let choices = sounds.keys.sorted(by: pythonOrder).joined(separator: ", ")
     throw ConfigError("\(label): unknown sound \(pythonRepr(text)); choose none or one of \(choices)")
+}
+
+/// sound(), for where a local named sound hides it.
+private func soundSetting(_ value: Any?, _ label: String, _ sounds: [String: String]) throws(ConfigError) -> String {
+    try sound(value, label, sounds)
 }
 
 /// Python sorts strings by code point; Swift's < compares grapheme clusters.
@@ -372,8 +388,8 @@ private func rules(
         if channels?.contains("") == true {
             throw ConfigError("\(label): channel must be a channel name or a list of them")
         }
-        if channels != nil, kind != .channel, kind != .topic {
-            throw ConfigError("\(label): channel only applies to channel and topic rules")
+        if channels != nil, ![.channel, .topic, .conversation, .reaction].contains(kind) {
+            throw ConfigError("\(label): channel only applies to channel, topic, conversation and reaction rules")
         }
         if kind == .channel, channels == nil {
             throw ConfigError("\(label): a channel rule needs channel")
@@ -390,6 +406,16 @@ private func rules(
         if kind == .topic || kind == .keyword {
             guard let source = raw[kind.rawValue] as? String, !source.isEmpty else {
                 throw ConfigError("\(label): a \(kind.rawValue) rule needs \(kind.rawValue)")
+            }
+            do {
+                pattern = try PyRegex(source)
+            } catch {
+                throw ConfigError("\(label): bad regular expression: \(error)")
+            }
+        } else if kind == .conversation || kind == .reaction, let source = raw["topic"] {
+            // Optional here: only topics matching it.
+            guard let source = source as? String, !source.isEmpty else {
+                throw ConfigError("\(label): topic must be a regular expression")
             }
             do {
                 pattern = try PyRegex(source)
@@ -421,12 +447,52 @@ private func rules(
         }
 
         let found = try behaviour(raw, label)
+
+        guard let join = (raw["join"] ?? false) as? Bool else {
+            throw ConfigError("\(label): join must be true or false")
+        }
+        var emoji: [String] = []
+        if let value = raw["emoji"] {
+            let names = (value as? String).map { [$0] } ?? (value as? [Any])?.compactMap { $0 as? String }
+            guard let names, !names.isEmpty, names.allSatisfy({ !$0.isEmpty }),
+                  (value as? [Any]).map({ $0.count == names.count }) ?? true
+            else { throw ConfigError("\(label): emoji must be an emoji name or a list of them") }
+            guard kind == .reaction else { throw ConfigError("\(label): emoji only applies to reaction rules") }
+            emoji = names
+        }
+
+        var reaction: Rule?
+        if let sub = raw["reaction"] {
+            guard [.channel, .topic, .conversation].contains(kind) else {
+                throw ConfigError("\(label): reaction settings only apply to channel, topic and conversation rules")
+            }
+            guard let table = sub as? [String: Any] else {
+                throw ConfigError("\(label): reaction settings must be a table, written [rule.reaction]")
+            }
+            if ["match", "channel", "topic", "keyword"].contains(where: { table[$0] != nil }) {
+                throw ConfigError("\(label): reaction settings cannot set match, channel, topic or keyword")
+            }
+            let subVolume = try table["volume"].map { value throws(ConfigError) in try percent(value, "\(label): volume") }
+            let subBanner = table["banner"]
+            if let subBanner, !["full", "title", "off"].contains(subBanner as? String ?? "") {
+                throw ConfigError("\(label): banner must be full, title or off")
+            }
+            let subSound = try table["sound"].map { value throws(ConfigError) in try soundSetting(value, label, sounds) }
+            reaction = try? Rule(
+                description: nil, kind: .reaction, channels: [], pattern: nil, server: nil, sound: subSound,
+                volume: subVolume, banner: subBanner as? String, priority: priority, index: index,
+                behaviour: try behaviour(table, label)
+            )
+        }
+
         do {
-            rules.append(try Rule(
+            var made = try Rule(
                 description: description, kind: kind, channels: channels ?? [], pattern: pattern,
                 server: server as? String, sound: sound, volume: volume, banner: banner as? String,
-                priority: priority, index: index, enabled: enabled, behaviour: found
-            ))
+                priority: priority, index: index, enabled: enabled, behaviour: found, join: join, emoji: emoji
+            )
+            made.reactionRule = reaction
+            rules.append(made)
         } catch {
             throw ConfigError("\(label): bad channel pattern: \(error)")
         }
@@ -500,6 +566,19 @@ public func parseConfig(_ text: String, sounds: [String: String]) throws(ConfigE
         throw ConfigError("external_images must be true or false")
     }
     config.externalImages = externalImages
+
+    guard let joinOnMention = (defaults["join_on_mention"] ?? true) as? Bool else {
+        throw ConfigError("join_on_mention must be true or false")
+    }
+    config.joinOnMention = joinOnMention
+    guard let hours = pyInt(defaults["joined_hours"] ?? Int64(48)), (1...720).contains(hours) else {
+        throw ConfigError("joined_hours must be an integer from 1 to 720")
+    }
+    config.joinedHours = hours
+    guard let reactions = (defaults["reactions"] ?? true) as? Bool else {
+        throw ConfigError("reactions must be true or false")
+    }
+    config.reactions = reactions
 
     config.rules = try rules(data, serverNames: Set(config.servers.map(\.name)), sounds: sounds)
     config.behaviour = try behaviour(defaults, "")

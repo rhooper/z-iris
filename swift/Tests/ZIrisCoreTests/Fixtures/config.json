@@ -574,7 +574,7 @@
   "input": {
    "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\ndescription = \"x\"\nmatch = \"everything\"\n"
   },
-  "message": "rule 'x': match must be one of topic, keyword, mention, wildcard, alert_word, channel, group_dm, dm",
+  "message": "rule 'x': match must be one of topic, keyword, mention, wildcard, alert_word, channel, group_dm, dm, conversation, reaction",
   "name": "rule_match_bad"
  },
  {
@@ -582,7 +582,7 @@
   "input": {
    "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nsound = \"ping\"\n"
   },
-  "message": "rule number 1: match must be one of topic, keyword, mention, wildcard, alert_word, channel, group_dm, dm",
+  "message": "rule number 1: match must be one of topic, keyword, mention, wildcard, alert_word, channel, group_dm, dm, conversation, reaction",
   "name": "rule_match_missing"
  },
  {
@@ -590,7 +590,7 @@
   "input": {
    "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[[rule]]\nmatch = \"mention\"\nchannel = \"ops\"\n"
   },
-  "message": "rule number 1: channel only applies to channel and topic rules",
+  "message": "rule number 1: channel only applies to channel, topic, conversation and reaction rules",
   "name": "rule_channel_on_mention"
  },
  {
@@ -862,7 +862,7 @@
   "input": {
    "toml": "[[server]]\nname = \"work\"\nzuliprc = \"~/.zuliprc\"\n[defaults]\nflash = \"blink\"\n[[rule]]\nmatch = \"x\"\n"
   },
-  "message": "rule number 1: match must be one of topic, keyword, mention, wildcard, alert_word, channel, group_dm, dm",
+  "message": "rule number 1: match must be one of topic, keyword, mention, wildcard, alert_word, channel, group_dm, dm, conversation, reaction",
   "name": "rule_error_before_defaults_error"
  },
  {

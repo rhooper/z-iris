@@ -7,6 +7,9 @@ public enum RuleKind: String, CaseIterable, Sendable {
     case channel
     case groupDM = "group_dm"
     case dm
+    // New in the Swift version; after dm so the kinds above keep their rank.
+    case conversation
+    case reaction
 
     var rank: Int { Self.allCases.firstIndex(of: self)! }
 
@@ -20,7 +23,18 @@ public enum RuleKind: String, CaseIterable, Sendable {
         case .channel: "Channel"
         case .groupDM: "Group DM"
         case .dm: "Direct message"
+        case .conversation: "Conversation you're in"
+        case .reaction: "Reaction to your message"
         }
+    }
+}
+
+/// Boxes a sub-rule, which a struct cannot hold directly.
+final class ReactionSubRule: Sendable {
+    let rule: Rule
+
+    init(_ rule: Rule) {
+        self.rule = rule
     }
 }
 
@@ -40,13 +54,28 @@ public struct Rule: Sendable, Equatable {
     public var enabled: Bool
     /// Per-rule overrides of the BEHAVIOUR settings.
     public var behaviour: Behaviour
+    /// Matching messages join their topic (a per-rule setting; never inherited).
+    public var join: Bool
+    /// For reaction rules: only these emoji names (empty: any).
+    public var emoji: [String]
+    private var reaction: ReactionSubRule?
     private var channelPatterns: [PyRegex]
+
+    /// The rule's [rule.reaction] sub-rule: reactions on your messages that
+    /// this rule's place covers.
+    public var reactionRule: Rule? {
+        get { reaction?.rule }
+        set { reaction = newValue.map(ReactionSubRule.init) }
+    }
 
     public init(
         description: String?, kind: RuleKind, channels: [String], pattern: PyRegex?,
         server: String?, sound: String?, volume: Int?, banner: String?, priority: Int,
-        index: Int, enabled: Bool = true, behaviour: Behaviour = [:]
+        index: Int, enabled: Bool = true, behaviour: Behaviour = [:],
+        join: Bool = false, emoji: [String] = []
     ) throws(PyRegex.Error) {
+        self.join = join
+        self.emoji = emoji
         self.description = description
         self.kind = kind
         self.channels = channels
@@ -80,7 +109,7 @@ public struct Rule: Sendable, Equatable {
         }
         let where_ = channels.map { "#\($0)" }.joined(separator: ", ")
         switch kind {
-        case .channel:
+        case .channel, .conversation where !channels.isEmpty:
             return "\(kind.label) \(where_)"
         case .topic, .keyword:
             guard let pattern else { return kind.label }
@@ -120,6 +149,8 @@ public struct Rule: Sendable, Equatable {
             return message.kind == .dm && message.dmUserIDs.count == 1
         case .groupDM:
             return message.kind == .dm && message.dmUserIDs.count > 1
+        case .conversation, .reaction:
+            return false  // layers and reactions, never competing for a message
         }
     }
 }
