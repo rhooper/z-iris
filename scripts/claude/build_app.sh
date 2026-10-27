@@ -10,6 +10,7 @@
 #   notifications are plain. A profile expiring within 7 days is refused: once
 #   it expires, macOS will not launch the app at all.
 #   Z_IRIS_BUNDLE_ID overrides z-iris's identifier (the helper keeps its own).
+#   Z_IRIS_VERSION sets the version (default: scripts/claude/version.sh).
 # 2026-10-27 (Swift; the Python launcher build is in git history).
 set -euo pipefail
 root="$(CDPATH= cd "$(dirname "$0")/../.." && pwd)"
@@ -21,7 +22,9 @@ case "$(basename "$dest")" in
 	*) echo "refusing: destination must be a path ending in .app (got $dest)" >&2; exit 1 ;;
 esac
 priority="$(dirname "$dest")/z-iris-priority.app"
-version="0.2.0"
+# Z_IRIS_VERSION is the release being built; otherwise the latest tag's.
+version="${Z_IRIS_VERSION:-$("$root/scripts/claude/version.sh")}"
+build="$("$root/scripts/claude/version.sh" build)"
 main_id="${Z_IRIS_BUNDLE_ID:-ca.toybox.z-iris}"
 main_profile="${Z_IRIS_PROFILE:-}"
 priority_profile="${Z_IRIS_PRIORITY_PROFILE:-}"
@@ -84,7 +87,7 @@ bundle() {
 	<key>CFBundleExecutable</key><string>$executable</string>
 	<key>CFBundleIconFile</key><string>z-iris</string>
 	<key>CFBundlePackageType</key><string>APPL</string>
-	<key>CFBundleVersion</key><string>$version</string>
+	<key>CFBundleVersion</key><string>$build</string>
 	<key>CFBundleShortVersionString</key><string>$version</string>
 	<key>LSMinimumSystemVersion</key><string>26.0</string>
 	<key>LSUIElement</key><true/>

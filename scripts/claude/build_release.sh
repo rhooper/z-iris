@@ -18,7 +18,11 @@ mkdir -p "$out"
 out="$(CDPATH= cd "$out" && pwd)"
 notary="${Z_IRIS_NOTARY_PROFILE:-z-iris-notary}"
 team=R9MHS94TL4
-version="$(sed -n 's/^version="\(.*\)"$/\1/p' "$root/scripts/claude/build_app.sh")"
+# The next version from the commits since the last tag (version.sh); tagged
+# once the release passes its checks. Only from a clean tree.
+[ -z "$(git -C "$root" status --porcelain --untracked-files=no)" ] || { echo "commit your changes first" >&2; exit 1; }
+version="${Z_IRIS_VERSION:-$("$root/scripts/claude/version.sh" next)}"
+echo "releasing $version"
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
 LSREGISTER=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
@@ -69,7 +73,7 @@ done
 [ -n "$identity" ] || { echo "no Developer ID identity in this keychain is authorized by the profiles" >&2; exit 1; }
 echo "signing with $identity"
 
-Z_IRIS_SIGN_IDENTITY="$identity" Z_IRIS_PROFILE="$work/ca.toybox.z-iris.provisionprofile" \
+Z_IRIS_VERSION="$version" Z_IRIS_SIGN_IDENTITY="$identity" Z_IRIS_PROFILE="$work/ca.toybox.z-iris.provisionprofile" \
 	Z_IRIS_PRIORITY_PROFILE="$work/ca.toybox.z-iris.priority.provisionprofile" \
 	"$root/scripts/claude/build_app.sh" "$out/z-iris.app" | grep '^built'
 
@@ -97,5 +101,6 @@ set +e
 status=$?
 set -e
 [ "$status" = 2 ] || { echo "z-iris did not start (exit $status)" >&2; exit 1; }
+git -C "$root" tag -a "v$version" -m "z-iris $version"
 shasum -a 256 "$zip"
-echo "packed $zip"
+echo "packed $zip, tagged v$version (push the tag and publish: gh release create v$version)"
