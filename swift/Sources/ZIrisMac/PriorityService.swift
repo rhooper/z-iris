@@ -18,7 +18,7 @@ public protocol AlertCenter: Sendable {
     func alertStyle() async -> String
     func requestAuthorization() async
     /// A time-sensitive alert without sound (z-iris plays it).
-    func add(identifier: String, title: String, body: String, attachment: String?) async throws
+    func add(identifier: String, title: String, body: String, attachment: String?, thread: String?) async throws
     func delivered() async -> [String]
     func remove(_ identifiers: [String]) async
 }
@@ -49,10 +49,13 @@ public struct UserNotificationAlerts: AlertCenter {
         _ = try? await center.requestAuthorization(options: [.alert, .sound])
     }
 
-    public func add(identifier: String, title: String, body: String, attachment path: String?) async throws {
+    public func add(identifier: String, title: String, body: String, attachment path: String?, thread: String?) async throws {
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
+        if let thread {
+            content.threadIdentifier = thread
+        }
         // Time-sensitive needs an entitlement; without it macOS delivers an
         // ordinary alert, so asking is always safe.
         content.interruptionLevel = .timeSensitive
@@ -159,7 +162,8 @@ public final class PriorityService: @unchecked Sendable {
         // A plain alert shows the sender's avatar as before.
         let attachment = image ?? sender?.avatar.flatMap { FileManager.default.fileExists(atPath: $0) ? $0 : nil }
         do {
-            try await center.add(identifier: group, title: title, body: body, attachment: attachment)
+            try await center.add(identifier: group, title: title, body: body, attachment: attachment,
+                                 thread: request["thread"] as? String)
         } catch {
             return bad(error.localizedDescription)
         }

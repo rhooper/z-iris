@@ -34,7 +34,7 @@ final class FakeAlerts: AlertCenter, @unchecked Sendable {
         lock.withLock { _prompted += 1 }
         if promptNeverAnswers { try? await Task.sleep(for: .seconds(3600)) }
     }
-    func add(identifier: String, title: String, body: String, attachment: String?) async throws {
+    func add(identifier: String, title: String, body: String, attachment: String?, thread: String?) async throws {
         lock.withLock {
             _sent.append(Sent(identifier: identifier, title: title, body: body, attachment: attachment))
             _delivered.append(identifier)

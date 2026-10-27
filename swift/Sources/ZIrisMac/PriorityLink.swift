@@ -167,11 +167,15 @@ public final class PriorityLink: Notifying, @unchecked Sendable {
         return nil
     }
 
-    public func show(title: String, body: String, url: String, image: String?, group: String?, sender: Sender?) async {
+    public func show(title: String, body: String, url: String, image: String?, group: String?, sender: Sender?,
+                     thread: String?) async {
         var body_: [String: Any] = [
             "op": "show", "title": title, "body": body, "url": url,
             "group": group ?? "z-iris", "image": image as Any? ?? NSNull(),
         ]
+        if let thread {
+            body_["thread"] = thread
+        }
         if let sender {
             body_["sender"] = sender.toJSON()
         }
@@ -193,7 +197,7 @@ public final class PriorityLink: Notifying, @unchecked Sendable {
             return reason
         }
         if failed != nil {
-            await fallback.show(title: title, body: body, url: url, image: image, group: group, sender: sender)
+            await fallback.show(title: title, body: body, url: url, image: image, group: group, sender: sender, thread: thread)
         }
     }
 

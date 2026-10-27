@@ -9,8 +9,16 @@ import ZIrisCore
 // between working and refused are logged once each, not per banner.
 
 public protocol Notifying: Sendable {
-    func show(title: String, body: String, url: String, image: String?, group: String?, sender: Sender?) async
+    /// thread: macOS stacks alerts with the same thread together.
+    func show(title: String, body: String, url: String, image: String?, group: String?, sender: Sender?,
+              thread: String?) async
     func clear(_ group: String) async
+}
+
+extension Notifying {
+    public func show(title: String, body: String, url: String, image: String?, group: String?, sender: Sender?) async {
+        await show(title: title, body: body, url: url, image: image, group: group, sender: sender, thread: nil)
+    }
 }
 
 public func openURL(_ url: String) {
@@ -97,7 +105,8 @@ public final class BannerNotifier: NSObject, Notifying, UNUserNotificationCenter
         return answer
     }
 
-    public func show(title: String, body: String, url: String, image: String?, group: String?, sender: Sender?) async {
+    public func show(title: String, body: String, url: String, image: String?, group: String?, sender: Sender?,
+                     thread: String?) async {
         guard await ready() else { return }
         let identifier = group ?? UUID().uuidString
         urls.put(identifier, url)
@@ -109,6 +118,9 @@ public final class BannerNotifier: NSObject, Notifying, UNUserNotificationCenter
         content.title = title
         content.body = body
         content.sound = nil  // z-iris plays the sound
+        if let thread {
+            content.threadIdentifier = thread
+        }
         if let picture = attachment(image) {
             content.attachments = [picture]
         }

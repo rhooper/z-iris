@@ -148,6 +148,32 @@ struct FakeSummarizer: Summarizer {
     }
 }
 
+@Suite struct ConversationOutputTests {
+    private let key = TopicKey(server: "w", channelID: 7, topic: "t")
+
+    private func joined(_ id: Int) -> ZIrisCore.Notification {
+        var n = note(id, kind: .channel)
+        n.conversation = key
+        return n
+    }
+
+    @Test func summaryReplacesSingles() async {
+        let banners = FakeFallback()
+        let out = output(fallback: banners)
+        out.deliver(joined(1))
+        out.conversationSummary(key, [joined(1), joined(2), joined(3)])
+        out.clearConversation(key)
+        await out.drain()
+        #expect(banners.threads == ["w:channel:7:t", "w:channel:7:t"])
+        #expect(banners.shown.count == 2)
+        let summary = banners.shown[1]
+        let group = "z-iris-conversation-w-7-8efd86fb78a5"  // sha1("t")
+        #expect((summary.title, summary.body, summary.group) == ("3 new in #ops > t", "hi there", group))
+        #expect(summary.sender == nil)
+        #expect(banners.cleared == ["z-iris-w-1", "z-iris-w-2", "z-iris-w-3", group])
+    }
+}
+
 final class Lines: @unchecked Sendable {
     private let lock = NSLock()
     private var lines: [String] = []

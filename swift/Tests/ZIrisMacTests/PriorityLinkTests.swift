@@ -44,12 +44,16 @@ final class FakeChild: PriorityChild {
 
 final class FakeFallback: Notifying, @unchecked Sendable {
     private(set) var shown: [(title: String, body: String, url: String, image: String?, group: String?, sender: Sender?)] = []
+    private(set) var threads: [String?] = []
+    private(set) var cleared: [String] = []
 
-    func show(title: String, body: String, url: String, image: String?, group: String?, sender: Sender?) async {
+    func show(title: String, body: String, url: String, image: String?, group: String?, sender: Sender?,
+              thread: String?) async {
         shown.append((title, body, url, image, group, sender))
+        threads.append(thread)
     }
 
-    func clear(_ group: String) async {}
+    func clear(_ group: String) async { cleared.append(group) }
 }
 
 private func makeApp() throws -> URL {

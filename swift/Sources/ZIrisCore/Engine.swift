@@ -12,6 +12,15 @@ public protocol EngineOutput: Sendable {
     func sound(_ notification: Notification, volume: Int?)
     func clearRead(server: String, ids: Set<Int>?)
     func clearUnlessUnread(server: String, unread: Set<Int>)
+    /// One alert for a conversation's unread messages, replacing their own.
+    func conversationSummary(_ key: TopicKey, _ unread: [Notification])
+    /// The conversation was read: its summary goes.
+    func clearConversation(_ key: TopicKey)
+}
+
+extension EngineOutput {
+    public func conversationSummary(_ key: TopicKey, _ unread: [Notification]) {}
+    public func clearConversation(_ key: TopicKey) {}
 }
 
 public protocol Cancellable: Sendable {
@@ -179,6 +188,8 @@ public actor Engine {
     // Insertion order of repeats, so read handling cancels in Python's order.
     private var repeatOrder: [MessageKey] = []
     private var maxGap = 0.0
+    /// Each joined topic's notifications not yet read.
+    private var unread: [TopicKey: [Notification]] = [:]
     private var stopped = false
 
     public init(
@@ -218,6 +229,7 @@ public actor Engine {
         case .deleted(let deleted): ids = deleted
         }
         forget(server: server, ids: ids)
+        forgetConversations(server: server) { ids?.contains($0) ?? true }
         output.clearRead(server: server, ids: ids)
     }
 
@@ -228,6 +240,7 @@ public actor Engine {
         let held = batches.values.flatMap(\.held).filter { $0.message.server == server }.map(\.message.id)
         let known = Set(repeats.keys.filter { $0.server == server }.map(\.id)).union(held)
         forget(server: server, ids: known.subtracting(unread))
+        forgetConversations(server: server) { !unread.contains($0) }
         output.clearUnlessUnread(server: server, unread: unread)
     }
 
@@ -242,6 +255,7 @@ public actor Engine {
         repeats = [:]
         repeatOrder = []
         batches = [:]
+        unread = [:]
     }
 
     // MARK: focus
@@ -280,7 +294,20 @@ public actor Engine {
         let key = SourceKey(notification)
         let now = clock()
 
-        if action.batchWindow > 0, batches[key] != nil {
+        // Past group_after unread, a joined topic's banner is its summary.
+        // Conversations group this way instead of batching.
+        var grouped: (TopicKey, [Notification])?
+        if let conversation = notification.conversation {
+            unread[conversation, default: []].append(notification)
+            let held = unread[conversation]!
+            if held.count > action.groupAfter {
+                grouped = (conversation, held)
+                say(notification, "conversation: summary of \(held.count)")
+            }
+        }
+        let batching = action.batchWindow > 0 && notification.conversation == nil
+
+        if batching, batches[key] != nil {
             batches[key]!.held.append(notification)
             say(notification, "batch: held")
             return
@@ -294,7 +321,18 @@ public actor Engine {
         }
 
         let output = output
-        if quiet || gap {
+        if let (conversation, held) = grouped {
+            if !(quiet || gap) {
+                var copy = notification
+                copy.action.banner = "off"
+                let noBanner = copy
+                acts.append { output.deliver(noBanner) }
+                if audible(notification) {
+                    rememberSound(key, now: now, gap: Double(action.minGap))
+                }
+            }
+            acts.append { output.conversationSummary(conversation, held) }
+        } else if quiet || gap {
             let bare = stripped(notification)
             acts.append { output.banner(bare) }
         } else {
@@ -304,7 +342,7 @@ public actor Engine {
             }
         }
 
-        if action.batchWindow > 0 {
+        if batching {
             var batch = Batch()
             batch.handle = scheduler.schedule(after: Double(action.batchWindow)) { [weak self] in
                 await self?.flush(key)
@@ -387,6 +425,20 @@ public actor Engine {
         }
         for key in batches.keys {
             batches[key]!.held.removeAll { $0.message.server == server && (ids?.contains($0.message.id) ?? true) }
+        }
+    }
+
+    /// Drop read messages from joined topics; a topic left with none has its
+    /// summary cleared, and its next message is a single alert again.
+    private func forgetConversations(server: String, read: (Int) -> Bool) {
+        for (key, held) in unread where key.server == server {
+            let left = held.filter { !read($0.message.id) }
+            if left.isEmpty {
+                unread[key] = nil
+                output.clearConversation(key)
+            } else {
+                unread[key] = left
+            }
         }
     }
 

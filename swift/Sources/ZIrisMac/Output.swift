@@ -1,3 +1,4 @@
+import CryptoKit
 import Foundation
 import ZIrisCore
 import ZulipKit
@@ -138,8 +139,10 @@ public final class RealOutput: EngineOutput, @unchecked Sendable {
         let persistent = (action.sticky || action.stay > 0) ? priority : nil
         let group = notification.group ?? bannerGroup(message)
         let target: any Notifying = persistent ?? notifier
+        let thread = notification.conversation.map(conversationThread)
         await target.show(
-            title: title, body: notificationBody(notification), url: notification.url, image: image, group: group, sender: sender
+            title: title, body: notificationBody(notification), url: notification.url, image: image, group: group,
+            sender: sender, thread: thread
         )
         if notification.summary != nil, action.summarize, action.banner == "full", let summarizer, !notification.batch.isEmpty {
             // The model's sentence replaces the body in place (same id), if it
@@ -148,7 +151,7 @@ public final class RealOutput: EngineOutput, @unchecked Sendable {
             Task.detached { [worker] in
                 guard let text = await withTimeout(timeout, { await summarizer.summarize(batch) }) else { return }
                 worker.submit {
-                    await target.show(title: title, body: text, url: url, image: picture, group: group, sender: nil)
+                    await target.show(title: title, body: text, url: url, image: picture, group: group, sender: nil, thread: thread)
                 }
             }
         }
@@ -158,6 +161,36 @@ public final class RealOutput: EngineOutput, @unchecked Sendable {
                 try? await Task.sleep(for: .seconds(seconds))
                 worker.submit { persistent.clearGroups([group]) }
             }
+        }
+    }
+
+    /// A joined topic's unread messages as one alert: their own alerts go,
+    /// and the summary shows (in place of any earlier one) as the latest did.
+    public func conversationSummary(_ key: TopicKey, _ unread: [ZIrisCore.Notification]) {
+        guard let latest = unread.last else { return }
+        let singles = unread.map { $0.group ?? bannerGroup($0.message) }
+        let message = latest.message
+        var summary = latest
+        summary.summary = "\(unread.count) new in #\(message.channelName ?? "") > \(message.topic ?? "")"
+        summary.group = conversationGroup(key)
+        summary.batch = unread.map(\.message)
+        if summary.action.banner == "off" {
+            summary.action.banner = "full"
+        }
+        worker.submit { [self, summary] in
+            for group in singles {
+                await notifier.clear(group)
+            }
+            priority?.clearGroups(singles)
+            await show(summary)
+        }
+    }
+
+    public func clearConversation(_ key: TopicKey) {
+        let group = conversationGroup(key)
+        worker.submit { [self] in
+            await notifier.clear(group)
+            priority?.clearGroups([group])
         }
     }
 
@@ -185,6 +218,17 @@ public final class RealOutput: EngineOutput, @unchecked Sendable {
     public func drain() async {
         await worker.drain()
     }
+}
+
+/// macOS's thread for a joined topic's alerts.
+func conversationThread(_ key: TopicKey) -> String {
+    "\(key.server):channel:\(key.channelID):\(key.topic)"
+}
+
+/// The summary alert's id: one per joined topic.
+func conversationGroup(_ key: TopicKey) -> String {
+    let digest = Insecure.SHA1.hash(data: Data(key.topic.utf8)).map { String(format: "%02x", $0) }.joined()
+    return "z-iris-conversation-\(key.server)-\(key.channelID)-\(digest.prefix(12))"
 }
 
 /// Prints what would happen instead of doing it (`--dry-run`).
