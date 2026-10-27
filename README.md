@@ -109,7 +109,7 @@ Menubar, Edit rules…, or `z-iris edit`. Changes apply by themselves a moment
 after you stop typing. Each save is validated with the same parser the app
 uses, writes `config.toml.bak` first and keeps your comments; the running app
 picks it up at once. Rules are listed by priority, with the defaults last as
-"Default — everything else"; deleted rules can be restored for five minutes.
+"Default Rule"; deleted rules stay under Recently Deleted for five minutes.
 Channel names come from every channel you can see, busiest first. The Sounds
 pane plays every tone, adds your own (stored at the same loudness as the
 bundled ones, the original kept in `sounds/originals/`) and removes them,
@@ -188,8 +188,8 @@ says so. `[defaults] reactions = false` turns them off.
       volume = 40
 
   Settings it leaves out come from its rule. It ranks as a reaction rule
-  with its rule's priority. The editor shows it as "Reactions to your messages
-  here" on that rule.
+  with its rule's priority. The editor shows it as "Reactions to Your Messages"
+  on that rule.
 
 ## Sticky alerts
 

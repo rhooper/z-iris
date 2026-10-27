@@ -199,7 +199,7 @@ public final class EditorModel {
             let name = try ZIrisMac.addSound(userSounds, builtin: builtinSounds, filename: file.lastPathComponent, data: data)
             settings.reload(force: true)
             refreshSounds()
-            status = "Added \(name)"
+            status = "Added “\(name)”."
         } catch {
             status = "\(error)"
         }

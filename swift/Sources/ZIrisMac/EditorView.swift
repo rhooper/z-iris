@@ -7,13 +7,17 @@ import ZulipKit
 // dictionaries; a field left empty in a rule uses the default rule's value.
 
 private let kinds: [(String, String)] = [
-    ("topic", "Topic"), ("keyword", "Keyword"), ("mention", "Mention (@you)"),
-    ("wildcard", "Wildcard mention (@all, @everyone, @channel, @topic)"),
-    ("alert_word", "Alert word (your Zulip alert words)"), ("channel", "Channel"),
-    ("group_dm", "Group DM"), ("dm", "Direct message"),
-    ("conversation", "Conversation you're in (topics you joined)"), ("reaction", "Reaction to your message"),
+    ("topic", "Topic"), ("keyword", "Keyword"), ("mention", "Mention of You"),
+    ("wildcard", "Wildcard Mention (@all, @everyone, @channel, @topic)"),
+    ("alert_word", "Alert Word (Your Zulip Alert Words)"), ("channel", "Channel"),
+    ("group_dm", "Group Direct Message"), ("dm", "Direct Message"),
+    ("conversation", "Conversation You're In (Topics You Joined)"), ("reaction", "Reaction to Your Message"),
 ]
-private let flashModes = ["none", "screen", "top", "bottom", "left", "right"]
+/// Flash styles: the config's value and its menu title.
+private let flashModes = [
+    ("none", "None"), ("screen", "Full Screen"), ("top", "Top Edge"), ("bottom", "Bottom Edge"),
+    ("left", "Left Edge"), ("right", "Right Edge"),
+]
 private let builtIn: [String: TOMLValue] = [
     "flash": .string("none"), "flash_color": .string("#ff3b30"), "flash_seconds": .float(0.6),
     "repeat": .integer(0), "repeat_every": .integer(30), "repeat_boost": .integer(0),
@@ -82,21 +86,22 @@ public struct EditorView: View {
                     ForEach(model.rules) { rule in
                         RuleRow(model: model, rule: rule).tag(EditorPane.rule(rule.id))
                     }
-                    Label("Default — everything else", systemImage: "circle.dashed").tag(EditorPane.defaults)
+                    Label("Default Rule", systemImage: "circle.dashed").tag(EditorPane.defaults)
                 }
                 if !model.deleted.isEmpty {
-                    Section("Deleted (kept five minutes)") {
+                    Section("Recently Deleted") {
                         ForEach(model.deleted, id: \.rule.id) { entry in
                             HStack {
                                 Text(model.label(entry.rule)).strikethrough().foregroundStyle(.secondary)
                                 Spacer()
                                 Button("Restore") { model.restore(entry.rule) }
+                                    .help("Deleted rules can be restored for five minutes.")
                             }
                         }
                     }
                 }
                 Section("Settings") {
-                    Label("Volume and focus", systemImage: "speaker.wave.2").tag(EditorPane.general)
+                    Label("Volume and Focus", systemImage: "speaker.wave.2").tag(EditorPane.general)
                     Label("Sounds", systemImage: "music.note.list").tag(EditorPane.sounds)
                     Label("Preview", systemImage: "eye").tag(EditorPane.preview)
                 }
@@ -191,8 +196,8 @@ private struct SoundPicker: View {
     var body: some View {
         HStack {
             Picker("Sound", selection: $sound) {
-                if allowDefault { Text("(default)").tag("") }
-                Text("none (silent)").tag("none")
+                if allowDefault { Text("Default").tag("") }
+                Text("None (Silent)").tag("none")
                 ForEach(model.sounds) { Text($0.name).tag($0.name) }
             }
             Button("Test") {
@@ -215,12 +220,17 @@ private struct BehaviourSections: View {
         isRule ? (model.defaults[key] ?? builtIn[key]) : builtIn[key]
     }
 
+    private func flashTitle(_ value: TOMLValue?) -> String {
+        guard case .string(let mode)? = value else { return "None" }
+        return flashModes.first { $0.0 == mode }?.1 ?? mode
+    }
+
     private func describe(_ value: TOMLValue?) -> String {
         switch value {
         case .integer(let n)?: "\(n)"
         case .float(let n)?: pythonRepr(n)
         case .string(let s)?: s
-        case .bool(let b)?: b ? "on" : "off"
+        case .bool(let b)?: b ? "On" : "Off"
         default: ""
         }
     }
@@ -244,16 +254,16 @@ private struct BehaviourSections: View {
 
     var body: some View {
         Section {
-            Picker("Desktop notification", selection: field(model, $fields, "banner").choice()) {
-                Text(isRule ? "show (default)" : "show").tag("")
-                Text("title only").tag("title")
-                Text("off").tag("off")
+            Picker("Notification", selection: field(model, $fields, "banner").choice()) {
+                Text(isRule ? "Default (Show)" : "Show").tag("")
+                Text("Title Only").tag("title")
+                Text("Off").tag("off")
             }
             Picker("Keep on screen", selection: keep) {
-                if isRule { Text("(default)").tag("") }
-                Text("fades").tag("fades")
-                Text("for a time").tag("seconds")
-                Text("until read").tag("read")
+                if isRule { Text("Default").tag("") }
+                Text("Fade Away").tag("fades")
+                Text("For a Time").tag("seconds")
+                Text("Until Read").tag("read")
             }
             if keep.wrappedValue == "seconds" {
                 Stepper("For \(staySeconds) seconds", value: Binding(get: { staySeconds }, set: {
@@ -266,14 +276,14 @@ private struct BehaviourSections: View {
         } header: {
             Text("Banner")
         } footer: {
-            Text("For a time or until read: z-iris priority shows an alert that stays (until you click it, close it, or read the message elsewhere). Fades: a normal banner.")
+            Text("For a time or until read, z-iris priority shows an alert that stays until you click it, close it, or read the message elsewhere. Otherwise it's a normal banner that fades away.")
         }
         Section("Flash") {
-            Picker("Flash", selection: field(model, $fields, "flash").choice()) {
-                if isRule { Text("(default: \(describe(inherited("flash"))))").tag("") }
-                ForEach(flashModes, id: \.self) { Text($0).tag($0) }
+            Picker("Style", selection: field(model, $fields, "flash").choice()) {
+                if isRule { Text("Default (\(flashTitle(inherited("flash"))))").tag("") }
+                ForEach(flashModes, id: \.0) { Text($0.1).tag($0.0) }
             }
-            ColorPicker("Flash colour", selection: Binding(get: {
+            ColorPicker("Color", selection: Binding(get: {
                 let rgb = parseColor({ if case .string(let c)? = fields["flash_color"] ?? inherited("flash_color") { c } else { fallbackColor } }())
                 return Color(.sRGB, red: rgb.red, green: rgb.green, blue: rgb.blue)
             }, set: { color in
@@ -282,11 +292,11 @@ private struct BehaviourSections: View {
                                                         Int(ns.greenComponent * 255 + 0.5), Int(ns.blueComponent * 255 + 0.5)))
                 model.changed()
             }), supportsOpacity: false)
-            TextField("Flash duration (seconds)", value: field(model, $fields, "flash_seconds").number, format: .number,
+            TextField("Duration (seconds)", value: field(model, $fields, "flash_seconds").number, format: .number,
                       prompt: Text(describe(inherited("flash_seconds"))))
-            Button("Test flash") {
+            Button("Test Flash") {
                 let mode = { if case .string(let m)? = fields["flash"] ?? inherited("flash") { m } else { "none" } }()
-                guard mode != "none" else { model.status = "Pick a flash style first."; return }
+                guard mode != "none" else { model.status = "Choose a flash style first."; return }
                 let color = { if case .string(let c)? = fields["flash_color"] ?? inherited("flash_color") { c } else { fallbackColor } }()
                 let seconds = { switch fields["flash_seconds"] ?? inherited("flash_seconds") {
                 case .float(let n)?: n
@@ -298,19 +308,19 @@ private struct BehaviourSections: View {
         Section {
             NumberField(title: "Repeat count", value: field(model, $fields, "repeat").integer, inherited: describe(inherited("repeat")), range: 0...20)
             NumberField(title: "Repeat interval (seconds)", value: field(model, $fields, "repeat_every").integer, inherited: describe(inherited("repeat_every")), range: 1...3600)
-            NumberField(title: "Repeat boost (% points)", value: field(model, $fields, "repeat_boost").integer, inherited: describe(inherited("repeat_boost")), range: 0...100)
+            NumberField(title: "Repeat boost (percentage points)", value: field(model, $fields, "repeat_boost").integer, inherited: describe(inherited("repeat_boost")), range: 0...100)
             NumberField(title: "Minimum gap (seconds)", value: field(model, $fields, "min_gap").integer, inherited: describe(inherited("min_gap")), range: 0...3600)
             NumberField(title: "Batch window (seconds)", value: field(model, $fields, "batch_window").integer, inherited: describe(inherited("batch_window")), range: 0...300)
-            NumberField(title: "Group after (alerts)", value: field(model, $fields, "group_after").integer, inherited: describe(inherited("group_after")), range: 1...20)
+            NumberField(title: "Group after (number of alerts)", value: field(model, $fields, "group_after").integer, inherited: describe(inherited("group_after")), range: 1...20)
             Picker("Summarize batches", selection: Binding(get: {
                 switch fields["summarize"] { case .bool(true)?: "on"; case .bool(false)?: "off"; default: isRule ? "" : "off" }
             }, set: { choice in
                 fields["summarize"] = choice.isEmpty ? nil : .bool(choice == "on")
                 model.changed()
             })) {
-                if isRule { Text("(default: \(describe(inherited("summarize"))))").tag("") }
-                Text("on").tag("on")
-                Text("off").tag("off")
+                if isRule { Text("Default (\(describe(inherited("summarize"))))").tag("") }
+                Text("On").tag("on")
+                Text("Off").tag("off")
             }
             .disabled(!ModelSummarizer.available)
             .help(ModelSummarizer.available ? "" : "Needs Apple Intelligence, which is off or not ready on this Mac.")
@@ -348,7 +358,7 @@ private struct ChannelTokens: View {
                 }
             }
             HStack {
-                TextField("Channel", text: $entry, prompt: Text("channel name or pattern, like ops-.*"))
+                TextField("Channel", text: $entry, prompt: Text("Channel name or pattern, such as ops-.*"))
                     .labelsHidden()
                     .frame(minWidth: 220)
                     .onSubmit(add)
@@ -408,9 +418,9 @@ private struct RuleEditor: View {
         Form {
             Section {
                 TextField("Description", text: field(model, $rule.fields, "description").text, prompt: Text(model.label(rule)))
-                Toggle("On", isOn: Binding(get: { rule.fields["enabled"] != .bool(false) },
+                Toggle("Enabled", isOn: Binding(get: { rule.fields["enabled"] != .bool(false) },
                                            set: { rule.fields["enabled"] = $0 ? nil : .bool(false); model.changed() }))
-                Picker("Matches", selection: field(model, $rule.fields, "match").choice(empty: "\u{0}")) {
+                Picker("Match", selection: field(model, $rule.fields, "match").choice(empty: "\u{0}")) {
                     ForEach(kinds, id: \.0) { Text($0.1).tag($0.0) }
                 }
                 if ["channel", "topic", "conversation", "reaction"].contains(match) {
@@ -431,12 +441,12 @@ private struct RuleEditor: View {
                 // One server: nothing to choose, unless the rule already names one.
                 if model.servers.count > 1 || rule.fields["server"] != nil {
                     Picker("Server", selection: field(model, $rule.fields, "server").choice()) {
-                        Text("any").tag("")
+                        Text("Any").tag("")
                         ForEach(model.servers, id: \.self) { Text($0).tag($0) }
                     }
                 }
                 TextField("Priority", value: field(model, $rule.fields, "priority").integer, format: .number, prompt: Text("0"))
-                    .help("Higher beats the usual most-specific order.")
+                    .help("A higher priority wins over the usual most-specific order.")
                 if match != "conversation", match != "reaction" {
                     Toggle("Join this rule's topics", isOn: Binding(get: { rule.fields["join"] == .bool(true) },
                                                                    set: { rule.fields["join"] = $0 ? .bool(true) : nil; model.changed() }))
@@ -445,7 +455,7 @@ private struct RuleEditor: View {
             }
             Section {
                 SoundPicker(model: model, sound: field(model, $rule.fields, "sound").choice(), volume: volume, allowDefault: true)
-                Toggle("Own volume", isOn: Binding(get: { rule.fields["volume"] != nil }, set: {
+                Toggle("Custom volume", isOn: Binding(get: { rule.fields["volume"] != nil }, set: {
                     rule.fields["volume"] = $0 ? .integer(volume) : nil
                     model.changed()
                 }))
@@ -456,14 +466,14 @@ private struct RuleEditor: View {
             } header: {
                 Text("Sound")
             } footer: {
-                Text("Without its own volume a rule uses the default rule's. The master volume scales both.")
+                Text("Without a custom volume, a rule uses the default rule's volume. The master volume scales both.")
             }
             BehaviourSections(model: model, fields: $rule.fields, isRule: true)
             if ["channel", "topic", "conversation"].contains(match) {
                 ReactionSection(model: model, fields: $rule.fields, volume: volume)
             }
             Section {
-                Button("Delete rule", role: .destructive, action: onDelete)
+                Button("Delete Rule", role: .destructive, action: onDelete)
             }
         }
         .formStyle(.grouped)
@@ -494,8 +504,8 @@ private struct EmojiField: View {
     }
 
     var body: some View {
-        TextField("Emoji (names, comma separated)", text: $text, prompt: Text("any emoji"))
-            .help("Zulip's emoji names, like tada, +1. Empty: any emoji.")
+        TextField("Emoji (names, separated by commas)", text: $text, prompt: Text("Any emoji"))
+            .help("Zulip's emoji names, such as tada or +1. Leave empty to match any emoji.")
             .onChange(of: text) {
                 let names = text.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
                 fields["emoji"] = names.isEmpty ? nil : .array(names.map(TOMLValue.string))
@@ -530,31 +540,31 @@ private struct ReactionSection: View {
                 SoundPicker(model: model, sound: Binding(get: { if case .string(let s)? = sub["sound"] { s } else { "" } },
                                                          set: { set("sound", $0.isEmpty ? nil : .string($0)) }),
                             volume: subVolume, allowDefault: true)
-                Toggle("Own volume", isOn: Binding(get: { sub["volume"] != nil }, set: { set("volume", $0 ? .integer(subVolume) : nil) }))
+                Toggle("Custom volume", isOn: Binding(get: { sub["volume"] != nil }, set: { set("volume", $0 ? .integer(subVolume) : nil) }))
                 if sub["volume"] != nil {
                     Slider(value: Binding(get: { Double(subVolume) }, set: { set("volume", .integer(Int($0))) }),
                            in: 0...100, step: 1) { Text("Volume \(subVolume)%") }
                 }
-                Picker("Desktop notification", selection: Binding(get: { if case .string(let s)? = sub["banner"] { s } else { "" } },
-                                                                 set: { set("banner", $0.isEmpty ? nil : .string($0)) })) {
-                    Text("show (default)").tag("")
-                    Text("title only").tag("title")
-                    Text("off").tag("off")
+                Picker("Notification", selection: Binding(get: { if case .string(let s)? = sub["banner"] { s } else { "" } },
+                                                         set: { set("banner", $0.isEmpty ? nil : .string($0)) })) {
+                    Text("Default (Show)").tag("")
+                    Text("Title Only").tag("title")
+                    Text("Off").tag("off")
                 }
-                Button("Remove reaction settings", role: .destructive) {
+                Button("Remove Reaction Settings", role: .destructive) {
                     fields["reaction"] = nil
                     model.changed()
                 }
             } else {
-                Button("Add reaction settings") {
+                Button("Add Reaction Settings") {
                     fields["reaction"] = .table([])
                     model.changed()
                 }
             }
         } header: {
-            Text("Reactions to your messages here")
+            Text("Reactions to Your Messages")
         } footer: {
-            Text("Someone reacting to a message you wrote in this rule's channels. Unset settings come from this rule; without one, a reaction is a quiet banner.")
+            Text("When someone reacts to a message you wrote in this rule's channels. Settings left unset come from this rule. Without reaction settings, a reaction shows a banner with no sound.")
         }
     }
 }
@@ -571,13 +581,13 @@ private struct DefaultsEditor: View {
                 SoundPicker(model: model, sound: field(model, $model.defaults, "sound").choice(empty: "\u{0}"), volume: volume, allowDefault: false)
                 Slider(value: Binding(get: { Double(volume) }, set: { model.defaults["volume"] = .integer(Int($0)); model.changed() }),
                        in: 0...100, step: 1) { Text("Volume \(volume)%") }
-                Toggle("Every channel message", isOn: Binding(get: { model.defaults["notify_channel_messages"] == .bool(true) },
+                Toggle("Notify for every channel message", isOn: Binding(get: { model.defaults["notify_channel_messages"] == .bool(true) },
                                                              set: { model.defaults["notify_channel_messages"] = .bool($0); model.changed() }))
-                    .help("Normally only mentions, DMs and rules notify; on, every unmuted channel message does.")
+                    .help("When this is off, only mentions, direct messages and rules notify. When it's on, every unmuted channel message does too.")
             } header: {
-                Text("Default — everything else")
+                Text("Default Rule")
             } footer: {
-                Text("Rules without their own sound, volume or settings below use these.")
+                Text("Applies to everything no other rule matches. Rules without their own sound, volume or settings below use these.")
             }
             BehaviourSections(model: model, fields: $model.defaults, isRule: false)
         }
@@ -627,8 +637,8 @@ private struct GeneralEditor: View {
             Section {
                 Picker("Focus now", selection: field(model, $model.focus, "mode").choice(empty: "\u{0}")) {
                     Text("Off").tag("off")
-                    Text("Only DMs and mentions make sound").tag("mentions_and_dms")
-                    Text("Silent (banners only)").tag("silent")
+                    Text("Only Direct Messages and Mentions").tag("mentions_and_dms")
+                    Text("Silent (Banners Only)").tag("silent")
                 }
                 ForEach(Array(hours.enumerated()), id: \.offset) { index, entry in
                     let halves = entry.split(separator: "-")
@@ -646,15 +656,15 @@ private struct GeneralEditor: View {
                         Button("Remove") { setHours(hours.enumerated().filter { $0.offset != index }.map(\.element)) }
                     }
                 }
-                Button("Add quiet hours") { setHours(hours + ["22:00-07:00"]) }
+                Button("Add Quiet Hours") { setHours(hours + ["22:00-07:00"]) }
                 Picker("During quiet hours", selection: field(model, $model.focus, "quiet_mode").choice(empty: "\u{0}")) {
-                    Text("Only DMs and mentions make sound").tag("mentions_and_dms")
-                    Text("Silent (banners only)").tag("silent")
+                    Text("Only Direct Messages and Mentions").tag("mentions_and_dms")
+                    Text("Silent (Banners Only)").tag("silent")
                 }
             } header: {
-                Text("Focus and quiet hours")
+                Text("Focus and Quiet Hours")
             } footer: {
-                Text("Focus applies right away until you turn it off. Quiet hours are local time and may cross midnight, like 22:00 to 07:00.")
+                Text("Focus applies right away until you turn it off. Quiet hours use local time and can cross midnight, such as 22:00 to 07:00. Only direct messages and mentions: everything else is dropped. Silent: banners still show, without sound or flash.")
             }
             Section {
                 Toggle("Join topics where you're mentioned", isOn: flag("join_on_mention"))
@@ -664,9 +674,9 @@ private struct GeneralEditor: View {
                 }), in: 1...720)
                 Toggle("Notify reactions to your messages", isOn: flag("reactions"))
             } header: {
-                Text("Conversations you're in")
+                Text("Conversations You're In")
             } footer: {
-                Text("A topic you post in (or are mentioned in) is joined: its messages alert, even through focus, until it has been quiet this long.")
+                Text("When you post in a topic, or are mentioned in one, you join it: its messages alert, even during focus, until it has been quiet this long.")
             }
         }
         .formStyle(.grouped)
@@ -685,7 +695,7 @@ private struct SoundsEditor: View {
                 ForEach(model.sounds) { sound in
                     HStack {
                         Text(sound.name)
-                        if sound.yours { Text("yours").font(.caption).foregroundStyle(.secondary) }
+                        if sound.yours { Text("Added by You").font(.caption).foregroundStyle(.secondary) }
                         Spacer()
                         Button("Play") { model.test(sound: sound.name, volume: 100) }
                         if sound.yours {
@@ -693,11 +703,11 @@ private struct SoundsEditor: View {
                         }
                     }
                 }
-                Button("Add sound…") { importing = true }
+                Button("Add Sound…") { importing = true }
             } header: {
                 Text("Sounds")
             } footer: {
-                Text("Added sounds are stored at the same loudness as the bundled ones; the file as given is kept in sounds/originals.")
+                Text("Added sounds are stored at the same loudness as the built-in ones. The original file is kept in sounds/originals.")
             }
         }
         .formStyle(.grouped)
@@ -710,15 +720,15 @@ private struct SoundsEditor: View {
         }
         .sheet(item: Binding(get: { inUse.map { InUse(value: $0) } }, set: { inUse = $0?.value })) { item in
             VStack(alignment: .leading, spacing: 12) {
-                Text("\"\(item.value.name)\" is used by: \(item.value.usedBy.joined(separator: ", ")).")
+                Text("“\(item.value.name)” is used by \(item.value.usedBy.joined(separator: ", ")).")
                 Picker("Use instead", selection: $replacement) {
-                    Text("none (silent)").tag("none")
+                    Text("None (Silent)").tag("none")
                     ForEach(model.sounds.filter { $0.name != item.value.name }) { Text($0.name).tag($0.name) }
                 }
                 HStack {
                     Spacer()
                     Button("Cancel") { inUse = nil }
-                    Button("Replace and remove") {
+                    Button("Replace and Remove") {
                         let name = item.value.name
                         inUse = nil
                         remove(name, replacement: replacement)
@@ -738,7 +748,7 @@ private struct SoundsEditor: View {
     private func remove(_ name: String, replacement: String?) {
         do {
             try model.removeSound(name, replacement: replacement)
-            model.status = "Removed \(name)"
+            model.status = "Removed “\(name)”."
         } catch let error as SoundInUse {
             inUse = error
         } catch {
@@ -754,9 +764,9 @@ private struct PreviewPane: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Button("Preview against recent messages") { run(refresh: true) }.disabled(busy)
+                Button("Preview Recent Messages") { run(refresh: true) }.disabled(busy)
                 if let servers = model.preview, servers.contains(where: { !$0.complete }) {
-                    Button("Fetch 1000 older") { run(more: true) }.disabled(busy)
+                    Button("Fetch 1,000 Older") { run(more: true) }.disabled(busy)
                 }
                 if busy { ProgressView().controlSize(.small) }
             }
@@ -778,7 +788,7 @@ private struct PreviewPane: View {
                     }
                 }
             } else {
-                Text("Runs the last 1000 messages (and your latest mentions) through the rules as edited, without saving.")
+                Text("Runs your last 1,000 messages, and your latest mentions, through the rules as edited, without saving.")
                     .foregroundStyle(.secondary)
                 Spacer()
             }
@@ -814,7 +824,7 @@ public final class EditorWindow {
     public func show() {
         if window == nil {
             let window = NSWindow(contentViewController: NSHostingController(rootView: EditorView(model: makeModel())))
-            window.title = "z-iris rules"
+            window.title = "z-iris Rules"
             window.setContentSize(NSSize(width: 900, height: 640))
             window.isReleasedWhenClosed = false
             window.center()
