@@ -1,9 +1,9 @@
 #!/bin/sh
-# Purpose: regenerate the bundled tones in src/z_iris/sounds with sox.
+# Purpose: regenerate the bundled tones in swift/Resources/sounds with sox.
 # Date: 2026-10-14
-# Usage: scripts/claude/gen_tones.sh   (needs sox and uv; run from the repo root)
+# Usage: scripts/claude/gen_tones.sh   (needs sox and Swift; run from the repo root)
 set -eu
-out=src/z_iris/sounds
+out=swift/Resources/sounds
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 mkdir -p "$out"
@@ -49,6 +49,6 @@ join "$out/alert.wav" "$work/hi.wav" "$work/lo.wav" "$work/hi.wav" "$work/lo.wav
 note "$work/u.wav" square 1000 0.06
 join "$out/urgent.wav" "$work/u.wav" "$work/gap.wav" "$work/u.wav" "$work/gap.wav" "$work/u.wav" "$work/gap.wav" "$work/u.wav"
 
-# Store every tone at the same loudness (see src/z_iris/loudness.py).
-uv run z-iris normalize --dir "$out" --no-backup
+# Store every tone at the same loudness (ZIrisCore/Loudness.swift).
+(cd swift && swift run z-iris normalize --dir Resources/sounds --no-backup)
 ls -l "$out"

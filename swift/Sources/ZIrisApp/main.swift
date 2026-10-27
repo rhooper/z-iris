@@ -17,16 +17,13 @@ let bannerURLs = FileManager.default.homeDirectoryForCurrentUser
 /// True when running as an app bundle (not `swift run`).
 let inBundle = Bundle.main.bundlePath.hasSuffix(".app")
 
-/// A resource: the bundle's in the app, the repository's in development.
-func resource(_ name: String, repository: String) -> URL {
+/// A resource: the bundle's in the app, swift/Resources's in development.
+func resource(_ name: String) -> URL {
     if inBundle, let path = Bundle.main.resourcePath {
         return URL(fileURLWithPath: path).appendingPathComponent(name)
     }
-    if let override = ProcessInfo.processInfo.environment["Z_IRIS_SOUNDS"], name == "sounds" {
-        return URL(fileURLWithPath: override)
-    }
     return URL(fileURLWithPath: #filePath).deletingLastPathComponent()
-        .appendingPathComponent("../../../" + repository).standardized
+        .appendingPathComponent("../../Resources/" + name).standardized
 }
 
 struct Options {
@@ -56,9 +53,11 @@ func parse(_ arguments: [String]) -> Options? {
             options.directory = arguments[index + 1]
             index += 1
         case "--no-backup": options.backup = false
-        case "probe", "normalize", "edit" where options.command == nil:
+        case "probe", "normalize", "edit":
+            guard options.command == nil else { return nil }
             options.command = argument
-        case "flash", "play" where options.command == nil:
+        case "flash", "play":
+            guard options.command == nil else { return nil }
             options.command = argument
             options.rest = Array(arguments[(index + 1)...])
             return options
@@ -72,7 +71,7 @@ func parse(_ arguments: [String]) -> Options? {
 
 func soundLibrary(for configPath: String) -> [String: String] {
     soundLibrary(
-        builtin: resource("sounds", repository: "src/z_iris/sounds"),
+        builtin: resource("sounds"),
         user: URL(fileURLWithPath: configPath).deletingLastPathComponent().appendingPathComponent("sounds")
     )
 }
@@ -166,12 +165,12 @@ func run(_ options: Options, _ config: Config) -> Int32 {
     let engine = Engine(output: output, config: { settings.config }, isPaused: { pause.isPaused }, log: log)
     let editor = EditorWindow {
         EditorModel(configPath: configPath, settings: settings,
-                    builtinSounds: resource("sounds", repository: "src/z_iris/sounds"),
+                    builtinSounds: resource("sounds"),
                     player: SoundPlayer(), flasher: Flasher())
     }
     let menu = (options.dryRun || options.headless) ? nil
         : MenuBar(settings: settings, pause: pause,
-                  icon: resource("z-iris-menubarTemplate.png", repository: "src/z_iris/static/z-iris-menubarTemplate.png").path,
+                  icon: resource("z-iris-menubarTemplate.png").path,
                   editRules: { editor.show() })
     for server in config.servers {
         let stream = EventStream(
@@ -184,13 +183,14 @@ func run(_ options: Options, _ config: Config) -> Int32 {
     }
     if menu == nil {
         // Headless: watch the config and report its problems once each.
-        var last: String?
+        final class Last: @unchecked Sendable { var error: String? }  // only the main run loop's timer uses it
+        let last = Last()
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
             let error = settings.reload()
-            if let error, error != last {
+            if let error, error != last.error {
                 FileHandle.standardError.write(Data("z-iris: config: \(error)\n".utf8))
             }
-            last = error
+            last.error = error
         }
         signal(SIGINT) { _ in exit(0) }
         RunLoop.main.run()
@@ -253,7 +253,7 @@ if options.command == "edit" {
     app.setActivationPolicy(.regular)
     let editor = EditorWindow {
         EditorModel(configPath: options.config, settings: settings,
-                    builtinSounds: resource("sounds", repository: "src/z_iris/sounds"), player: SoundPlayer(), flasher: Flasher())
+                    builtinSounds: resource("sounds"), player: SoundPlayer(), flasher: Flasher())
     }
     editor.show()
     NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: nil, queue: .main) { _ in exit(0) }

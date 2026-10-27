@@ -8,8 +8,8 @@ punchy amp envelope, all driven hard into saturation. A4 (440 Hz), gate
 250 ms (an eighth note at 120 bpm), then a short release.
 
 Date: 2026-10-20
-Usage: uv run python scripts/claude/gen_moog.py   (from the repo root)
-Then: uv run z-iris normalize --dir src/z_iris/sounds --no-backup
+Usage: python3 scripts/claude/gen_moog.py   (from the repo root)
+Then: (cd swift && swift run z-iris normalize --dir Resources/sounds --no-backup)
 """
 
 from __future__ import annotations
@@ -24,7 +24,7 @@ NOTE_HZ = 440.0
 GATE = 0.25  # seconds the key is down
 RELEASE = 0.05
 DRIVE = 4.0  # into the filter; 1.0 is clean
-OUT = Path(__file__).resolve().parents[2] / "src" / "z_iris" / "sounds" / "moog-a.wav"
+OUT = Path(__file__).resolve().parents[2] / "swift" / "Resources" / "sounds" / "moog-a.wav"
 
 
 def blep(t: float, dt: float) -> float:

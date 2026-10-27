@@ -4,7 +4,7 @@ import ZIrisCore
 
 @Suite struct SoundsTests {
     private let builtin = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
-        .appendingPathComponent("../../../src/z_iris/sounds").standardized
+        .appendingPathComponent("../../Resources/sounds").standardized
 
     @Test func userFilesWinAndOddFilesAreSkipped() throws {
         let user = FileManager.default.temporaryDirectory.appendingPathComponent("z-iris-sounds-\(UUID().uuidString)")

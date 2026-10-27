@@ -7,8 +7,8 @@ small two- and three-operator versions of famous factory presets, short enough
 for a notification.
 
 Date: 2026-10-20
-Usage: uv run python scripts/claude/gen_dx7_tones.py [name ...]   (from the repo root)
-Then: uv run z-iris normalize --dir src/z_iris/sounds --no-backup
+Usage: python3 scripts/claude/gen_dx7_tones.py [name ...]   (from the repo root)
+Then: (cd swift && swift run z-iris normalize --dir Resources/sounds --no-backup)
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ import wave
 from pathlib import Path
 
 RATE = 44100
-OUT = Path(__file__).resolve().parents[2] / "src" / "z_iris" / "sounds"
+OUT = Path(__file__).resolve().parents[2] / "swift" / "Resources" / "sounds"
 
 
 def env(t: float, attack: float, decay: float, sustain: float = 0.0) -> float:

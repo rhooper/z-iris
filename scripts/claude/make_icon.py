@@ -1,13 +1,16 @@
+# /// script
+# dependencies = ["pillow"]
+# ///
 """Build the z-iris icons: the Zulip logo plus a quarter note.
 
 Zulip's Icon.png (Apache 2.0, from zulip-desktop) is only 48 px, so the
 colours are sampled from it and the circle and Z are redrawn as vectors.
-Writes src/z_iris/static/: z-iris.png (1024), z-iris.icns, and the menubar
+Writes swift/Resources/: z-iris.png (1024), z-iris.icns, and the menubar
 template image z-iris-menubarTemplate.png (black Z with a note). rumps loads that
 one file and scales it to 20 pt, never reading an @2x sibling, so it is drawn
 large enough to stay sharp at 3x.
 
-Usage: uv run python scripts/claude/make_icon.py [Icon.png]
+Usage: uv run scripts/claude/make_icon.py [Icon.png]
 """
 
 from __future__ import annotations
@@ -20,7 +23,7 @@ from pathlib import Path
 from PIL import Image, ImageChops, ImageDraw, ImageFilter
 
 RES = Path.home() / "Devel/zulip-desktop/public/resources"
-OUT = Path(__file__).resolve().parents[2] / "src/z_iris/static"
+OUT = Path(__file__).resolve().parents[2] / "swift/Resources"
 SIZE = 1024
 MENUBAR_PX = 160
 

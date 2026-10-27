@@ -11,8 +11,8 @@ burst, slightly irregular, with a little crackle. Keying was hard, and each
 key-down and key-up adds a short click.
 
 Date: 2026-10-20
-Usage: uv run python scripts/claude/gen_morse.py   (from the repo root)
-Then: uv run z-iris normalize --dir src/z_iris/sounds --no-backup
+Usage: python3 scripts/claude/gen_morse.py   (from the repo root)
+Then: (cd swift && swift run z-iris normalize --dir Resources/sounds --no-backup)
 """
 
 from __future__ import annotations
@@ -32,7 +32,7 @@ RING_DECAY = 0.0006  # seconds
 RAMP = 0.0005  # hard keying, as a key or relay switches the transmitter
 CLICK = 0.002  # the contact's own tick at key-down and key-up
 CLICK_LEVEL = 0.9
-OUT = Path(__file__).resolve().parents[2] / "src" / "z_iris" / "sounds" / "sos.wav"
+OUT = Path(__file__).resolve().parents[2] / "swift" / "Resources" / "sounds" / "sos.wav"
 
 
 def keying(pattern: str, repeats: int) -> list[tuple[float, float]]:

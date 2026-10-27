@@ -1,11 +1,11 @@
-"""Write the Swift port's emoji table: shortcode name -> emoji.
+# /// script
+# dependencies = ["emoji==2.16.0"]
+# ///
+"""Write the app's emoji table (ZIrisCore/Resources/emoji.json): shortcode
+name -> emoji, Zulip's names first and then the emoji package's aliases, as
+the Python version looked them up. Rerun after make_zulip_emoji.py.
 
-plaintext.expand_emoji looks a name up in Zulip's names first, then asks the
-emoji package (language="alias"). This merges both into one map with the
-same answers, so the Swift version needs no emoji package. Rerun after
-make_zulip_emoji.py or an emoji upgrade (check_fixtures.sh checks).
-
-2026-10-26. Usage: uv run python scripts/claude/dump_emoji.py
+2026-10-26. Usage: uv run scripts/claude/dump_emoji.py
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ from pathlib import Path
 import emoji
 
 ROOT = Path(__file__).resolve().parents[2]
-ZULIP = ROOT / "src/z_iris/static/zulip_emoji.json"
+ZULIP = ROOT / "swift/Resources/zulip_emoji.json"
 OUT = ROOT / "swift/Sources/ZIrisCore/Resources/emoji.json"
 
 

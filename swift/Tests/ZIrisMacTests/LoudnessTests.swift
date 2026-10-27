@@ -64,7 +64,7 @@ private func soxStat(_ url: URL) -> (peak: Double, rms: Double)? {
 
     @Test func everyBundledToneMeasuresAsSoxDoes() throws {
         let tones = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
-            .appendingPathComponent("../../../src/z_iris/sounds").standardized
+            .appendingPathComponent("../../Resources/sounds").standardized
         let names = try FileManager.default.contentsOfDirectory(atPath: tones.path).filter { $0.hasSuffix(".wav") }
         #expect(names.count > 40)
         for name in names {

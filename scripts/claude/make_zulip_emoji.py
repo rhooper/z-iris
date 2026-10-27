@@ -1,4 +1,4 @@
-"""Regenerate src/z_iris/static/zulip_emoji.json: Zulip's emoji names (and
+"""Regenerate swift/Resources/zulip_emoji.json: Zulip's emoji names (and
 aliases) mapped to the emoji they stand for, so :slight_smile: and
 :working_on_it: expand the way Zulip shows them.
 
@@ -7,7 +7,8 @@ generated from the Zulip server's emoji data (Apache-2.0). It is parsed with
 ast, never imported or executed.
 
 2026-10-19. Usage:
-  uv run python scripts/claude/make_zulip_emoji.py [path/to/unicode_emojis.py]
+  python3 scripts/claude/make_zulip_emoji.py [path/to/unicode_emojis.py]
+Then run dump_emoji.py, which merges it into the app's emoji table.
 """
 
 from __future__ import annotations
@@ -18,7 +19,7 @@ import sys
 from pathlib import Path
 
 DEFAULT_SOURCE = Path.home() / "Devel/zulip-terminal/zulipterminal/unicode_emojis.py"
-TARGET = Path(__file__).resolve().parents[2] / "src/z_iris/static/zulip_emoji.json"
+TARGET = Path(__file__).resolve().parents[2] / "swift/Resources/zulip_emoji.json"
 
 
 def emoji_data(source: Path) -> dict:
