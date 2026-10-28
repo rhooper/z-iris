@@ -4,11 +4,12 @@ import ZIrisMac
 
 // z-iris priority: z-iris runs this as a child and writes one JSON request
 // per line on stdin; each gets one JSON reply line on stdout (priority.py's
-// main). macOS also launches it alone to deliver a click on an alert; it
-// quits 30 seconds after z-iris goes away or the click is handled. The top
-// level stays synchronous (see the app's main.swift).
+// main). It quits the moment z-iris goes away (its parent exits or its
+// input ends). macOS also launches it alone to deliver a click on an alert;
+// then it quits 30 seconds after the click is handled. The top level stays
+// synchronous (see the app's main.swift).
 
-let idleExit = 30.0
+let lifetime = HelperLifetime()
 
 final class Activity: @unchecked Sendable {
     private let lock = NSLock()
@@ -46,6 +47,16 @@ let service = PriorityService()
 let clicks = Clicks(service: service, activity: activity)
 UNUserNotificationCenter.current().delegate = clicks
 
+// The kernel says when z-iris exits, however it goes; no polling.
+let parentExit = DispatchSource.makeProcessSource(identifier: lifetime.parent, eventMask: .exit, queue: .main)
+if lifetime.hasParent {
+    parentExit.setEventHandler { app.terminate(nil) }
+    parentExit.resume()
+    if lifetime.orphaned() {  // it went before the watch began
+        app.terminate(nil)
+    }
+}
+
 Thread.detachNewThread {
     let done = DispatchSemaphore(value: 0)
     while let line = readLine(strippingNewline: true) {
@@ -60,9 +71,9 @@ Thread.detachNewThread {
     }
     // z-iris has gone, or macOS launched this app only to deliver a click.
     activity.touch()
-    while activity.idle < idleExit {
+    while activity.idle < lifetime.graceAfterInput {
         Thread.sleep(forTimeInterval: 1)
     }
     DispatchQueue.main.async { app.terminate(nil) }
 }
-withExtendedLifetime(clicks) { app.run() }
+withExtendedLifetime((clicks, parentExit)) { app.run() }
