@@ -231,8 +231,8 @@ private struct InUseBadge: View {
     }
 }
 
-/// Every sound, to filter, hear and choose: arrow keys move and play each
-/// one; Return or a double-click chooses it.
+/// Every sound in two columns, to filter, hear and choose: arrow keys move
+/// and play each one; Return or a double-click chooses it.
 private struct SoundBrowser: View {
     let model: EditorModel
     @Binding var sound: String
@@ -244,8 +244,39 @@ private struct SoundBrowser: View {
     @State private var pitch: SoundPitch?
     @State private var style: SoundStyle?
     @State private var highlighted: String?
+    @FocusState private var gridFocused: Bool
 
     private static let defaultID = "\u{1}default"
+
+    private struct Item: Identifiable {
+        var id: String
+        var title: String
+        var detail: String
+        var users: [String]
+    }
+
+    /// What the grid shows, in order: the default and silence first when
+    /// nothing narrows the list.
+    private func items(_ usage: [String: [String]]) -> [Item] {
+        var items: [Item] = []
+        if query.isEmpty, length == nil, pitch == nil, style == nil {
+            if allowDefault {
+                items.append(Item(id: Self.defaultID, title: "Default (\(model.defaultSound))",
+                                  detail: "The default rule's sound", users: []))
+            }
+            items.append(Item(id: "none", title: "None (Silent)", detail: "No sound", users: []))
+        }
+        return items + filtered.map { Item(id: $0.name, title: $0.name, detail: detail($0), users: usage[$0.name] ?? []) }
+    }
+
+    /// Move the highlight by a step through the grid (two to a row).
+    private func move(_ step: Int, in items: [Item]) -> KeyPress.Result {
+        guard !items.isEmpty else { return .ignored }
+        let current = items.firstIndex { $0.id == highlighted }
+        let next = current.map { min(max($0 + step, 0), items.count - 1) } ?? 0
+        highlighted = items[next].id
+        return .handled
+    }
 
     private var filtered: [SoundChoice] {
         model.sounds.filter { choice in
@@ -297,19 +328,41 @@ private struct SoundBrowser: View {
                 }
             }
             .labelsHidden()
-            List(selection: $highlighted) {
-                if query.isEmpty, length == nil, pitch == nil, style == nil {
-                    if allowDefault {
-                        row(Self.defaultID, title: "Default (\(model.defaultSound))", detail: "The default rule's sound", users: [])
+            let shown = items(usage)
+            ScrollViewReader { scroller in
+                ScrollView {
+                    LazyVGrid(columns: [GridItem(.flexible(), spacing: 6), GridItem(.flexible())], spacing: 2) {
+                        ForEach(shown) { item in
+                            row(item.id, title: item.title, detail: item.detail, users: item.users)
+                                .padding(.horizontal, 6).padding(.vertical, 4)
+                                .background(RoundedRectangle(cornerRadius: 6)
+                                    .fill(highlighted == item.id ? Color.accentColor.opacity(0.22) : Color.clear))
+                                .contentShape(Rectangle())
+                                .onTapGesture(count: 2) { choose(item.id) }
+                                .onTapGesture { highlighted = item.id; gridFocused = true }
+                                .id(item.id)
+                        }
                     }
-                    row("none", title: "None (Silent)", detail: "No sound", users: [])
+                    .padding(4)
                 }
-                ForEach(filtered) { choice in
-                    row(choice.name, title: choice.name, detail: detail(choice), users: usage[choice.name] ?? [])
+                .background(RoundedRectangle(cornerRadius: 8).fill(.background))
+                .focusable()
+                .focusEffectDisabled()
+                .focused($gridFocused)
+                .onKeyPress(.leftArrow) { move(-1, in: shown) }
+                .onKeyPress(.rightArrow) { move(1, in: shown) }
+                .onKeyPress(.upArrow) { move(-2, in: shown) }
+                .onKeyPress(.downArrow) { move(2, in: shown) }
+                .onKeyPress(.return) {
+                    guard highlighted != nil else { return .ignored }
+                    choose(highlighted)
+                    return .handled
+                }
+                .onChange(of: highlighted) {
+                    play(highlighted)
+                    if let highlighted { withAnimation { scroller.scrollTo(highlighted) } }
                 }
             }
-            .contextMenu(forSelectionType: String.self, menu: { _ in }, primaryAction: { ids in choose(ids.first) })
-            .onChange(of: highlighted) { play(highlighted) }
             HStack {
                 Text("\(filtered.count) of \(model.sounds.count) sounds").font(.caption).foregroundStyle(.secondary)
                 Spacer()
@@ -320,8 +373,8 @@ private struct SoundBrowser: View {
             }
         }
         .padding()
-        .frame(width: 470, height: 540)
-        .onAppear { highlighted = nil }
+        .frame(width: 660, height: 560)
+        .onAppear { highlighted = nil; gridFocused = true }
     }
 
     private func row(_ id: String, title: String, detail: String, users: [String]) -> some View {
@@ -334,11 +387,10 @@ private struct SoundBrowser: View {
                 Text(title)
                 Text(detail).font(.caption).foregroundStyle(.secondary)
             }
-            Spacer()
+            Spacer(minLength: 4)
             if !users.isEmpty { InUseBadge(users: users) }
             if isChosen(id) { Image(systemName: "checkmark").foregroundStyle(.tint) }
         }
-        .tag(id)
     }
 }
 
