@@ -191,6 +191,24 @@ public final class EditorModel {
         changed(immediately: true)
     }
 
+    /// Drag rules within a sidebar section (RuleOrder.swift).
+    public func moveRules(in section: RuleSection, from source: IndexSet, to destination: Int) {
+        rules = movingRules(rules, \.fields, in: section, from: source, to: destination)
+        changed(immediately: true)
+    }
+
+    public func pin(_ rule: EditableRule) {
+        guard let index = rules.firstIndex(where: { $0.id == rule.id }) else { return }
+        rules = pinning(rules, \.fields, at: index)
+        changed(immediately: true)
+    }
+
+    public func unpin(_ rule: EditableRule) {
+        guard let index = rules.firstIndex(where: { $0.id == rule.id }) else { return }
+        rules = unpinning(rules, \.fields, at: index)
+        changed(immediately: true)
+    }
+
     public func delete(_ rule: EditableRule) {
         guard let index = rules.firstIndex(where: { $0.id == rule.id }) else { return }
         deleted.insert((rules.remove(at: index), index, Date()), at: 0)

@@ -71,6 +71,34 @@ private extension Binding where Value == TOMLValue? {
     }
 }
 
+/// A sidebar section's title, as the kinds are named in the Match menu.
+private func sectionTitle(_ section: RuleSection) -> String {
+    switch section {
+    case .first: "First"
+    case .last: "Last"
+    case .kind(let kind):
+        switch kind {
+        case .sender: "Sender"
+        case .topic: "Topic"
+        case .keyword: "Keyword"
+        case .mention: "Mention of You"
+        case .wildcard: "Wildcard Mention"
+        case .alertWord: "Alert Word"
+        case .channel: "Channel"
+        case .groupDM: "Group Direct Message"
+        case .dm: "Direct Message"
+        case .conversation: "Conversations You're In"
+        case .reaction: "Reactions to Your Messages"
+        }
+    }
+}
+
+/// Conversation and reaction rules never compete with the rest, so they
+/// are never pinned.
+private func layered(_ section: RuleSection) -> Bool {
+    section == .kind(.conversation) || section == .kind(.reaction)
+}
+
 public struct EditorView: View {
     @Bindable var model: EditorModel
     @State private var selection: EditorPane? = .defaults
@@ -82,11 +110,28 @@ public struct EditorView: View {
     public var body: some View {
         NavigationSplitView {
             List(selection: $selection) {
-                Section("Rules") {
-                    ForEach(model.rules) { rule in
-                        RuleRow(model: model, rule: rule).tag(EditorPane.rule(rule.id))
+                // In the order rules are tried: pinned First, then each kind
+                // in turn. Drag within a section; pin from the context menu.
+                ForEach(ruleSections(model.rules, \.fields), id: \.section) { group in
+                    Section(sectionTitle(group.section)) {
+                        ForEach(group.indices.map { model.rules[$0] }) { rule in
+                            RuleRow(model: model, rule: rule, pinned: group.section == .first)
+                                .tag(EditorPane.rule(rule.id))
+                                .contextMenu {
+                                    if group.section == .first || group.section == .last {
+                                        Button("Unpin") { model.unpin(rule) }
+                                    } else if !layered(group.section) {
+                                        Button("Pin to First") { model.pin(rule) }
+                                    }
+                                }
+                        }
+                        .onMove { model.moveRules(in: group.section, from: $0, to: $1) }
                     }
+                }
+                Section {
                     Label("Default Rule", systemImage: "circle.dashed").tag(EditorPane.defaults)
+                } footer: {
+                    Text("Everything no rule above matches.").font(.caption)
                 }
                 if !model.deleted.isEmpty {
                     Section("Recently Deleted") {
@@ -154,6 +199,7 @@ public struct EditorView: View {
 private struct RuleRow: View {
     let model: EditorModel
     let rule: EditableRule
+    let pinned: Bool
 
     private var accent: Color {
         let flash = { if case .string(let f)? = rule.fields["flash"] { f } else if case .string(let f)? = model.defaults["flash"] { f } else { "none" } }()
@@ -168,8 +214,8 @@ private struct RuleRow: View {
             RoundedRectangle(cornerRadius: 2).fill(accent).frame(width: 4, height: 18)
             Text(model.label(rule)).lineLimit(1)
             Spacer()
-            if case .integer(let p)? = rule.fields["priority"], p != 0 {
-                Text("\(p)").font(.caption).foregroundStyle(.secondary)
+            if pinned {
+                Image(systemName: "pin.fill").font(.caption).foregroundStyle(.secondary).help("Pinned: tried before every other kind")
             }
         }
         .opacity(rule.fields["enabled"] == .bool(false) ? 0.45 : 1)
@@ -695,8 +741,6 @@ private struct RuleEditor: View {
                         ForEach(model.servers, id: \.self) { Text($0).tag($0) }
                     }
                 }
-                TextField("Priority", value: field(model, $rule.fields, "priority").integer, format: .number, prompt: Text("0"))
-                    .help("A higher priority wins over the usual most-specific order.")
                 if match != "conversation", match != "reaction" {
                     Toggle("Join this rule's topics", isOn: Binding(get: { rule.fields["join"] == .bool(true) },
                                                                    set: { rule.fields["join"] = $0 ? .bool(true) : nil; model.changed() }))
