@@ -187,24 +187,158 @@ private struct NumberField: View {
     }
 }
 
+/// The chosen sound, as a button that opens the sound browser.
 private struct SoundPicker: View {
     let model: EditorModel
     @Binding var sound: String
     let volume: Int
     let allowDefault: Bool
+    @State private var browsing = false
+
+    private var title: String {
+        switch sound {
+        case "", "\u{0}": allowDefault ? "Default (\(model.defaultSound))" : model.defaultSound
+        case "none": "None (Silent)"
+        default: sound
+        }
+    }
 
     var body: some View {
-        HStack {
-            Picker("Sound", selection: $sound) {
-                if allowDefault { Text("Default").tag("") }
-                Text("None (Silent)").tag("none")
-                ForEach(model.sounds) { Text($0.name).tag($0.name) }
+        LabeledContent("Sound") {
+            Button { browsing = true } label: {
+                HStack(spacing: 4) {
+                    Text(title)
+                    Image(systemName: "chevron.up.chevron.down").font(.caption)
+                }
             }
-            Button("Test") {
-                let name = sound.isEmpty ? { if case .string(let s)? = model.defaults["sound"] { s } else { "chime" } }() : sound
-                model.test(sound: name, volume: volume)
+            .popover(isPresented: $browsing, arrowEdge: .trailing) {
+                SoundBrowser(model: model, sound: $sound, volume: volume, allowDefault: allowDefault) { browsing = false }
             }
         }
+    }
+}
+
+/// "In Use", naming the rules that use the sound when you hover over it.
+private struct InUseBadge: View {
+    let users: [String]
+
+    var body: some View {
+        Text("In Use")
+            .font(.caption)
+            .padding(.horizontal, 6).padding(.vertical, 1)
+            .background(Capsule().fill(.quaternary))
+            .help("Used by " + users.joined(separator: ", "))
+    }
+}
+
+/// Every sound, to filter, hear and choose: arrow keys move and play each
+/// one; Return or a double-click chooses it.
+private struct SoundBrowser: View {
+    let model: EditorModel
+    @Binding var sound: String
+    let volume: Int
+    let allowDefault: Bool
+    let done: () -> Void
+    @State private var query = ""
+    @State private var length: SoundLength?
+    @State private var pitch: SoundPitch?
+    @State private var style: SoundStyle?
+    @State private var highlighted: String?
+
+    private static let defaultID = "\u{1}default"
+
+    private var filtered: [SoundChoice] {
+        model.sounds.filter { choice in
+            let measure = model.measures[choice.name]
+            return (query.isEmpty || choice.name.localizedCaseInsensitiveContains(query))
+                && (style == nil || choice.style == style)
+                && (length == nil || measure?.length == length)
+                && (pitch == nil || measure?.pitch == pitch)
+        }
+    }
+
+    private func detail(_ choice: SoundChoice) -> String {
+        guard let measure = model.measures[choice.name] else { return choice.style.title }
+        return String(format: "%.2f s", measure.seconds) + " · \(measure.pitch.title) · \(choice.style.title)"
+    }
+
+    private func play(_ id: String?) {
+        guard let id, id != "none" else { return }
+        model.test(sound: id == Self.defaultID ? model.defaultSound : id, volume: volume)
+    }
+
+    private func choose(_ id: String?) {
+        guard let id else { return }
+        sound = id == Self.defaultID ? "" : id
+        done()
+    }
+
+    private func isChosen(_ id: String) -> Bool {
+        id == Self.defaultID ? (sound.isEmpty || sound == "\u{0}") : sound == id
+    }
+
+    var body: some View {
+        let usage = model.soundUsage
+        VStack(spacing: 8) {
+            TextField("Search", text: $query, prompt: Text("Search sounds"))
+                .textFieldStyle(.roundedBorder)
+            HStack {
+                Picker("Length", selection: $length) {
+                    Text("Any Length").tag(SoundLength?.none)
+                    ForEach(SoundLength.allCases, id: \.self) { Text($0.title).tag(Optional($0)) }
+                }
+                Picker("Pitch", selection: $pitch) {
+                    Text("Any Pitch").tag(SoundPitch?.none)
+                    ForEach(SoundPitch.allCases, id: \.self) { Text($0.title).tag(Optional($0)) }
+                }
+                Picker("Style", selection: $style) {
+                    Text("All Styles").tag(SoundStyle?.none)
+                    ForEach(SoundStyle.allCases, id: \.self) { Text($0.title).tag(Optional($0)) }
+                }
+            }
+            .labelsHidden()
+            List(selection: $highlighted) {
+                if query.isEmpty, length == nil, pitch == nil, style == nil {
+                    if allowDefault {
+                        row(Self.defaultID, title: "Default (\(model.defaultSound))", detail: "The default rule's sound", users: [])
+                    }
+                    row("none", title: "None (Silent)", detail: "No sound", users: [])
+                }
+                ForEach(filtered) { choice in
+                    row(choice.name, title: choice.name, detail: detail(choice), users: usage[choice.name] ?? [])
+                }
+            }
+            .contextMenu(forSelectionType: String.self, menu: { _ in }, primaryAction: { ids in choose(ids.first) })
+            .onChange(of: highlighted) { play(highlighted) }
+            HStack {
+                Text("\(filtered.count) of \(model.sounds.count) sounds").font(.caption).foregroundStyle(.secondary)
+                Spacer()
+                Button("Cancel", action: done).keyboardShortcut(.cancelAction)
+                Button("Choose") { choose(highlighted) }
+                    .keyboardShortcut(.defaultAction)
+                    .disabled(highlighted == nil)
+            }
+        }
+        .padding()
+        .frame(width: 470, height: 540)
+        .onAppear { highlighted = nil }
+    }
+
+    private func row(_ id: String, title: String, detail: String, users: [String]) -> some View {
+        HStack {
+            Button { play(id) } label: { Image(systemName: "play.circle") }
+                .buttonStyle(.borderless)
+                .help("Play")
+                .disabled(id == "none")
+            VStack(alignment: .leading, spacing: 1) {
+                Text(title)
+                Text(detail).font(.caption).foregroundStyle(.secondary)
+            }
+            Spacer()
+            if !users.isEmpty { InUseBadge(users: users) }
+            if isChosen(id) { Image(systemName: "checkmark").foregroundStyle(.tint) }
+        }
+        .tag(id)
     }
 }
 
@@ -690,12 +824,14 @@ private struct SoundsEditor: View {
     @State private var replacement = "none"
 
     var body: some View {
+        let usage = model.soundUsage
         Form {
             Section {
                 ForEach(model.sounds) { sound in
                     HStack {
                         Text(sound.name)
                         if sound.yours { Text("Added by You").font(.caption).foregroundStyle(.secondary) }
+                        if let users = usage[sound.name] { InUseBadge(users: users) }
                         Spacer()
                         Button("Play") { model.test(sound: sound.name, volume: 100) }
                         if sound.yours {

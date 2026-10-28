@@ -1,3 +1,4 @@
+import Accelerate
 import AVFoundation
 import ZIrisCore
 
@@ -114,4 +115,41 @@ public func normalizeDirectory(_ directory: URL, keepOriginals: Bool = true) -> 
         changed.append((url, final))
     }
     return changed
+}
+
+/// A sound's length in seconds and its spectral centroid in Hz (the
+/// power-weighted mean frequency over the whole sound), for the sound browser.
+public func soundTraits(_ url: URL) -> (seconds: Double, centroid: Double)? {
+    guard let file = try? AVAudioFile(forReading: url),
+          let buffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat, frameCapacity: AVAudioFrameCount(file.length))
+    else { return nil }
+    do { try file.read(into: buffer) } catch { return nil }
+    guard let data = buffer.floatChannelData, buffer.frameLength > 0 else { return nil }
+    let rate = file.processingFormat.sampleRate
+    let length = Int(buffer.frameLength)
+    var mono = [Float](repeating: 0, count: length)
+    for channel in 0..<Int(file.processingFormat.channelCount) {
+        vDSP.add(mono, UnsafeBufferPointer(start: data[channel], count: length), result: &mono)
+    }
+    let size = 4096
+    guard let dft = try? vDSP.DiscreteFourierTransform(
+        count: size, direction: .forward, transformType: .complexComplex, ofType: Float.self
+    ) else { return nil }
+    let window = vDSP.window(ofType: Float.self, usingSequence: .hanningDenormalized, count: size, isHalfWindow: false)
+    let zeros = [Float](repeating: 0, count: size)
+    var weighted = 0.0, total = 0.0
+    var start = 0
+    repeat {
+        var frame = [Float](repeating: 0, count: size)
+        let count = min(size, length - start)
+        frame.replaceSubrange(0..<count, with: mono[start..<start + count])
+        let (real, imaginary) = dft.transform(real: vDSP.multiply(frame, window), imaginary: zeros)
+        for bin in 1..<size / 2 {
+            let power = Double(real[bin] * real[bin] + imaginary[bin] * imaginary[bin])
+            weighted += power * Double(bin) * rate / Double(size)
+            total += power
+        }
+        start += size
+    } while start < length
+    return (Double(length) / rate, total > 0 ? weighted / total : 0)
 }

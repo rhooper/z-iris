@@ -24,6 +24,15 @@ public struct SoundChoice: Identifiable, Equatable, Sendable {
     /// One of the user's own, which can be removed.
     public var yours: Bool
     public var id: String { name }
+    public var style: SoundStyle { SoundStyle(name: name, yours: yours) }
+}
+
+/// A sound's length and spectral centroid, for the sound browser's filters.
+public struct SoundMeasure: Equatable, Sendable {
+    public var seconds: Double
+    public var centroid: Double
+    public var length: SoundLength { SoundLength(seconds: seconds) }
+    public var pitch: SoundPitch { SoundPitch(centroid: centroid) }
 }
 
 public struct SoundInUse: Error, Equatable {
@@ -41,6 +50,8 @@ public final class EditorModel {
     /// Deleted rules wait five minutes to be restored.
     public var deleted: [(rule: EditableRule, index: Int, at: Date)] = []
     public var sounds: [SoundChoice] = []
+    /// Each sound's length and pitch, measured in the background.
+    public var measures: [String: SoundMeasure] = [:]
     public var channels: [String] = []
     public var preview: [ServerPreview]?
     public var status = ""
@@ -99,6 +110,34 @@ public final class EditorModel {
     public func refreshSounds() {
         let mine = Set(userSoundNames(userSounds))
         sounds = library.keys.filter { $0 != "synth" }.sorted(by: pythonOrder).map { SoundChoice(name: $0, yours: mine.contains($0)) }
+        let paths = library.filter { $0.key != "synth" && measures[$0.key] == nil }
+        guard !paths.isEmpty else { return }
+        Task {
+            let measured = await Task.detached {
+                paths.compactMapValues { path in
+                    soundTraits(URL(fileURLWithPath: path)).map { SoundMeasure(seconds: $0.seconds, centroid: $0.centroid) }
+                }
+            }.value
+            measures.merge(measured) { $1 }
+        }
+    }
+
+    /// The default sound's name (the default rule's, else chime).
+    public var defaultSound: String {
+        if case .string(let name)? = defaults["sound"] { return name }
+        return "chime"
+    }
+
+    /// Which rules use each sound, as the editor shows them now.
+    public var soundUsage: [String: [String]] {
+        let string = { (value: TOMLValue?) -> String? in if case .string(let s)? = value { s } else { nil } }
+        return soundUsers(defaultSound: defaultSound, rules: rules.map { rule in
+            var reaction: String?
+            if case .table(let keys)? = rule.fields["reaction"] {
+                reaction = string(keys.first { $0.0 == "sound" }?.1)
+            }
+            return (label: label(rule), sound: string(rule.fields["sound"]), reactionSound: reaction)
+        })
     }
 
     /// What the web editor sent on every save: its whole state.
