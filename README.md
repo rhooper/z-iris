@@ -89,9 +89,14 @@ one sample per kind.
   is exactly #ops and `ops-.*` matches #ops-east and #ops-west.
 - `sound`: `none`, a bundled tone (chime, ping, bell, blip, knock, double,
   triple, rise, fall, alert, urgent, low, soft, mid-short, mid-long; the DX7-style
-  `dx-*` voices; moog-a; sos; ten after famous synths: juno-pad, tb303-acid,
-  prophet-brass, obx-jump, cs80-blade, ppg-wave, d50-fantasia, m1-piano,
-  alpha-hoover, odyssey-sync; nine public-domain recordings), or a file in
+  `dx-*` voices; moog-a; sos; three patches each after nineteen famous
+  synths and samplers: `juno-*` (Roland Juno-106), `tb303-*`, `prophet-*`
+  (Prophet-5), `obx-*` (Oberheim OB-Xa), `cs80-*` (Yamaha CS-80), `ppg-*`
+  (PPG Wave), `d50-*` (Roland D-50), `m1-*` (Korg M1), `alpha-*` (Alpha Juno),
+  `odyssey-*` (ARP Odyssey), `mellotron-*`, `fairlight-*`, `jupiter-*`
+  (Jupiter-8), `sh101-*`, `emulator-*` (E-mu Emulator), `jp8000-*`,
+  `synclavier-*`, `buchla-*` and `omnichord-*`; nine public-domain
+  recordings), or a file in
   `~/.config/z-iris/sounds/` (its name without the extension). `volume`: 0 to
   100. `banner`: `full`, `title` (no message text) or `off`. `server`: one server.
 - Precedence: higher `priority` first, then topic, keyword, mention, wildcard,

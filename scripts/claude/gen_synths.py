@@ -1,4 +1,5 @@
-"""Generate nineteen bundled tones after famous synthesizers and samplers.
+"""Generate bundled tones after famous synthesizers and samplers: one
+signature sound each, plus two more patches each instrument is known for.
 
 Each is a short, characteristic gesture of its instrument, small enough for a
 notification: subtractive voices (band-limited polyBLEP oscillators through a
@@ -25,6 +26,15 @@ partials and hard sync, as the originals made them.
   synclavier-bell  Synclavier: an additive bell with its own partial decays
   buchla-bongo     Buchla: West Coast "bongos", a folded tone through a low-pass gate
   omnichord-strum  Suzuki Omnichord: a strum across the strumplate
+
+and two more of each (see MORE below): juno-bass, juno-strings, tb303-bass,
+tb303-squelch, prophet-pad, prophet-pluck, obx-brass, obx-strings,
+cs80-chariots, cs80-pad, ppg-bell, ppg-pad, d50-pizzagogo, d50-heaven,
+m1-organ, m1-universe, alpha-stab, alpha-bass, odyssey-bass, odyssey-ring,
+mellotron-strings, mellotron-choir, fairlight-sarar, fairlight-bells,
+jupiter-brass, jupiter-pad, sh101-bass, sh101-blip, emulator-shakuhachi,
+emulator-strings, jp8000-pluck, jp8000-pad, synclavier-pluck, synclavier-pad,
+buchla-ping, buchla-chime, omnichord-harp, omnichord-organ.
 
 Date: 2026-10-28
 Usage: python3 scripts/claude/gen_synths.py [name ...]   (from the repo root)
@@ -423,6 +433,288 @@ def omnichord_strum() -> list[float]:
     return chorus(track, depth_ms=1.0, mix=0.3)
 
 
+# ---- building blocks for the further patches ----
+
+def additive(f: float, seconds: float, partials, attack: float = 0.002) -> list[float]:
+    """Sine partials (ratio, level, decay seconds), each fading on its own."""
+    return [sum(level * math.sin(2 * math.pi * f * ratio * n / RATE + ratio) * math.exp(-n / RATE / tau)
+                for ratio, level, tau in partials) * min(n / RATE / attack, 1.0)
+            for n in range(int(seconds * RATE))]
+
+
+def fm(f: float, seconds: float, ratio: float, index: float, index_tau: float, amp_tau: float,
+       attack: float = 0.002) -> list[float]:
+    """Two operators: a modulator whose depth dies away bends a sine carrier."""
+    return [math.sin(2 * math.pi * f * n / RATE
+                     + index * math.exp(-n / RATE / index_tau) * math.sin(2 * math.pi * f * ratio * n / RATE))
+            * math.exp(-n / RATE / amp_tau) * min(n / RATE / attack, 1.0)
+            for n in range(int(seconds * RATE))]
+
+
+def formants(chord, seconds: float, vowel, amp: tuple, gate: float, vibrato: float = 0.006) -> list[float]:
+    """Sung vowels: a saw per note through band-pass formants (Hz, level, Q)."""
+    track: list[float] = []
+    for f in chord:
+        osc, filters, out = Osc("saw"), [SVF() for _ in vowel], []
+        for n in range(int(seconds * RATE)):
+            t = n / RATE
+            x = osc.next(f * (1.0 + vibrato * math.sin(2 * math.pi * 5.2 * t) * min(t / 0.25, 1.0)))
+            v = sum(level * flt.next(x, fc, q)[1] for (fc, level, q), flt in zip(vowel, filters))
+            out.append(v * adsr(t, gate, *amp))
+        place(track, out, 0.0, 1 / len(chord) ** 0.5)
+    return track
+
+
+def lofi(track: list[float], hold: int = 3, levels: int = 96) -> list[float]:
+    """An early sampler's grain: a lower sample rate and coarse steps."""
+    out, held = [], 0.0
+    for n, v in enumerate(track):
+        if n % hold == 0:
+            held = round(v * levels) / levels
+        out.append(held)
+    return out
+
+
+def tape(track: list[float], seed: int) -> list[float]:
+    """Mellotron tape: wow (a slow pitch sway, by resampling) and hiss."""
+    out, hiss = [], noise(seed)
+    for n in range(len(track)):
+        pos = n * (1.0 + 0.002 * math.sin(2 * math.pi * 0.8 * n / RATE))
+        i = min(int(pos), len(track) - 2)
+        frac = pos - int(pos)
+        out.append(track[i] * (1 - frac) + track[i + 1] * frac + 0.004 * next(hiss))
+    return out
+
+
+def lpg(f: float, seconds: float, decay: float, fold: float, ratio: float = 0.0, index: float = 0.0) -> list[float]:
+    """A Buchla voice: a (optionally FM) sine, folded, through a low-pass gate
+    whose light cell closes brightness and level together."""
+    gate, out = SVF(), []
+    for n in range(int(seconds * RATE)):
+        t = n / RATE
+        cell = math.exp(-t / decay) * min(t / 0.001, 1.0)
+        tone = math.sin(2 * math.pi * f * t + index * cell * math.sin(2 * math.pi * f * ratio * t))
+        folded = math.sin(fold * cell * tone * math.pi / 2)
+        out.append(gate.next(folded, 150 + 5000 * cell, 0.8)[0] * cell)
+    return out
+
+
+def chords(stabs, seconds: float, **voice) -> list[float]:
+    """Subtractive chord stabs: (notes, start, gain) each."""
+    track: list[float] = []
+    for notes, at, gain in stabs:
+        place(track, subtractive([hz(n) for n in notes], seconds, **voice), at, gain)
+    return track
+
+
+def notes(seq, seconds: float, **voice) -> list[float]:
+    """Single subtractive notes in sequence: (note, start, gain) each."""
+    return chords([((n,), at, g) for n, at, g in seq], seconds, **voice)
+
+
+# ---- two more patches for each instrument ----
+
+MORE = {
+    "juno-bass": lambda: chorus(notes([("A2", 0.0, 1.0), ("E3", 0.16, 0.8)], 0.3, gate=0.12,
+        amp=(0.003, 0.2, 0.6, 0.08), cutoff=300, sweep=1600, fenv=(0.002, 0.08, 0.1, 0.08), resonance=0.3,
+        detune=0.0, shapes=("saw",), sub=0.5, drive=1.8), mix=0.3),
+    "juno-strings": lambda: chorus(subtractive([hz(n) for n in ("C4", "E4", "G4")], 1.3, gate=0.9,
+        amp=(0.22, 0.6, 0.85, 0.3), cutoff=1800, sweep=600, fenv=(0.3, 0.5, 0.6, 0.3), resonance=0.05,
+        detune=0.0, shapes=("saw",)), depth_ms=2.5, rate_hz=0.8, mix=0.55),
+    "tb303-bass": lambda: notes([("C3", 0.0, 1.0), ("C3", 0.12, 0.8), ("Eb3", 0.24, 0.9), ("G3", 0.36, 1.0)],
+        0.12, gate=0.08, amp=(0.002, 0.3, 0.8, 0.02), cutoff=300, sweep=1300, fenv=(0.002, 0.07, 0.0, 0.02),
+        resonance=0.55, detune=0.0, shapes=("saw",), drive=2.0),
+    "tb303-squelch": lambda: subtractive([hz("C3")], 0.65, gate=0.55, amp=(0.003, 0.4, 0.9, 0.08),
+        cutoff=180, sweep=3200, fenv=(0.35, 0.2, 0.7, 0.08), resonance=0.9, detune=0.0, shapes=("saw",),
+        drive=2.5),
+    "prophet-pad": lambda: subtractive([hz(n) for n in ("A3", "C4", "E4", "G4")], 1.4, gate=1.0,
+        amp=(0.25, 0.6, 0.85, 0.35), cutoff=700, sweep=900, fenv=(0.4, 0.5, 0.7, 0.35), resonance=0.15,
+        detune=0.005),
+    "prophet-pluck": lambda: subtractive([hz(n) for n in ("E4", "G4", "B4")], 0.45, gate=0.05,
+        amp=(0.002, 0.15, 0.2, 0.15), cutoff=600, sweep=4500, fenv=(0.002, 0.06, 0.0, 0.1), resonance=0.4,
+        detune=0.004, shapes=("pulse", "saw"), pwm=0.25),
+    "obx-brass": lambda: chords([(("F3", "A3", "C4", "F4"), 0.0, 1.0), (("G3", "B3", "D4", "G4"), 0.22, 1.0)],
+        0.45, gate=0.25, amp=(0.01, 0.3, 0.8, 0.12), cutoff=700, sweep=3500, fenv=(0.05, 0.2, 0.5, 0.12),
+        resonance=0.1, detune=0.008, drive=1.6),
+    "obx-strings": lambda: chorus(subtractive([hz(n) for n in ("D4", "F#4", "A4")], 1.3, gate=0.9,
+        amp=(0.18, 0.6, 0.85, 0.3), cutoff=2200, sweep=500, fenv=(0.25, 0.5, 0.6, 0.3), resonance=0.05,
+        detune=0.009), mix=0.45),
+    "cs80-chariots": lambda: subtractive([hz(n) for n in ("C4", "E4", "G4", "C5")], 1.0, gate=0.6,
+        amp=(0.004, 0.35, 0.55, 0.3), cutoff=600, sweep=4200, fenv=(0.004, 0.18, 0.3, 0.3), resonance=0.15,
+        detune=0.007, shapes=("saw", "pulse"), vibrato=0.004),
+    "cs80-pad": lambda: subtractive([hz("A3"), hz("E4"), hz("A4")], 1.4, gate=1.0, amp=(0.3, 0.6, 0.9, 0.35),
+        cutoff=400, sweep=1600, fenv=(0.6, 0.5, 0.8, 0.35), resonance=0.2, detune=0.008, vibrato=0.006),
+    "ppg-bell": lambda: [v * math.exp(-n / RATE / 0.35) for n, v in enumerate(ppg_sweep(hz("G4"), 1.0, 14, 1))],
+    "ppg-pad": lambda: [v * adsr(n / RATE, 0.9, 0.25, 0.5, 0.9, 0.3) for n, v in
+                        enumerate(ppg_sweep(hz("A3"), 1.2, 3, 9, wobble=True))],
+    "d50-pizzagogo": lambda: d50_pizz(),
+    "d50-heaven": lambda: d50_heaven(),
+    "m1-organ": lambda: m1_organ(),
+    "m1-universe": lambda: chorus([a + 0.25 * b for a, b in zip(
+        subtractive([hz(n) for n in ("C4", "G4", "D5")], 1.4, gate=1.0, amp=(0.2, 0.6, 0.85, 0.35),
+                    cutoff=1500, sweep=800, fenv=(0.3, 0.5, 0.6, 0.35), resonance=0.1, detune=0.007,
+                    shapes=("saw", "saw", "saw")),
+        additive(hz("G5"), 1.4, ((1, 1.0, 0.6), (2.76, 0.4, 0.3))))], mix=0.4),
+    "alpha-stab": lambda: chorus(subtractive([hz(n) for n in ("A3", "C4", "E4")], 0.35, gate=0.12,
+        amp=(0.002, 0.2, 0.7, 0.08), cutoff=2000, sweep=3000, fenv=(0.002, 0.1, 0.3, 0.08), resonance=0.1,
+        detune=0.012, shapes=("pulse", "pulse", "saw"), pwm=0.3), mix=0.4),
+    "alpha-bass": lambda: subtractive([hz("A2"), hz("A3")], 0.6, gate=0.45, amp=(0.005, 0.3, 0.85, 0.1),
+        cutoff=500, sweep=900, fenv=(0.01, 0.2, 0.5, 0.1), resonance=0.15, detune=0.01,
+        shapes=("saw", "saw"), drive=2.0),
+    "odyssey-bass": lambda: notes([("E3", 0.0, 1.0), ("B3", 0.15, 0.8)], 0.28, gate=0.12,
+        amp=(0.003, 0.2, 0.6, 0.06), cutoff=250, sweep=2400, fenv=(0.002, 0.08, 0.1, 0.06), resonance=0.5,
+        detune=0.0, shapes=("pulse",), drive=1.8),
+    "odyssey-ring": lambda: [math.sin(2 * math.pi * hz("A4") * n / RATE) * math.sin(2 * math.pi * hz("A4") * 1.37 * n / RATE)
+                             * math.exp(-n / RATE / 0.3) * min(n / RATE / 0.002, 1.0) for n in range(int(0.9 * RATE))],
+    "mellotron-strings": lambda: tape(subtractive([hz(n) for n in ("D4", "F#4", "A4")], 1.2, gate=0.85,
+        amp=(0.12, 0.6, 0.85, 0.25), cutoff=1600, sweep=300, fenv=(0.2, 0.5, 0.6, 0.25), resonance=0.05,
+        detune=0.004, vibrato=0.003), seed=21),
+    "mellotron-choir": lambda: tape(formants([hz(n) for n in ("C4", "E4", "G4")], 1.2,
+        ((700, 1.0, 5.0), (1100, 0.5, 7.0), (2600, 0.2, 9.0)), amp=(0.15, 0.5, 0.85, 0.25), gate=0.85), seed=23),
+    "fairlight-sarar": lambda: lofi(formants([hz(n) for n in ("E4", "G#4", "B4")], 1.1,
+        ((850, 1.0, 6.0), (1220, 0.6, 8.0), (2810, 0.3, 10.0)), amp=(0.08, 0.5, 0.85, 0.25), gate=0.8)),
+    "fairlight-bells": lambda: lofi(additive(hz("G4"), 1.4, ((0.5, 0.4, 0.9), (1, 1.0, 1.0), (1.2, 0.5, 0.6),
+                                                          (1.5, 0.4, 0.5), (2, 0.6, 0.6), (2.5, 0.2, 0.3)))),
+    "jupiter-brass": lambda: subtractive([hz(n) for n in ("G3", "B3", "D4")], 0.6, gate=0.35,
+        amp=(0.01, 0.3, 0.8, 0.12), cutoff=500, sweep=3800, fenv=(0.04, 0.2, 0.45, 0.12), resonance=0.2,
+        detune=0.006, shapes=("saw", "pulse"), drive=1.7),
+    "jupiter-pad": lambda: chorus(subtractive([hz(n) for n in ("C4", "E4", "G4", "B4")], 1.4, gate=1.0,
+        amp=(0.25, 0.6, 0.85, 0.35), cutoff=900, sweep=1000, fenv=(0.4, 0.5, 0.7, 0.35), resonance=0.25,
+        detune=0.006, shapes=("saw", "pulse"), pwm=0.2), mix=0.35),
+    "sh101-bass": lambda: notes([("C3", 0.0, 1.0), ("G3", 0.14, 0.9), ("C3", 0.28, 1.0)], 0.16, gate=0.1,
+        amp=(0.002, 0.15, 0.6, 0.04), cutoff=280, sweep=2000, fenv=(0.002, 0.07, 0.1, 0.04), resonance=0.45,
+        detune=0.0, shapes=("pulse",), sub=0.6, drive=1.8),
+    "sh101-blip": lambda: notes([("C4", 0.0, 1.0), ("E4", 0.09, 1.0), ("C5", 0.18, 1.0)], 0.12, gate=0.05,
+        amp=(0.002, 0.08, 0.3, 0.04), cutoff=900, sweep=3500, fenv=(0.002, 0.05, 0.1, 0.04), resonance=0.5,
+        detune=0.0, shapes=("pulse",), drive=1.5),
+    "emulator-shakuhachi": lambda: shakuhachi(),
+    "emulator-strings": lambda: lofi(subtractive([hz(n) for n in ("A3", "C#4", "E4", "A4")], 1.2, gate=0.85,
+        amp=(0.15, 0.6, 0.85, 0.25), cutoff=1900, sweep=400, fenv=(0.2, 0.5, 0.6, 0.25), resonance=0.05,
+        detune=0.006, vibrato=0.004), hold=2, levels=2048),
+    "jp8000-pluck": lambda: notes([("A3", 0.0, 1.0), ("C4", 0.1, 0.9), ("E4", 0.2, 1.0)], 0.3, gate=0.05,
+        amp=(0.002, 0.15, 0.2, 0.1), cutoff=700, sweep=4500, fenv=(0.002, 0.07, 0.0, 0.08), resonance=0.15,
+        detune=0.008, shapes=("saw",) * 7),
+    "jp8000-pad": lambda: chorus(subtractive([hz(n) for n in ("F3", "A3", "C4", "E4")], 1.4, gate=1.0,
+        amp=(0.25, 0.6, 0.85, 0.35), cutoff=1400, sweep=1200, fenv=(0.4, 0.5, 0.7, 0.35), resonance=0.05,
+        detune=0.007, shapes=("saw",) * 7), mix=0.45),
+    "synclavier-pluck": lambda: synclavier_pluck(),
+    "synclavier-pad": lambda: additive(hz("C4"), 1.4, ((1, 1.0, 2.0), (1.003, 0.8, 2.0), (2, 0.5, 1.2),
+                                                      (3.01, 0.3, 0.9), (4, 0.2, 0.7)), attack=0.25),
+    "buchla-ping": lambda: buchla_ping(),
+    "buchla-chime": lambda: buchla_chime(),
+    "omnichord-harp": lambda: omnichord_harp(),
+    "omnichord-organ": lambda: omnichord_organ(),
+}
+
+
+def ppg_sweep(f: float, seconds: float, start: float, end: float, wobble: bool = False) -> list[float]:
+    """A PPG wavetable whose position moves from one harmonic to another."""
+    out, phases = [], [0.0] * 24
+    for n in range(int(seconds * RATE)):
+        t = n / RATE
+        centre = start + (end - start) * (t / seconds)
+        if wobble:
+            centre += 2.0 * math.sin(2 * math.pi * 0.9 * t)
+        v = 0.0
+        for k in range(1, 25):
+            if k * f > RATE * 0.45:
+                break
+            phases[k - 1] = (phases[k - 1] + k * f / RATE) % 1.0
+            v += (math.exp(-((k - centre) / 2.2) ** 2) + (0.6 if k == 1 else 0.0)) * math.sin(2 * math.pi * phases[k - 1])
+        out.append(round(v * 48) / 48)
+    return out
+
+
+def d50_pizz() -> list[float]:
+    track: list[float] = []
+    for name, at in (("C4", 0.0), ("G4", 0.11), ("E5", 0.22)):
+        f = hz(name)
+        body = subtractive([f], 0.35, gate=0.03, amp=(0.002, 0.1, 0.0, 0.1), cutoff=500, sweep=3000,
+                           fenv=(0.002, 0.05, 0.0, 0.05), resonance=0.2, detune=0.0, shapes=("saw",))
+        attack = additive(f, 0.35, ((1, 0.6, 0.08), (3.01, 0.3, 0.04), (5.2, 0.2, 0.03)))
+        place(track, [a + b for a, b in zip(body, attack)], at, 0.8)
+    return track
+
+
+def d50_heaven() -> list[float]:
+    track: list[float] = []
+    for name, at in (("C4", 0.0), ("E4", 0.13), ("G4", 0.26), ("C5", 0.39)):
+        f = hz(name)
+        bell = additive(f, 0.5, ((1, 1.0, 0.25), (2, 0.4, 0.15), (2.76, 0.4, 0.1), (5.4, 0.2, 0.05)))
+        voice = formants([f], 0.5, ((800, 1.0, 6.0), (1150, 0.5, 8.0)), amp=(0.03, 0.2, 0.3, 0.15), gate=0.12)
+        place(track, [a + 0.6 * b for a, b in zip(bell, voice)], at, 0.7)
+    return chorus(track, mix=0.35)
+
+
+def m1_organ() -> list[float]:
+    track: list[float] = []
+    for at in (0.0, 0.2):
+        for name in ("C4", "E4", "G4"):
+            f = hz(name)
+            note = [(math.sin(2 * math.pi * f * n / RATE) + 0.7 * math.sin(4 * math.pi * f * n / RATE)
+                     + 0.5 * math.sin(6 * math.pi * f * n / RATE) * math.exp(-n / RATE / 0.06)  # the percussion
+                     + 0.3 * math.sin(8 * math.pi * f * n / RATE))
+                    * adsr(n / RATE, 0.14, 0.002, 0.3, 0.8, 0.05) for n in range(int(0.22 * RATE))]
+            place(track, note, at, 0.4)
+    click = noise(5)
+    for at in (0.0, 0.2):
+        place(track, [next(click) * math.exp(-n / RATE / 0.003) for n in range(int(0.01 * RATE))], at, 0.15)
+    return track
+
+
+def shakuhachi() -> list[float]:
+    f, phase, breath, hiss, out = hz("D4"), 0.0, SVF(), noise(13), []
+    for n in range(int(0.9 * RATE)):
+        t = n / RATE
+        bend = 2 ** (-1 / 12 * math.exp(-t / 0.12))  # a breathy scoop up into the note
+        pitch = f * bend * (1.0 + 0.008 * math.sin(2 * math.pi * 5 * t) * min(t / 0.3, 1.0))
+        phase = (phase + pitch / RATE) % 1.0
+        tone = math.sin(2 * math.pi * phase) + 0.2 * math.sin(4 * math.pi * phase)
+        chiff = math.exp(-t / 0.05)  # the strong breath at the start
+        air = breath.next(next(hiss), pitch * 2, 1.5)[1]
+        out.append((tone * (1 - 0.6 * chiff) + air * (0.4 + 1.5 * chiff)) * adsr(t, 0.7, 0.03, 0.4, 0.8, 0.15))
+    return lofi(out, hold=2, levels=2048)
+
+
+def synclavier_pluck() -> list[float]:
+    track: list[float] = []
+    for name, at in (("A4", 0.0), ("E4", 0.14)):
+        place(track, fm(hz(name), 0.6, ratio=1.0, index=4.0, index_tau=0.06, amp_tau=0.2), at, 0.8)
+    return track
+
+
+def buchla_ping() -> list[float]:
+    track: list[float] = []
+    ping = lpg(hz("A4"), 0.4, decay=0.06, fold=1.2)
+    for k, at in enumerate((0.0, 0.18, 0.36, 0.54)):  # a dotted echo, fading
+        place(track, ping, at, 0.55 ** k)
+    return track
+
+
+def buchla_chime() -> list[float]:
+    track: list[float] = []
+    for name, at in (("E4", 0.0), ("B4", 0.16)):
+        place(track, lpg(hz(name), 0.6, decay=0.12, fold=1.5, ratio=1.5, index=2.5), at)
+    return track
+
+
+def omnichord_harp() -> list[float]:
+    track: list[float] = []
+    names = ("A5", "E5", "C5", "A4", "E4", "C4", "A3")  # down the strumplate, softly
+    for k, name in enumerate(names):
+        f = hz(name)
+        pluck = [(math.sin(2 * math.pi * f * n / RATE) + 0.25 * math.sin(4 * math.pi * f * n / RATE))
+                 * math.exp(-n / RATE / 0.6) * min(n / RATE / 0.003, 1.0) for n in range(int(1.0 * RATE))]
+        place(track, pluck, 0.05 * k, 0.35 + 0.03 * k)
+    return chorus(track, depth_ms=1.0, mix=0.3)
+
+
+def omnichord_organ() -> list[float]:
+    return chorus(subtractive([hz(n) for n in ("F3", "A3", "C4", "F4")], 0.6, gate=0.4,
+                              amp=(0.005, 0.3, 0.85, 0.08), cutoff=1600, sweep=0, fenv=(0.01, 0.1, 1.0, 0.1),
+                              resonance=0.0, detune=0.0, shapes=("pulse",), pwm=0.0), mix=0.3)
+
+
 TONES = {
     "juno-pad": juno_pad, "tb303-acid": tb303_acid, "prophet-brass": prophet_brass, "obx-jump": obx_jump,
     "cs80-blade": cs80_blade, "ppg-wave": ppg_wave, "d50-fantasia": d50_fantasia, "m1-piano": m1_piano,
@@ -430,6 +722,7 @@ TONES = {
     "fairlight-orch": fairlight_orch, "jupiter-arp": jupiter_arp, "sh101-zap": sh101_zap,
     "emulator-choir": emulator_choir, "jp8000-supersaw": jp8000_supersaw, "synclavier-bell": synclavier_bell,
     "buchla-bongo": buchla_bongo, "omnichord-strum": omnichord_strum,
+    **MORE,
 }
 
 

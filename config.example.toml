@@ -11,8 +11,9 @@ zuliprc = "~/.zuliprc"
 # Tones: chime, ping, bell, blip, knock, double, triple, rise, fall, alert,
 # urgent, low, soft, mid-short, mid-long; DX7-style FM dx-epiano, dx-bells,
 # dx-vibe, dx-organ and more; moog-a (Minimoog A4); sos (Morse, spark-gap);
-# after famous synths juno-pad, tb303-acid, prophet-brass, obx-jump,
-# cs80-blade, ppg-wave, d50-fantasia, m1-piano, alpha-hoover, odyssey-sync;
+# three each after famous synths: juno-*, tb303-*, prophet-*, obx-*, cs80-*,
+# ppg-*, d50-*, m1-*, alpha-*, odyssey-*, mellotron-*, fairlight-*,
+# jupiter-*, sh101-*, emulator-*, jp8000-*, synclavier-*, buchla-*, omnichord-*;
 # recordings doorbell, rooster, foghorn and more. The editor lists all.
 sound = "chime"
 # Percent of the system output level, 0 to 100.
