@@ -34,10 +34,11 @@ public enum SoundStyle: String, CaseIterable, Sendable {
         "bicycle-bell", "church-bells", "doorbell", "foghorn", "rooster", "singing-bowl", "steam-whistle",
         "typewriter-ding", "wind-chimes",
     ]
-    /// The instruments the synth tones are named after (gen_synths.py, gen_moog.py).
+    /// The instruments the synth tones are named after (gen_synths.py, gen_moog.py, gen_celeste.py).
     static let synthFamilies: Set<String> = [
         "juno", "tb303", "prophet", "obx", "cs80", "ppg", "d50", "m1", "alpha", "odyssey", "mellotron",
         "fairlight", "jupiter", "sh101", "emulator", "jp8000", "synclavier", "buchla", "omnichord", "moog",
+        "celeste",
     ]
     /// The drum machines and synth drums the drum tones are named after (gen_drums.py).
     static let drumFamilies: Set<String> = ["808", "909", "syndrum", "cr78"]

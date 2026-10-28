@@ -21,6 +21,7 @@ import Testing
         #expect(SoundStyle(name: "juno-pad", yours: false) == .synths)
         #expect(SoundStyle(name: "moog-a", yours: false) == .synths)
         #expect(SoundStyle(name: "omnichord-harp", yours: false) == .synths)
+        #expect(SoundStyle(name: "celeste-crystal", yours: false) == .synths)
         #expect(SoundStyle(name: "rooster", yours: false) == .recordings)
         #expect(SoundStyle(name: "808-cowbell", yours: false) == .drums)
         #expect(SoundStyle(name: "syndrum-pew", yours: false) == .drums)
