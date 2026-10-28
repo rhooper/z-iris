@@ -128,13 +128,15 @@ public struct EditorView: View {
                 }
             }
             .frame(minWidth: 480)
-        }
-        .safeAreaInset(edge: .bottom) {
-            HStack {
-                Text(model.status).font(.callout).foregroundStyle(model.problem == nil ? Color.secondary : Color.red).lineLimit(2)
-                Spacer()
+            // The save status belongs to the detail column: across the whole
+            // window it covered the sidebar's last item.
+            .safeAreaInset(edge: .bottom) {
+                HStack {
+                    Text(model.status).font(.callout).foregroundStyle(model.problem == nil ? Color.secondary : Color.red).lineLimit(2)
+                    Spacer()
+                }
+                .padding(.horizontal).padding(.vertical, 6).background(.bar)
             }
-            .padding(.horizontal).padding(.vertical, 6).background(.bar)
         }
         .task {
             model.load()
@@ -1073,7 +1075,12 @@ public final class EditorWindow {
 
     public func show() {
         if window == nil {
-            let window = NSWindow(contentViewController: NSHostingController(rootView: EditorView(model: makeModel())))
+            let hosting = NSHostingController(rootView: EditorView(model: makeModel()))
+            // A real toolbar from the SwiftUI one: without it the sidebar ran
+            // up under the title bar.
+            hosting.sceneBridgingOptions = [.toolbars]
+            let window = NSWindow(contentViewController: hosting)
+            window.toolbarStyle = .unified
             window.title = "z-iris Rules"
             window.setContentSize(NSSize(width: 900, height: 640))
             window.isReleasedWhenClosed = false
