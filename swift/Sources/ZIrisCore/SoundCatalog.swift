@@ -40,7 +40,7 @@ public enum SoundStyle: String, CaseIterable, Sendable {
         "fairlight", "jupiter", "sh101", "emulator", "jp8000", "synclavier", "buchla", "omnichord", "moog",
     ]
     /// The drum machines and synth drums the drum tones are named after (gen_drums.py).
-    static let drumFamilies: Set<String> = ["808", "909", "syndrum", "simmons", "cr78"]
+    static let drumFamilies: Set<String> = ["808", "909", "syndrum", "cr78"]
 
     public init(name: String, yours: Bool) {
         let family = name.split(separator: "-").first.map(String.init) ?? name

@@ -15,8 +15,7 @@ lets a short hit reach the others' loudness without clipping.
   909-kick      Roland TR-909 kick: a punchy sweep with a click
   909-clap      TR-909 handclap, brighter and tighter
   909-roll      TR-909 snare roll, building
-  syndrum-pew   Pollard Syndrum: the disco "pew", twice
-  simmons-fill  Simmons SDS-V: electronic toms, a fill down
+  syndrum-pew   Pollard Syndrum: the disco "pew"
   cr78-beat     Roland CR-78: a soft vintage kick, rim and hat pattern
 
 Date: 2026-10-28
@@ -114,11 +113,8 @@ def hat_808(seed: int, decay: float = 0.03) -> list[float]:
     return out
 
 
-def tom(start: float, end: float, decay: float = 0.18, seed: int = 0, crack: float = 0.0) -> list[float]:
-    body = sweep_sine(start, end, 0.05, decay, 0.4, 1.4)
-    if crack:
-        return mix((body, 1.0), (filtered_noise(0.4, start * 4, 0.8, 0.02, seed), crack))
-    return body
+def tom(start: float, end: float, decay: float = 0.18) -> list[float]:
+    return sweep_sine(start, end, 0.05, decay, 0.4, 1.4)
 
 
 def kick_909() -> list[float]:
@@ -206,19 +202,8 @@ def _() -> list[float]:
 
 @tone("syndrum-pew")
 def _() -> list[float]:
-    track: list[float] = []
-    for at in (0.0, 0.2):
-        pew = sweep_sine(900, 160, 0.09, 0.25, 0.35, 1.3)
-        place(track, mix((pew, 1.0), (filtered_noise(0.35, 4000, 0.7, 0.01, 7), 0.15)), at)
-    return saturate(track, 1.4)
-
-
-@tone("simmons-fill")
-def _() -> list[float]:
-    track: list[float] = []
-    for k, (start, end) in enumerate(((520, 300), (400, 220), (300, 160), (220, 110))):
-        place(track, tom(start, end, decay=0.2, seed=40 + k, crack=0.35), 0.09 * k)
-    return saturate(track, 1.8)
+    pew = sweep_sine(900, 160, 0.09, 0.25, 0.35, 1.3)
+    return saturate(mix((pew, 1.0), (filtered_noise(0.35, 4000, 0.7, 0.01, 7), 0.15)), 1.4)
 
 
 @tone("cr78-beat")

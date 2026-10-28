@@ -96,8 +96,8 @@ one sample per kind.
   `odyssey-*` (ARP Odyssey), `mellotron-*`, `fairlight-*`, `jupiter-*`
   (Jupiter-8), `sh101-*`, `emulator-*` (E-mu Emulator), `jp8000-*`,
   `synclavier-*`, `buchla-*` and `omnichord-*`; drums after the TR-808,
-  TR-909, CR-78, Syndrum and Simmons (`808-*`, `909-*`, `cr78-beat`,
-  `syndrum-pew`, `simmons-fill`); nine public-domain recordings), or a file in
+  TR-909, CR-78 and Syndrum (`808-*`, `909-*`, `cr78-beat`, `syndrum-pew`);
+  nine public-domain recordings), or a file in
   `~/.config/z-iris/sounds/` (its name without the extension). `volume`: 0 to
   100. `banner`: `full`, `title` (no message text) or `off`. `server`: one server.
 - Precedence: higher `priority` first, then topic, keyword, mention, wildcard,
