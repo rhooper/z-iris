@@ -1,7 +1,8 @@
 """Generate short, middle-pitched bundled tones on many instruments: under
 0.35 s, with a spectral centroid in the sound browser's middle band (420 to
 650 Hz), so there are plenty of quick, unobtrusive notifications to choose
-between. Each is one note, named instrument-note.
+between. Each is one note, named instrument-note; every instrument plays
+its first note and a fourth below, a minor third and a fifth above it.
 
   guitar-a4      a plucked string (Karplus-Strong)
   harp-c5        a softer plucked string, longer-lived
@@ -70,23 +71,44 @@ def fade_out(track: list[float], tail: float = 0.05) -> list[float]:
     return [v * (1.0 if n < start else (len(track) - n) / count) for n, v in enumerate(track)]
 
 
+# Each instrument's voice at any frequency, and the note it was first made on.
+INSTRUMENTS = {
+    "guitar": ("A4", lambda f: karplus(f, LENGTH, 0.996, 2.5, 1)),
+    "harp": ("C5", lambda f: karplus(f, LENGTH, 0.998, 1.5, 2)),
+    "pizz": ("B4", lambda f: warm([v * math.exp(-n / RATE / 0.13) for n, v in enumerate(karplus(f, LENGTH, 0.99, 2.0, 3))])),
+    "kalimba": ("D5", lambda f: additive(f, LENGTH, ((1, 1.0, 0.18), (5.4, 0.25, 0.03)))),
+    "marimba": ("A4", lambda f: additive(f, LENGTH, ((1, 1.0, 0.12), (4, 0.35, 0.02), (10, 0.08, 0.008)))),
+    "vibes": ("C5", lambda f: additive(f, LENGTH, ((1, 1.0, 0.25), (4, 0.3, 0.05), (10, 0.06, 0.01)))),
+    "celesta": ("A4", lambda f: additive(f, LENGTH, ((1, 1.0, 0.2), (2, 0.3, 0.08), (3, 0.12, 0.05)))),
+    "musicbox": ("C5", lambda f: additive(f, LENGTH, ((1, 1.0, 0.22), (3, 0.2, 0.06), (5.8, 0.12, 0.03)))),
+    "steelpan": ("B4", lambda f: fm(f, LENGTH, ratio=3.5, index=1.2, index_tau=0.05, amp_tau=0.15)),
+    "glass": ("A4", lambda f: additive(f, LENGTH, ((1, 1.0, 0.3), (2.32, 0.25, 0.12), (4.25, 0.1, 0.06)))),
+    "woodblock": ("C5", lambda f: warm(additive(f, LENGTH, ((1, 1.0, 0.08), (2.9, 0.4, 0.025), (5.1, 0.15, 0.01))), 2.5)),
+    "ocarina": ("B4", lambda f: ocarina(f)),
+    "fmbell": ("C5", lambda f: fm(f, LENGTH, ratio=1.4, index=2.0, index_tau=0.06, amp_tau=0.14)),
+    # the filter follows the note, as keyboard tracking would
+    "synthpluck": ("A4", lambda f: warm(subtractive([f], LENGTH, gate=0.08, amp=(0.002, 0.15, 0.3, 0.1),
+                                                     cutoff=1.02 * f, sweep=2.05 * f, fenv=(0.002, 0.05, 0.0, 0.05),
+                                                     resonance=0.25, detune=0.005))),
+}
+# Besides its first note, each instrument plays a fourth below, a minor third
+# above and a fifth above it, so each spans the low, middle and high bands.
+INTERVALS = (0, -5, 3, 7)
+NOTE_NAMES = ("c", "db", "d", "eb", "e", "f", "gb", "g", "ab", "a", "bb", "b")
+
+
+def shifted(note: str, semitones: int) -> str:
+    """A note name moved by semitones, spelled with flats: "a4" + 3 is "c5"."""
+    names = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11}
+    key = names[note[0].upper()] + (-1 if note[1:2] == "b" else 1 if note[1:2] == "#" else 0)
+    number = 12 * int(note[-1]) + key + semitones
+    return f"{NOTE_NAMES[number % 12]}{number // 12}"
+
+
 TONES = {
-    "guitar-a4": lambda: karplus(hz("A4"), LENGTH, 0.996, 2.5, 1),
-    "harp-c5": lambda: karplus(hz("C5"), LENGTH, 0.998, 1.5, 2),
-    "pizz-b4": lambda: warm([v * math.exp(-n / RATE / 0.13) for n, v in enumerate(karplus(hz("B4"), LENGTH, 0.99, 2.0, 3))]),
-    "kalimba-d5": lambda: additive(hz("D5"), LENGTH, ((1, 1.0, 0.18), (5.4, 0.25, 0.03))),
-    "marimba-a4": lambda: additive(hz("A4"), LENGTH, ((1, 1.0, 0.12), (4, 0.35, 0.02), (10, 0.08, 0.008))),
-    "vibes-c5": lambda: additive(hz("C5"), LENGTH, ((1, 1.0, 0.25), (4, 0.3, 0.05), (10, 0.06, 0.01))),
-    "celesta-a4": lambda: additive(hz("A4"), LENGTH, ((1, 1.0, 0.2), (2, 0.3, 0.08), (3, 0.12, 0.05))),
-    "musicbox-c5": lambda: additive(hz("C5"), LENGTH, ((1, 1.0, 0.22), (3, 0.2, 0.06), (5.8, 0.12, 0.03))),
-    "steelpan-b4": lambda: fm(hz("B4"), LENGTH, ratio=3.5, index=1.2, index_tau=0.05, amp_tau=0.15),
-    "glass-a4": lambda: additive(hz("A4"), LENGTH, ((1, 1.0, 0.3), (2.32, 0.25, 0.12), (4.25, 0.1, 0.06))),
-    "woodblock-c5": lambda: warm(additive(hz("C5"), LENGTH, ((1, 1.0, 0.08), (2.9, 0.4, 0.025), (5.1, 0.15, 0.01))), 2.5),
-    "ocarina-b4": lambda: ocarina(hz("B4")),
-    "fmbell-c5": lambda: fm(hz("C5"), LENGTH, ratio=1.4, index=2.0, index_tau=0.06, amp_tau=0.14),
-    "synthpluck-a4": lambda: warm(subtractive([hz("A4")], LENGTH, gate=0.08, amp=(0.002, 0.15, 0.3, 0.1),
-                                         cutoff=450, sweep=900, fenv=(0.002, 0.05, 0.0, 0.05), resonance=0.25,
-                                         detune=0.005)),
+    f"{name}-{shifted(base, step)}": (lambda voice, base, step: lambda: voice(hz(base) * 2 ** (step / 12)))(voice, base, step)
+    for name, (base, voice) in INSTRUMENTS.items()
+    for step in INTERVALS
 }
 
 

@@ -9,8 +9,9 @@ zuliprc = "~/.zuliprc"
 [defaults]
 # A sound name: a bundled tone, a file you added in the editor, or "none".
 # Tones: chime, ping, bell, blip, knock, double, triple, rise, fall, alert,
-# urgent, low, soft, mid-short, mid-long; short middle notes guitar-a4,
-# kalimba-d5, marimba-a4, vibes-c5, glass-a4, woodblock-c5 and more; DX7-style FM dx-epiano, dx-bells,
+# urgent, low, soft, mid-short, mid-long; short notes guitar-e4, guitar-a4,
+# guitar-c5, guitar-e5, kalimba-*, marimba-*, vibes-*, glass-*, woodblock-*
+# and more (four pitches each); DX7-style FM dx-epiano, dx-bells,
 # dx-vibe, dx-organ and more; moog-a (Minimoog A4); sos (Morse, spark-gap);
 # three each after famous synths: juno-*, tb303-*, prophet-*, obx-*, cs80-*,
 # ppg-*, d50-*, m1-*, alpha-*, odyssey-*, mellotron-*, fairlight-*,

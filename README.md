@@ -89,9 +89,11 @@ one sample per kind.
   is exactly #ops and `ops-.*` matches #ops-east and #ops-west.
 - `sound`: `none`, a bundled tone (chime, ping, bell, blip, knock, double,
   triple, rise, fall, alert, urgent, low, soft, mid-short, mid-long; short
-  middle notes on many instruments: guitar-a4, harp-c5, pizz-b4, kalimba-d5,
-  marimba-a4, vibes-c5, celesta-a4, musicbox-c5, steelpan-b4, glass-a4,
-  woodblock-c5, ocarina-b4, fmbell-c5, synthpluck-a4; the DX7-style
+  notes on many instruments, four pitches each: guitar-a4, harp-c5, pizz-b4,
+  kalimba-d5, marimba-a4, vibes-c5, celesta-a4, musicbox-c5, steelpan-b4,
+  glass-a4, woodblock-c5, ocarina-b4, fmbell-c5, synthpluck-a4, each also a
+  fourth below, a minor third and a fifth above (guitar-e4, guitar-c5,
+  guitar-e5; flats spelled `eb`, `gb`); the DX7-style
   `dx-*` voices; moog-a; sos; three patches each after nineteen famous
   synths and samplers: `juno-*` (Roland Juno-106), `tb303-*`, `prophet-*`
   (Prophet-5), `obx-*` (Oberheim OB-Xa), `cs80-*` (Yamaha CS-80), `ppg-*`
