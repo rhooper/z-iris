@@ -76,8 +76,11 @@ Rules live in `~/.config/z-iris/config.toml` as `[[rule]]` tables, and the file
 reloads while z-iris runs (menubar: Reload config). `config.example.toml` has
 one sample per kind.
 
-- `match`: `channel`, `topic`, `keyword`, `mention`, `wildcard`, `alert_word`,
-  `dm` or `group_dm`; `conversation` and `reaction` are described below. `mention` is @you only and `wildcard` is @all, @everyone,
+- `match`: `sender`, `channel`, `topic`, `keyword`, `mention`, `wildcard`,
+  `alert_word`, `dm` or `group_dm`; `conversation` and `reaction` are described
+  below. `sender` matches someone's messages anywhere, in channels or direct
+  messages: `sender = ["Ada Lovelace", "bob@example.com"]`, each a full name or
+  email, matched whole and in any case. `mention` is @you only and `wildcard` is @all, @everyone,
   @channel or @topic; `alert_word` is your own Zulip alert words. Topic and
   keyword values are case-insensitive regular expressions, written as Python's
   `re` reads them (as the first version was in Python).
@@ -108,7 +111,7 @@ one sample per kind.
   nine public-domain recordings), or a file in
   `~/.config/z-iris/sounds/` (its name without the extension). `volume`: 0 to
   100. `banner`: `full`, `title` (no message text) or `off`. `server`: one server.
-- Precedence: higher `priority` first, then topic, keyword, mention, wildcard,
+- Precedence: higher `priority` first, then sender, topic, keyword, mention, wildcard,
   alert word, channel, group DM, DM, then file order.
 - Final volume is rule volume (or `[defaults] volume`) times the server's
   `volume` times `master_volume`, each as a percent.

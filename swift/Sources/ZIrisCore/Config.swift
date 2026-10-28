@@ -428,6 +428,19 @@ private func rules(
             }
         }
 
+        // One name or email, or a list.
+        var senders: [String] = []
+        if let value = raw["sender"] {
+            let names = (value as? String).map { [$0] } ?? (value as? [Any])?.compactMap { $0 as? String }
+            guard let names, !names.isEmpty, names.allSatisfy({ !$0.isEmpty }),
+                  (value as? [Any]).map({ $0.count == names.count }) ?? true
+            else { throw ConfigError("\(label): sender must be a name or email, or a list of them") }
+            guard kind == .sender else { throw ConfigError("\(label): sender only applies to sender rules") }
+            senders = names
+        } else if kind == .sender {
+            throw ConfigError("\(label): a sender rule needs sender")
+        }
+
         var pattern: PyRegex?
         if kind == .topic || kind == .keyword {
             guard let source = raw[kind.rawValue] as? String, !source.isEmpty else {
@@ -515,7 +528,8 @@ private func rules(
             var made = try Rule(
                 description: description, kind: kind, channels: channels ?? [], pattern: pattern,
                 server: server as? String, sound: sound, volume: volume, banner: banner as? String,
-                priority: priority, index: index, enabled: enabled, behaviour: found, join: join, emoji: emoji
+                priority: priority, index: index, enabled: enabled, behaviour: found, join: join, emoji: emoji,
+                senders: senders
             )
             made.reactionRule = reaction
             rules.append(made)

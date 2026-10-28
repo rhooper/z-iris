@@ -12,6 +12,8 @@ public struct Message: Sendable, Equatable, Hashable {
     public var kind: Kind
     public var senderID: Int
     public var senderName: String
+    /// Empty when the event did not say.
+    public var senderEmail: String
     public var content: String
     public var flags: Set<String>
     public var channelID: Int?
@@ -28,8 +30,9 @@ public struct Message: Sendable, Equatable, Hashable {
         server: String, host: String, id: Int, kind: Kind, senderID: Int,
         senderName: String, content: String, flags: Set<String>, channelID: Int?,
         channelName: String?, topic: String?, dmUserIDs: [Int],
-        avatarURL: String? = nil, dmNames: [String] = []
+        avatarURL: String? = nil, dmNames: [String] = [], senderEmail: String = ""
     ) {
+        self.senderEmail = senderEmail
         self.server = server
         self.host = host
         self.id = id
@@ -78,6 +81,7 @@ extension Message {
         let id = try raw.int("id")
         let senderID = try raw.int("sender_id")
         let senderName = try raw.string("sender_full_name")
+        let senderEmail = raw["sender_email"] as? String ?? ""
         let content = try raw.string("content")
         let avatarURL = raw["avatar_url"] as? String
         let type = try raw.string("type")
@@ -89,7 +93,7 @@ extension Message {
                 senderName: senderName, content: content, flags: flags,
                 channelID: try raw.int("stream_id"),
                 channelName: try raw.string("display_recipient"),
-                topic: topic, dmUserIDs: [], avatarURL: avatarURL
+                topic: topic, dmUserIDs: [], avatarURL: avatarURL, senderEmail: senderEmail
             )
             return
         }
@@ -107,7 +111,7 @@ extension Message {
             server: server, host: host, id: id, kind: .dm, senderID: senderID,
             senderName: senderName, content: content, flags: flags,
             channelID: nil, channelName: nil, topic: nil, dmUserIDs: ids,
-            avatarURL: avatarURL, dmNames: ids.map { names[$0] ?? "" }
+            avatarURL: avatarURL, dmNames: ids.map { names[$0] ?? "" }, senderEmail: senderEmail
         )
     }
 }

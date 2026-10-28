@@ -7,7 +7,7 @@ import ZulipKit
 // dictionaries; a field left empty in a rule uses the default rule's value.
 
 private let kinds: [(String, String)] = [
-    ("topic", "Topic"), ("keyword", "Keyword"), ("mention", "Mention of You"),
+    ("sender", "Sender (Someone in Particular)"), ("topic", "Topic"), ("keyword", "Keyword"), ("mention", "Mention of You"),
     ("wildcard", "Wildcard Mention (@all, @everyone, @channel, @topic)"),
     ("alert_word", "Alert Word (Your Zulip Alert Words)"), ("channel", "Channel"),
     ("group_dm", "Group Direct Message"), ("dm", "Direct Message"),
@@ -602,6 +602,54 @@ private struct ChannelTokens: View {
     }
 }
 
+/// A sender rule's people: full names or emails, matched whole in any case.
+private struct PersonTokens: View {
+    let model: EditorModel
+    @Binding var people: TOMLValue?
+    @State private var entry = ""
+
+    private var names: [String] {
+        if case .array(let items)? = people { return items.compactMap { if case .string(let s) = $0 { s } else { nil } } }
+        if case .string(let s)? = people { return [s] }
+        return []
+    }
+
+    private func set(_ list: [String]) {
+        people = list.isEmpty ? nil : .array(list.map(TOMLValue.string))
+    }
+
+    private func add() {
+        let name = entry.trimmingCharacters(in: .whitespaces)
+        guard !name.isEmpty, !names.contains(where: { $0.lowercased() == name.lowercased() }) else { return }
+        set(names + [name])
+        entry = ""
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            ForEach(Array(names.enumerated()), id: \.offset) { index, name in
+                HStack {
+                    Text(name)
+                    Spacer()
+                    Button { set(names.enumerated().filter { $0.offset != index }.map(\.element)) } label: {
+                        Image(systemName: "xmark.circle.fill")
+                    }
+                    .buttonStyle(.borderless)
+                    .help("Remove")
+                }
+            }
+            HStack {
+                TextField("Person", text: $entry, prompt: Text("Full name or email, such as Ada Lovelace"))
+                    .labelsHidden()
+                    .onSubmit(add)
+                Button("Add", action: add).disabled(entry.trimmingCharacters(in: .whitespaces).isEmpty)
+            }
+            Text("Their messages anywhere, in channels or direct messages; names and emails match whole, in any case.")
+                .font(.caption).foregroundStyle(.secondary)
+        }
+    }
+}
+
 private struct RuleEditor: View {
     let model: EditorModel
     @Binding var rule: EditableRule
@@ -621,6 +669,11 @@ private struct RuleEditor: View {
                 if ["channel", "topic", "conversation", "reaction"].contains(match) {
                     LabeledContent(match == "channel" ? "Channels" : "Channels (optional)") {
                         ChannelTokens(model: model, channels: field(model, $rule.fields, "channel"))
+                    }
+                }
+                if match == "sender" {
+                    LabeledContent("People") {
+                        PersonTokens(model: model, people: field(model, $rule.fields, "sender"))
                     }
                 }
                 if ["topic", "conversation", "reaction"].contains(match) {

@@ -2,6 +2,8 @@
 
 /// Rule kinds in tie-break order: on equal priority the earlier kind wins.
 public enum RuleKind: String, CaseIterable, Sendable {
+    // A rule about a particular person is the most specific of all.
+    case sender
     case topic, keyword, mention, wildcard
     case alertWord = "alert_word"
     case channel
@@ -15,6 +17,7 @@ public enum RuleKind: String, CaseIterable, Sendable {
 
     var label: String {
         switch self {
+        case .sender: "Sender"
         case .topic: "Topic"
         case .keyword: "Keyword"
         case .mention: "Mention"
@@ -58,6 +61,8 @@ public struct Rule: Sendable, Equatable {
     public var join: Bool
     /// For reaction rules: only these emoji names (empty: any).
     public var emoji: [String]
+    /// For sender rules: full names or emails, matched whole and in any case.
+    public var senders: [String]
     private var reaction: ReactionSubRule?
     private var channelPatterns: [PyRegex]
 
@@ -72,10 +77,11 @@ public struct Rule: Sendable, Equatable {
         description: String?, kind: RuleKind, channels: [String], pattern: PyRegex?,
         server: String?, sound: String?, volume: Int?, banner: String?, priority: Int,
         index: Int, enabled: Bool = true, behaviour: Behaviour = [:],
-        join: Bool = false, emoji: [String] = []
+        join: Bool = false, emoji: [String] = [], senders: [String] = []
     ) throws(PyRegex.Error) {
         self.join = join
         self.emoji = emoji
+        self.senders = senders
         self.description = description
         self.kind = kind
         self.channels = channels
@@ -99,7 +105,7 @@ public struct Rule: Sendable, Equatable {
         lhs.description == rhs.description && lhs.kind == rhs.kind && lhs.channels == rhs.channels
             && lhs.pattern == rhs.pattern && lhs.server == rhs.server && lhs.sound == rhs.sound
             && lhs.volume == rhs.volume && lhs.banner == rhs.banner && lhs.priority == rhs.priority
-            && lhs.index == rhs.index && lhs.enabled == rhs.enabled
+            && lhs.index == rhs.index && lhs.enabled == rhs.enabled && lhs.senders == rhs.senders
     }
 
     /// The description, else what the rule matches ("Channel #ops, #deploys").
@@ -109,6 +115,8 @@ public struct Rule: Sendable, Equatable {
         }
         let where_ = channels.map { "#\($0)" }.joined(separator: ", ")
         switch kind {
+        case .sender where !senders.isEmpty:
+            return "\(kind.label) \(senders.joined(separator: ", "))"
         case .channel, .conversation where !channels.isEmpty:
             return "\(kind.label) \(where_)"
         case .topic, .keyword:
@@ -129,6 +137,9 @@ public struct Rule: Sendable, Equatable {
             return false
         }
         switch kind {
+        case .sender:
+            let who = [message.senderName, message.senderEmail].filter { !$0.isEmpty }.map(\.pythonLowercased)
+            return senders.contains { who.contains($0.pythonLowercased) }
         case .channel:
             return message.kind == .channel && inChannels(message.channelName)
         case .topic:

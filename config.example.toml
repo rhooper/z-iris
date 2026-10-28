@@ -46,7 +46,7 @@ notify_channel_messages = false
 # online. Server uploads, server avatars and Gravatar always work.
 # external_images = false
 
-# Rules. The most specific matching rule wins: topic, keyword, mention (@you),
+# Rules. The most specific matching rule wins: sender, topic, keyword, mention (@you),
 # wildcard (@all and friends), alert_word, channel, group_dm, dm. A higher
 # "priority" (default 0) overrides that order, and ties go to file order (the
 # editor saves rules sorted by priority, then description). Only match is
@@ -70,6 +70,12 @@ notify_channel_messages = false
 # limited by emoji names) decide how reactions to your messages notify. A
 # channel, topic or conversation rule may carry [rule.reaction] settings for
 # reactions in its channels.
+#
+# [[rule]]
+# description = "boss"
+# match = "sender"
+# sender = ["Ada Lovelace", "ada@example.com"]   # full names or emails, any case
+# sound = "dx-brass"
 #
 # [[rule]]
 # description = "outage"

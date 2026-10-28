@@ -6,7 +6,7 @@ import TOMLDecoder
 
 /// "reaction" is the rule's [rule.reaction] sub-table, written after it.
 public let ruleFields = [
-    "description", "match", "channel", "topic", "keyword", "emoji", "server", "sound",
+    "description", "match", "channel", "sender", "topic", "keyword", "emoji", "server", "sound",
     "volume", "banner", "priority", "enabled", "join", "flash", "flash_color",
     "flash_seconds", "repeat", "repeat_every", "repeat_boost", "min_gap",
     "batch_window", "sticky", "stay", "summarize", "group_after", "reaction",
@@ -172,8 +172,10 @@ private func editableRule(_ raw: [String: Any]) -> [String: TOMLValue] {
     if rule["description"] == nil, let name = raw["name"].map(tomlValue), name.truthy {
         rule["description"] = name
     }
-    if let channel = rule["channel"], case .string = channel {
-        rule["channel"] = .array([channel])
+    for key in ["channel", "sender"] {
+        if let one = rule[key], case .string = one {
+            rule[key] = .array([one])
+        }
     }
     return rule
 }
@@ -217,9 +219,16 @@ private func sortLabel(_ raw: [String: TOMLValue], description: String?) -> Stri
         default: return nil
         }
     }
+    var senders: [String] = []
+    if case .array(let items)? = raw["sender"] {
+        senders = items.compactMap { if case .string(let name) = $0 { name } else { nil } }
+    } else if case .string(let name)? = raw["sender"] {
+        senders = [name]
+    }
     guard let kind = RuleKind(rawValue: kindName),
           let rule = try? Rule(description: description, kind: kind, channels: channels, pattern: pattern,
-                               server: nil, sound: nil, volume: nil, banner: nil, priority: 0, index: 0)
+                               server: nil, sound: nil, volume: nil, banner: nil, priority: 0, index: 0,
+                               senders: senders)
     else { return nil }
     return rule.label
 }
@@ -234,7 +243,7 @@ private func ruleKeys(_ raw: [String: TOMLValue]) -> [(String, TOMLValue)] {
     var keys: [(String, TOMLValue)] = []
     for key in ruleFields where key != "reaction" {
         var value = raw[key]
-        if key == "channel", case .array(let items)? = value {
+        if key == "channel" || key == "sender", case .array(let items)? = value {
             let kept = items.filter(\.truthy)
             value = kept.count == 1 ? kept[0] : (kept.isEmpty ? nil : .array(kept))
         }

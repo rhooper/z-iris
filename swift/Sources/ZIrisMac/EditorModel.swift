@@ -219,8 +219,13 @@ public final class EditorModel {
         }
         let source = { (key: String) -> String? in if case .string(let s)? = rule.fields[key], !s.isEmpty { s } else { nil } }
         let pattern = (kind == .topic ? source("topic") : kind == .keyword ? source("keyword") : nil).flatMap { try? PyRegex($0) }
+        var senders: [String] = []
+        if case .array(let items)? = rule.fields["sender"] {
+            senders = items.compactMap { if case .string(let s) = $0, !s.isEmpty { s } else { nil } }
+        }
         return (try? Rule(description: nil, kind: kind, channels: channels.filter { (try? PyRegex($0)) != nil }, pattern: pattern,
-                          server: nil, sound: nil, volume: nil, banner: nil, priority: 0, index: 0).label) ?? kind.rawValue
+                          server: nil, sound: nil, volume: nil, banner: nil, priority: 0, index: 0,
+                          senders: senders).label) ?? kind.rawValue
     }
 
     // MARK: sounds
