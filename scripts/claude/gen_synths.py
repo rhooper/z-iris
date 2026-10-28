@@ -193,19 +193,19 @@ def subtractive(freqs: list[float], seconds: float, *, gate: float, amp: tuple, 
 
 def juno_pad() -> list[float]:
     chord = [hz(n) for n in ("A3", "C4", "E4", "B4")]
-    voice = subtractive(chord, 1.3, gate=0.9, amp=(0.06, 0.6, 0.8, 0.3), cutoff=900, sweep=1400,
-                        fenv=(0.12, 0.5, 0.4, 0.3), resonance=0.15, detune=0.0, shapes=("saw", "pulse"),
+    voice = subtractive(chord, 0.75, gate=0.45, amp=(0.03, 0.4, 0.8, 0.2), cutoff=900, sweep=1400,
+                        fenv=(0.08, 0.35, 0.4, 0.2), resonance=0.15, detune=0.0, shapes=("saw", "pulse"),
                         pwm=0.3, sub=0.25)
     return chorus(voice, mix=0.5)
 
 
 def tb303_acid() -> list[float]:
     track: list[float] = []
-    steps = [("C3", 0.0, 0.0, False), ("C3", 0.14, 1.0, False), ("C4", 0.28, 0.6, True)]
+    steps = [("C3", 0.0, 0.0, False), ("C3", 0.1, 1.0, False), ("C4", 0.2, 0.6, True)]
     for name, at, accent, slide in steps:
         f = hz(name)
         glide = (lambda t: 0.5 + 0.5 * min(t / 0.06, 1.0)) if slide else None
-        note = subtractive([f], 0.24 if slide else 0.15, gate=0.2 if slide else 0.11,
+        note = subtractive([f], 0.18 if slide else 0.11, gate=0.14 if slide else 0.08,
                            amp=(0.003, 0.4, 0.85, 0.02), cutoff=260, sweep=1800 + 2200 * accent,
                            fenv=(0.002, 0.09 + 0.05 * accent, 0.0, 0.03), resonance=0.82, detune=0.0,
                            shapes=("saw",), drive=2.2, glide=glide)
@@ -231,14 +231,14 @@ def obx_jump() -> list[float]:
 
 def cs80_blade() -> list[float]:
     def bend(t: float) -> float:
-        return 2 ** (-2 / 12 * math.exp(-t / 0.09))  # rises a whole tone into the note
-    return subtractive([hz("A3"), hz("E4")], 1.1, gate=0.8, amp=(0.07, 0.5, 0.85, 0.25), cutoff=450,
-                       sweep=2400, fenv=(0.25, 0.4, 0.6, 0.25), resonance=0.25, detune=0.007,
+        return 2 ** (-2 / 12 * math.exp(-t / 0.06))  # rises a whole tone into the note
+    return subtractive([hz("A3"), hz("E4")], 0.65, gate=0.4, amp=(0.035, 0.3, 0.85, 0.18), cutoff=450,
+                       sweep=2400, fenv=(0.12, 0.25, 0.6, 0.18), resonance=0.25, detune=0.007,
                        shapes=("saw", "pulse"), glide=bend, vibrato=0.006)
 
 
 def ppg_wave() -> list[float]:
-    f, seconds = hz("E4"), 0.9
+    f, seconds = hz("E4"), 0.55
     out = []
     phases = [0.0] * 24
     for n in range(int(seconds * RATE)):
@@ -251,20 +251,20 @@ def ppg_wave() -> list[float]:
             weight = math.exp(-((k - centre) / 2.2) ** 2) + (0.6 if k == 1 else 0.0)
             phases[k - 1] = (phases[k - 1] + k * f / RATE) % 1.0
             value += weight * math.sin(2 * math.pi * phases[k - 1])
-        out.append(value * adsr(t, 0.6, 0.005, 0.5, 0.7, 0.25))
+        out.append(value * adsr(t, 0.35, 0.005, 0.3, 0.7, 0.15))
     # the PPG's 8-bit grain, lightly
     return [round(v * 48) / 48 for v in out]
 
 
 def d50_fantasia() -> list[float]:
-    track = subtractive([hz(n) for n in ("C4", "E4", "G4")], 1.4, gate=1.0, amp=(0.15, 0.8, 0.7, 0.35),
-                        cutoff=700, sweep=900, fenv=(0.3, 0.6, 0.5, 0.3), resonance=0.1, detune=0.006)
+    track = subtractive([hz(n) for n in ("C4", "E4", "G4")], 0.85, gate=0.5, amp=(0.08, 0.5, 0.7, 0.25),
+                        cutoff=700, sweep=900, fenv=(0.15, 0.4, 0.5, 0.25), resonance=0.1, detune=0.006)
     track = chorus(track, mix=0.4)
     for note, at in (("C5", 0.0), ("G5", 0.09), ("E6", 0.18)):  # the bell "attack" sparkle
         f = hz(note)
         bell = [(math.sin(2 * math.pi * f * n / RATE) + 0.5 * math.sin(2 * math.pi * f * 2.76 * n / RATE)
-                 + 0.25 * math.sin(2 * math.pi * f * 5.4 * n / RATE)) * math.exp(-n / RATE / 0.25)
-                for n in range(int(0.9 * RATE))]
+                 + 0.25 * math.sin(2 * math.pi * f * 5.4 * n / RATE)) * math.exp(-n / RATE / 0.2)
+                for n in range(int(0.6 * RATE))]
         place(track, bell, at, 0.35)
     return track
 
@@ -292,12 +292,14 @@ def m1_piano() -> list[float]:
 
 def alpha_hoover() -> list[float]:
     def dive(t: float) -> float:
-        return 2 ** ((-7 * math.exp(-t / 0.08) + 0.4 * math.sin(2 * math.pi * 3 * t) * min(t / 0.2, 1)) / 12)
-    voice = subtractive([hz("C3"), hz("C4")], 0.7, gate=0.5, amp=(0.01, 0.3, 0.8, 0.12), cutoff=2600,
-                        sweep=1500, fenv=(0.01, 0.2, 0.4, 0.12), resonance=0.05,
-                        shapes=("pulse", "saw", "pulse", "saw", "pulse"), detune=0.012, pwm=0.35,
-                        glide=dive, drive=1.8)
-    return chorus(voice, depth_ms=2.5, mix=0.5)
+        return 2 ** ((-7 * math.exp(-t / 0.05) + 0.4 * math.sin(2 * math.pi * 3 * t) * min(t / 0.2, 1)) / 12)
+    voice = subtractive([hz("C3"), hz("C4")], 0.45, gate=0.3, amp=(0.006, 0.2, 0.85, 0.1), cutoff=3200,
+                        sweep=1500, fenv=(0.01, 0.15, 0.4, 0.1), resonance=0.1,
+                        shapes=("pulse", "saw", "pulse", "saw", "pulse"), detune=0.018, pwm=0.4,
+                        glide=dive, drive=3.5)
+    # driven hard and crushed, as it hit the rave rigs
+    dirty = [round(math.tanh(2.8 * v) * 40) / 40 for v in voice]
+    return chorus(dirty, depth_ms=2.5, mix=0.5)
 
 
 def odyssey_sync() -> list[float]:
@@ -323,7 +325,7 @@ def odyssey_sync() -> list[float]:
 def mellotron_flute() -> list[float]:
     track: list[float] = []
     hiss = noise(7)
-    for name, at, length in (("C4", 0.0, 0.25), ("E4", 0.2, 0.25), ("G4", 0.4, 0.5)):
+    for name, at, length in (("C4", 0.0, 0.21), ("E4", 0.17, 0.21), ("G4", 0.34, 0.42)):
         f, phase, breath, out = hz(name), 0.0, SVF(), []
         for n in range(int(length * RATE)):
             t = n / RATE
@@ -356,11 +358,11 @@ def fairlight_orch() -> list[float]:
 
 def jupiter_arp() -> list[float]:
     track: list[float] = []
-    for k, name in enumerate(("C4", "E4", "G4", "C5", "G4", "C5")):
+    for k, name in enumerate(("C4", "E4", "G4", "C5")):
         note = subtractive([hz(name)], 0.16, gate=0.06, amp=(0.002, 0.08, 0.5, 0.05), cutoff=900, sweep=3200,
                            fenv=(0.002, 0.07, 0.15, 0.05), resonance=0.35, detune=0.003,
                            shapes=("pulse", "saw"), drive=1.6)
-        place(track, note, 0.075 * k, 0.9 if k < 5 else 1.0)
+        place(track, note, 0.075 * k, 0.9 if k < 3 else 1.0)
     return track
 
 
@@ -397,10 +399,10 @@ def jp8000_supersaw() -> list[float]:
 
 def synclavier_bell() -> list[float]:
     f = hz("G4")
-    partials = ((1.0, 1.0, 1.2), (2.0, 0.6, 0.8), (2.4, 0.45, 0.5), (3.0, 0.3, 0.45),
-                (4.07, 0.25, 0.3), (5.4, 0.15, 0.2), (6.8, 0.1, 0.12))  # ratio, level, seconds
+    partials = ((1.0, 1.0, 0.6), (2.0, 0.6, 0.4), (2.4, 0.45, 0.28), (3.0, 0.3, 0.25),
+                (4.07, 0.25, 0.17), (5.4, 0.15, 0.11), (6.8, 0.1, 0.07))  # ratio, level, seconds
     out = []
-    for n in range(int(1.5 * RATE)):
+    for n in range(int(0.9 * RATE)):
         t = n / RATE
         v = sum(level * math.sin(2 * math.pi * f * ratio * t) * math.exp(-t / tau) for ratio, level, tau in partials)
         out.append(v * min(t / 0.002, 1.0))
@@ -518,17 +520,17 @@ MORE = {
     "juno-bass": lambda: chorus(notes([("A2", 0.0, 1.0), ("E3", 0.16, 0.8)], 0.3, gate=0.12,
         amp=(0.003, 0.2, 0.6, 0.08), cutoff=300, sweep=1600, fenv=(0.002, 0.08, 0.1, 0.08), resonance=0.3,
         detune=0.0, shapes=("saw",), sub=0.5, drive=1.8), mix=0.3),
-    "juno-strings": lambda: chorus(subtractive([hz(n) for n in ("C4", "E4", "G4")], 1.3, gate=0.9,
-        amp=(0.22, 0.6, 0.85, 0.3), cutoff=1800, sweep=600, fenv=(0.3, 0.5, 0.6, 0.3), resonance=0.05,
+    "juno-strings": lambda: chorus(subtractive([hz(n) for n in ("C4", "E4", "G4")], 0.75, gate=0.45,
+        amp=(0.12, 0.4, 0.85, 0.2), cutoff=1800, sweep=600, fenv=(0.15, 0.35, 0.6, 0.2), resonance=0.05,
         detune=0.0, shapes=("saw",)), depth_ms=2.5, rate_hz=0.8, mix=0.55),
     "tb303-bass": lambda: notes([("C3", 0.0, 1.0), ("C3", 0.12, 0.8), ("Eb3", 0.24, 0.9), ("G3", 0.36, 1.0)],
         0.12, gate=0.08, amp=(0.002, 0.3, 0.8, 0.02), cutoff=300, sweep=1300, fenv=(0.002, 0.07, 0.0, 0.02),
         resonance=0.55, detune=0.0, shapes=("saw",), drive=2.0),
-    "tb303-squelch": lambda: subtractive([hz("C3")], 0.65, gate=0.55, amp=(0.003, 0.4, 0.9, 0.08),
-        cutoff=180, sweep=3200, fenv=(0.35, 0.2, 0.7, 0.08), resonance=0.9, detune=0.0, shapes=("saw",),
+    "tb303-squelch": lambda: subtractive([hz("C3")], 0.4, gate=0.32, amp=(0.003, 0.3, 0.9, 0.06),
+        cutoff=180, sweep=3200, fenv=(0.2, 0.15, 0.7, 0.06), resonance=0.9, detune=0.0, shapes=("saw",),
         drive=2.5),
-    "prophet-pad": lambda: subtractive([hz(n) for n in ("A3", "C4", "E4", "G4")], 1.4, gate=1.0,
-        amp=(0.25, 0.6, 0.85, 0.35), cutoff=700, sweep=900, fenv=(0.4, 0.5, 0.7, 0.35), resonance=0.15,
+    "prophet-pad": lambda: subtractive([hz(n) for n in ("A3", "C4", "E4", "G4")], 0.8, gate=0.5,
+        amp=(0.12, 0.4, 0.85, 0.22), cutoff=700, sweep=900, fenv=(0.2, 0.35, 0.7, 0.22), resonance=0.15,
         detune=0.005),
     "prophet-pluck": lambda: subtractive([hz(n) for n in ("E4", "G4", "B4")], 0.45, gate=0.05,
         amp=(0.002, 0.15, 0.2, 0.15), cutoff=600, sweep=4500, fenv=(0.002, 0.06, 0.0, 0.1), resonance=0.4,
@@ -536,25 +538,25 @@ MORE = {
     "obx-brass": lambda: chords([(("F3", "A3", "C4", "F4"), 0.0, 1.0), (("G3", "B3", "D4", "G4"), 0.22, 1.0)],
         0.45, gate=0.25, amp=(0.01, 0.3, 0.8, 0.12), cutoff=700, sweep=3500, fenv=(0.05, 0.2, 0.5, 0.12),
         resonance=0.1, detune=0.008, drive=1.6),
-    "obx-strings": lambda: chorus(subtractive([hz(n) for n in ("D4", "F#4", "A4")], 1.3, gate=0.9,
-        amp=(0.18, 0.6, 0.85, 0.3), cutoff=2200, sweep=500, fenv=(0.25, 0.5, 0.6, 0.3), resonance=0.05,
+    "obx-strings": lambda: chorus(subtractive([hz(n) for n in ("D4", "F#4", "A4")], 0.75, gate=0.45,
+        amp=(0.1, 0.4, 0.85, 0.2), cutoff=2200, sweep=500, fenv=(0.12, 0.35, 0.6, 0.2), resonance=0.05,
         detune=0.009), mix=0.45),
     "cs80-chariots": lambda: subtractive([hz(n) for n in ("C4", "E4", "G4", "C5")], 1.0, gate=0.6,
         amp=(0.004, 0.35, 0.55, 0.3), cutoff=600, sweep=4200, fenv=(0.004, 0.18, 0.3, 0.3), resonance=0.15,
         detune=0.007, shapes=("saw", "pulse"), vibrato=0.004),
-    "cs80-pad": lambda: subtractive([hz("A3"), hz("E4"), hz("A4")], 1.4, gate=1.0, amp=(0.3, 0.6, 0.9, 0.35),
-        cutoff=400, sweep=1600, fenv=(0.6, 0.5, 0.8, 0.35), resonance=0.2, detune=0.008, vibrato=0.006),
-    "ppg-bell": lambda: [v * math.exp(-n / RATE / 0.35) for n, v in enumerate(ppg_sweep(hz("G4"), 1.0, 14, 1))],
-    "ppg-pad": lambda: [v * adsr(n / RATE, 0.9, 0.25, 0.5, 0.9, 0.3) for n, v in
-                        enumerate(ppg_sweep(hz("A3"), 1.2, 3, 9, wobble=True))],
+    "cs80-pad": lambda: subtractive([hz("A3"), hz("E4"), hz("A4")], 0.8, gate=0.45, amp=(0.12, 0.4, 0.9, 0.22),
+        cutoff=400, sweep=1600, fenv=(0.25, 0.35, 0.8, 0.22), resonance=0.2, detune=0.008, vibrato=0.006),
+    "ppg-bell": lambda: [v * math.exp(-n / RATE / 0.2) for n, v in enumerate(ppg_sweep(hz("G4"), 0.6, 14, 1))],
+    "ppg-pad": lambda: [v * adsr(n / RATE, 0.45, 0.12, 0.35, 0.9, 0.2) for n, v in
+                        enumerate(ppg_sweep(hz("A3"), 0.7, 3, 9, wobble=True))],
     "d50-pizzagogo": lambda: d50_pizz(),
     "d50-heaven": lambda: d50_heaven(),
     "m1-organ": lambda: m1_organ(),
     "m1-universe": lambda: chorus([a + 0.25 * b for a, b in zip(
-        subtractive([hz(n) for n in ("C4", "G4", "D5")], 1.4, gate=1.0, amp=(0.2, 0.6, 0.85, 0.35),
-                    cutoff=1500, sweep=800, fenv=(0.3, 0.5, 0.6, 0.35), resonance=0.1, detune=0.007,
+        subtractive([hz(n) for n in ("C4", "G4", "D5")], 0.8, gate=0.5, amp=(0.1, 0.4, 0.85, 0.22),
+                    cutoff=1500, sweep=800, fenv=(0.15, 0.35, 0.6, 0.22), resonance=0.1, detune=0.007,
                     shapes=("saw", "saw", "saw")),
-        additive(hz("G5"), 1.4, ((1, 1.0, 0.6), (2.76, 0.4, 0.3))))], mix=0.4),
+        additive(hz("G5"), 0.8, ((1, 1.0, 0.35), (2.76, 0.4, 0.18))))], mix=0.4),
     "alpha-stab": lambda: chorus(subtractive([hz(n) for n in ("A3", "C4", "E4")], 0.35, gate=0.12,
         amp=(0.002, 0.2, 0.7, 0.08), cutoff=2000, sweep=3000, fenv=(0.002, 0.1, 0.3, 0.08), resonance=0.1,
         detune=0.012, shapes=("pulse", "pulse", "saw"), pwm=0.3), mix=0.4),
@@ -566,22 +568,22 @@ MORE = {
         detune=0.0, shapes=("pulse",), drive=1.8),
     "odyssey-ring": lambda: [math.sin(2 * math.pi * hz("A4") * n / RATE) * math.sin(2 * math.pi * hz("A4") * 1.37 * n / RATE)
                              * math.exp(-n / RATE / 0.3) * min(n / RATE / 0.002, 1.0) for n in range(int(0.9 * RATE))],
-    "mellotron-strings": lambda: tape(subtractive([hz(n) for n in ("D4", "F#4", "A4")], 1.2, gate=0.85,
-        amp=(0.12, 0.6, 0.85, 0.25), cutoff=1600, sweep=300, fenv=(0.2, 0.5, 0.6, 0.25), resonance=0.05,
+    "mellotron-strings": lambda: tape(subtractive([hz(n) for n in ("D4", "F#4", "A4")], 0.7, gate=0.4,
+        amp=(0.08, 0.4, 0.85, 0.18), cutoff=1600, sweep=300, fenv=(0.12, 0.35, 0.6, 0.18), resonance=0.05,
         detune=0.004, vibrato=0.003), seed=21),
     "mellotron-choir": lambda: tape(formants([hz(n) for n in ("C4", "E4", "G4")], 1.2,
         ((700, 1.0, 5.0), (1100, 0.5, 7.0), (2600, 0.2, 9.0)), amp=(0.15, 0.5, 0.85, 0.25), gate=0.85), seed=23),
     "fairlight-sarar": lambda: lofi(formants([hz(n) for n in ("E4", "G#4", "B4")], 1.1,
         ((850, 1.0, 6.0), (1220, 0.6, 8.0), (2810, 0.3, 10.0)), amp=(0.08, 0.5, 0.85, 0.25), gate=0.8)),
-    "fairlight-bells": lambda: lofi(additive(hz("G4"), 1.4, ((0.5, 0.4, 0.9), (1, 1.0, 1.0), (1.2, 0.5, 0.6),
-                                                          (1.5, 0.4, 0.5), (2, 0.6, 0.6), (2.5, 0.2, 0.3)))),
+    "fairlight-bells": lambda: lofi(additive(hz("G4"), 0.8, ((0.5, 0.4, 0.45), (1, 1.0, 0.5), (1.2, 0.5, 0.3),
+                                                          (1.5, 0.4, 0.25), (2, 0.6, 0.3), (2.5, 0.2, 0.15)))),
     "jupiter-brass": lambda: subtractive([hz(n) for n in ("G3", "B3", "D4")], 0.6, gate=0.35,
         amp=(0.01, 0.3, 0.8, 0.12), cutoff=500, sweep=3800, fenv=(0.04, 0.2, 0.45, 0.12), resonance=0.2,
         detune=0.006, shapes=("saw", "pulse"), drive=1.7),
-    "jupiter-pad": lambda: chorus(subtractive([hz(n) for n in ("C4", "E4", "G4", "B4")], 1.4, gate=1.0,
-        amp=(0.25, 0.6, 0.85, 0.35), cutoff=900, sweep=1000, fenv=(0.4, 0.5, 0.7, 0.35), resonance=0.25,
+    "jupiter-pad": lambda: chorus(subtractive([hz(n) for n in ("C4", "E4", "G4", "B4")], 0.8, gate=0.5,
+        amp=(0.12, 0.4, 0.85, 0.22), cutoff=900, sweep=1000, fenv=(0.2, 0.35, 0.7, 0.22), resonance=0.25,
         detune=0.006, shapes=("saw", "pulse"), pwm=0.2), mix=0.35),
-    "sh101-bass": lambda: notes([("C3", 0.0, 1.0), ("G3", 0.14, 0.9), ("C3", 0.28, 1.0)], 0.16, gate=0.1,
+    "sh101-bass": lambda: notes([("C3", 0.0, 1.0), ("G3", 0.1, 0.9), ("C3", 0.2, 1.0)], 0.12, gate=0.07,
         amp=(0.002, 0.15, 0.6, 0.04), cutoff=280, sweep=2000, fenv=(0.002, 0.07, 0.1, 0.04), resonance=0.45,
         detune=0.0, shapes=("pulse",), sub=0.6, drive=1.8),
     "sh101-blip": lambda: notes([("C4", 0.0, 1.0), ("E4", 0.09, 1.0), ("C5", 0.18, 1.0)], 0.12, gate=0.05,
@@ -594,8 +596,8 @@ MORE = {
     "jp8000-pluck": lambda: notes([("A3", 0.0, 1.0), ("C4", 0.1, 0.9), ("E4", 0.2, 1.0)], 0.3, gate=0.05,
         amp=(0.002, 0.15, 0.2, 0.1), cutoff=700, sweep=4500, fenv=(0.002, 0.07, 0.0, 0.08), resonance=0.15,
         detune=0.008, shapes=("saw",) * 7),
-    "jp8000-pad": lambda: chorus(subtractive([hz(n) for n in ("F3", "A3", "C4", "E4")], 1.4, gate=1.0,
-        amp=(0.25, 0.6, 0.85, 0.35), cutoff=1400, sweep=1200, fenv=(0.4, 0.5, 0.7, 0.35), resonance=0.05,
+    "jp8000-pad": lambda: chorus(subtractive([hz(n) for n in ("F3", "A3", "C4", "E4")], 0.8, gate=0.5,
+        amp=(0.12, 0.4, 0.85, 0.22), cutoff=1400, sweep=1200, fenv=(0.2, 0.35, 0.7, 0.22), resonance=0.05,
         detune=0.007, shapes=("saw",) * 7), mix=0.45),
     "synclavier-pluck": lambda: synclavier_pluck(),
     "synclavier-pad": lambda: additive(hz("C4"), 1.4, ((1, 1.0, 2.0), (1.003, 0.8, 2.0), (2, 0.5, 1.2),
