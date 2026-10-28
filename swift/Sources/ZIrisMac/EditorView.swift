@@ -243,6 +243,7 @@ private struct SoundBrowser: View {
     @State private var length: SoundLength?
     @State private var pitch: SoundPitch?
     @State private var style: SoundStyle?
+    @State private var feel: SoundFeel?
     @State private var highlighted: String?
     @FocusState private var gridFocused: Bool
 
@@ -259,7 +260,7 @@ private struct SoundBrowser: View {
     /// nothing narrows the list.
     private func items(_ usage: [String: [String]]) -> [Item] {
         var items: [Item] = []
-        if query.isEmpty, length == nil, pitch == nil, style == nil {
+        if query.isEmpty, length == nil, pitch == nil, style == nil, feel == nil {
             if allowDefault {
                 items.append(Item(id: Self.defaultID, title: "Default (\(model.defaultSound))",
                                   detail: "The default rule's sound", users: []))
@@ -283,14 +284,17 @@ private struct SoundBrowser: View {
             let measure = model.measures[choice.name]
             return (query.isEmpty || choice.name.localizedCaseInsensitiveContains(query))
                 && (style == nil || choice.style == style)
+                && (feel == nil || soundFeels(choice.name).contains(feel!))
                 && (length == nil || measure?.length == length)
                 && (pitch == nil || measure?.pitch == pitch)
         }
     }
 
     private func detail(_ choice: SoundChoice) -> String {
-        guard let measure = model.measures[choice.name] else { return choice.style.title }
-        return String(format: "%.2f s", measure.seconds) + " · \(measure.pitch.title) · \(choice.style.title)"
+        let feels = soundFeels(choice.name).map(\.title).sorted().joined(separator: ", ")
+        let kind = feels.isEmpty ? choice.style.title : "\(choice.style.title) · \(feels)"
+        guard let measure = model.measures[choice.name] else { return kind }
+        return String(format: "%.2f s", measure.seconds) + " · \(measure.pitch.title) · \(kind)"
     }
 
     private func play(_ id: String?) {
@@ -326,6 +330,11 @@ private struct SoundBrowser: View {
                     Text("All Styles").tag(SoundStyle?.none)
                     ForEach(SoundStyle.allCases, id: \.self) { Text($0.title).tag(Optional($0)) }
                 }
+                Picker("Feel", selection: $feel) {
+                    Text("Any Feel").tag(SoundFeel?.none)
+                    ForEach(SoundFeel.allCases, id: \.self) { Text($0.title).tag(Optional($0)) }
+                }
+                .help("How a sound feels, after the character tags of the Expressive E Osmose")
             }
             .labelsHidden()
             let shown = items(usage)
@@ -385,7 +394,7 @@ private struct SoundBrowser: View {
                 .disabled(id == "none")
             VStack(alignment: .leading, spacing: 1) {
                 Text(title)
-                Text(detail).font(.caption).foregroundStyle(.secondary)
+                Text(detail).font(.caption).foregroundStyle(.secondary).lineLimit(1).help(detail)
             }
             Spacer(minLength: 4)
             if !users.isEmpty { InUseBadge(users: users) }

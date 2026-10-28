@@ -31,3 +31,14 @@ private func tone(_ hz: Float, seconds: Double) throws -> URL {
         #expect(SoundPitch(centroid: low.centroid) == .low && SoundPitch(centroid: high.centroid) == .high)
     }
 }
+
+@Suite struct BundledFeelTests {
+    @Test func everyBundledSoundHasAFeel() throws {
+        let sounds = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+            .appendingPathComponent("../../Resources/sounds").standardized
+        let names = try FileManager.default.contentsOfDirectory(atPath: sounds.path)
+            .filter { $0.hasSuffix(".wav") }.map { String($0.dropLast(4)) }
+        #expect(names.count > 150)
+        #expect(names.filter { soundFeels($0).isEmpty }.sorted() == [])
+    }
+}
