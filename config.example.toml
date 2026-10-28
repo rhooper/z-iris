@@ -14,6 +14,7 @@ zuliprc = "~/.zuliprc"
 # three each after famous synths: juno-*, tb303-*, prophet-*, obx-*, cs80-*,
 # ppg-*, d50-*, m1-*, alpha-*, odyssey-*, mellotron-*, fairlight-*,
 # jupiter-*, sh101-*, emulator-*, jp8000-*, synclavier-*, buchla-*, omnichord-*;
+# drums 808-snare, 808-clap, 808-cowbell, 808-beat, 909-kick, 909-roll and more;
 # recordings doorbell, rooster, foghorn and more. The editor lists all.
 sound = "chime"
 # Percent of the system output level, 0 to 100.

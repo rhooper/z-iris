@@ -5,3 +5,4 @@ dist/
 swift/.build/
 .build/
 .swiftpm/
+__pycache__/

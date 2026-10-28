@@ -27,7 +27,7 @@ public enum SoundPitch: String, CaseIterable, Sendable {
 }
 
 public enum SoundStyle: String, CaseIterable, Sendable {
-    case tones, dx7, synths, recordings, yours
+    case tones, dx7, synths, drums, recordings, yours
 
     /// The bundled recordings (SOURCES.md).
     static let recordingNames: Set<String> = [
@@ -39,6 +39,8 @@ public enum SoundStyle: String, CaseIterable, Sendable {
         "juno", "tb303", "prophet", "obx", "cs80", "ppg", "d50", "m1", "alpha", "odyssey", "mellotron",
         "fairlight", "jupiter", "sh101", "emulator", "jp8000", "synclavier", "buchla", "omnichord", "moog",
     ]
+    /// The drum machines and synth drums the drum tones are named after (gen_drums.py).
+    static let drumFamilies: Set<String> = ["808", "909", "syndrum", "simmons", "cr78"]
 
     public init(name: String, yours: Bool) {
         let family = name.split(separator: "-").first.map(String.init) ?? name
@@ -50,6 +52,8 @@ public enum SoundStyle: String, CaseIterable, Sendable {
             self = .dx7
         } else if Self.synthFamilies.contains(family) {
             self = .synths
+        } else if Self.drumFamilies.contains(family) {
+            self = .drums
         } else {
             self = .tones
         }
@@ -60,6 +64,7 @@ public enum SoundStyle: String, CaseIterable, Sendable {
         case .tones: "Tones"
         case .dx7: "DX7"
         case .synths: "Synths"
+        case .drums: "Drums"
         case .recordings: "Recordings"
         case .yours: "Yours"
         }

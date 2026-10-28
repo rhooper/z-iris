@@ -22,8 +22,10 @@ import Testing
         #expect(SoundStyle(name: "moog-a", yours: false) == .synths)
         #expect(SoundStyle(name: "omnichord-harp", yours: false) == .synths)
         #expect(SoundStyle(name: "rooster", yours: false) == .recordings)
+        #expect(SoundStyle(name: "808-cowbell", yours: false) == .drums)
+        #expect(SoundStyle(name: "simmons-fill", yours: false) == .drums)
         #expect(SoundStyle(name: "klaxon", yours: true) == .yours)
-        #expect(SoundStyle.allCases.map(\.title) == ["Tones", "DX7", "Synths", "Recordings", "Yours"])
+        #expect(SoundStyle.allCases.map(\.title) == ["Tones", "DX7", "Synths", "Drums", "Recordings", "Yours"])
     }
 
     @Test func whoUsesWhat() {
