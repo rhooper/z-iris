@@ -94,7 +94,8 @@ one sample per kind.
   glass-a4, woodblock-c5, ocarina-b4, fmbell-c5, synthpluck-a4, each also a
   fourth below, a minor third and a fifth above (guitar-e4, guitar-c5,
   guitar-e5; flats spelled `eb`, `gb`); the DX7-style
-  `dx-*` voices; moog-a; sos; three patches each after nineteen famous
+  `dx-*` voices; moog-a and the same Minimoog voice on a3, c4, e4, g4, a4
+  and c5, each short, plain or long (moog-c4-short, moog-c4, moog-c4-long); sos; three patches each after nineteen famous
   synths and samplers: `juno-*` (Roland Juno-106), `tb303-*`, `prophet-*`
   (Prophet-5), `obx-*` (Oberheim OB-Xa), `cs80-*` (Yamaha CS-80), `ppg-*`
   (PPG Wave), `d50-*` (Roland D-50), `m1-*` (Korg M1), `alpha-*` (Alpha Juno),
