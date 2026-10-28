@@ -302,12 +302,10 @@ public func applyEdit(_ text: String, payload: EditPayload, sounds: [String: Str
             copy["description"] = description
             return copy
         }
-        // Python's sort is stable; keep the original order among equals.
+        // In the order they are tried: priority, then kind, then the order
+        // given (the editor's own, which the user can drag).
         let ordered = edited.enumerated().sorted { a, b in
-            let (ka, kb) = (sortKey(a.element), sortKey(b.element))
-            if ka.0 != kb.0 { return ka.0 < kb.0 }
-            if ka.1 != kb.1 { return pythonOrder(ka.1, kb.1) }
-            return a.offset < b.offset
+            precedence(a.element, position: a.offset) < precedence(b.element, position: b.offset)
         }.map(\.element)
         for raw in ordered {
             spans.append(path: ["rule"], isArray: true, keys: ruleKeys(raw))
