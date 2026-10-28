@@ -27,6 +27,7 @@ macOS menubar notifier for Zulip, in Swift (`swift/`, a SwiftPM package). The fi
 - z-iris-priority.app (`ca.toybox.z-iris.priority`, `ZIrisPriority`) shows sticky alerts; z-iris runs it as a child and talks JSON lines over stdin/stdout (`PriorityLink`, `PriorityService`). It stays a sibling app (`docs/swift-macos-spikes.md`). macOS only prompts it for permission from a real location (`~/Applications`), never `/tmp`, and Persistent is a style the user sets. Ad hoc signing cannot carry the time-sensitive or communication entitlement (macOS kills the app); profiles from the paid team can. An expired profile stops the app launching. Design: `docs/superpowers/specs/2026-10-19-sticky-alerts-design.md`.
 - Sender faces: communication notifications (`Comms.swift`), needing the communication entitlement and `NSUserActivityTypes` = INSendMessageIntent. For one person macOS shows `INPerson.displayName` as the title, so it is the whole title; a group shows sender + group name and needs the picture z-iris draws. `setImage(_:forParameterNamed:)` is called by selector (Swift marks it unavailable on macOS). Proven calls: `docs/sender-icons-spike.md`.
 - macOS never prompts for menubar icons: they are allowed in System Settings, Menu Bar.
+- A new bundled sound needs feels in `SoundFeel.swift` (by its name, or its family: the name before the first hyphen), or `everyBundledSoundHasAFeel` fails; a new synth or drum family also goes in `SoundStyle`'s family sets (`SoundCatalog.swift`).
 
 ## Layout (swift/)
 
