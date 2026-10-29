@@ -53,6 +53,9 @@ public final class EditorModel {
     /// Each sound's length and pitch, measured in the background.
     public var measures: [String: SoundMeasure] = [:]
     public var channels: [String] = []
+    /// Each server's people, for picking senders.
+    public var users: [String: [ServerUser]] = [:]
+    public var userErrors: [String: String] = [:]
     public var preview: [ServerPreview]?
     public var status = ""
     public var problem: String?
@@ -64,11 +67,13 @@ public final class EditorModel {
     @ObservationIgnored private let flasher: Flasher?
     @ObservationIgnored private let previews: PreviewSource
     @ObservationIgnored private let channelSource: ChannelSource
+    @ObservationIgnored private let userSource: UserSource
     @ObservationIgnored private var saveTask: Task<Void, Never>?
     @ObservationIgnored private let writeLock = NSLock()
 
     public init(configPath: String, settings: Settings, builtinSounds: URL, player: SoundPlayer?, flasher: Flasher?,
-                previews: PreviewSource = PreviewSource(), channels: ChannelSource = ChannelSource()) {
+                previews: PreviewSource = PreviewSource(), channels: ChannelSource = ChannelSource(),
+                users: UserSource = UserSource()) {
         self.configPath = configPath
         self.settings = settings
         self.builtinSounds = builtinSounds
@@ -76,6 +81,7 @@ public final class EditorModel {
         self.flasher = flasher
         self.previews = previews
         channelSource = channels
+        userSource = users
     }
 
     public var userSounds: URL {
@@ -105,6 +111,21 @@ public final class EditorModel {
 
     public func loadChannels() async {
         channels = await channelSource.channels(settings.config.servers).all
+    }
+
+    public func loadUsers() async {
+        (users, userErrors) = await userSource.users(settings.config.servers)
+    }
+
+    /// The servers a rule's people come from: its own, else every server.
+    public func peopleServers(_ fields: [String: TOMLValue]) -> [String] {
+        if case .string(let server)? = fields["server"], !server.isEmpty { return [server] }
+        return servers
+    }
+
+    /// Someone by user ID on one of these servers.
+    public func person(_ id: Int, on servers: [String]) -> ServerUser? {
+        servers.lazy.compactMap { self.users[$0]?.first { $0.id == id } }.first
     }
 
     public func refreshSounds() {
@@ -237,13 +258,22 @@ public final class EditorModel {
         }
         let source = { (key: String) -> String? in if case .string(let s)? = rule.fields[key], !s.isEmpty { s } else { nil } }
         let pattern = (kind == .topic ? source("topic") : kind == .keyword ? source("keyword") : nil).flatMap { try? PyRegex($0) }
+        // People the editor knows by ID are shown by name.
         var senders: [String] = []
+        var senderIDs: [Int] = []
         if case .array(let items)? = rule.fields["sender"] {
-            senders = items.compactMap { if case .string(let s) = $0, !s.isEmpty { s } else { nil } }
+            let from = peopleServers(rule.fields)
+            for item in items {
+                switch item {
+                case .string(let s) where !s.isEmpty: senders.append(s)
+                case .integer(let id): if let known = person(id, on: from) { senders.append(known.fullName) } else { senderIDs.append(id) }
+                default: break
+                }
+            }
         }
         return (try? Rule(description: nil, kind: kind, channels: channels.filter { (try? PyRegex($0)) != nil }, pattern: pattern,
                           server: nil, sound: nil, volume: nil, banner: nil, priority: 0, index: 0,
-                          senders: senders).label) ?? kind.rawValue
+                          senders: senders, senderIDs: senderIDs).label) ?? kind.rawValue
     }
 
     // MARK: sounds

@@ -188,6 +188,9 @@ public struct EditorView: View {
             await model.loadChannels()
         }
         .task {
+            await model.loadUsers()
+        }
+        .task {
             while !Task.isCancelled {
                 try? await Task.sleep(for: .seconds(15))
                 model.forgetOldDeletions()
@@ -650,50 +653,123 @@ private struct ChannelTokens: View {
     }
 }
 
-/// A sender rule's people: full names or emails, matched whole in any case.
+/// A rule's people, picked from the server's users and saved by user ID.
+/// Names and emails from older configs, and IDs the server does not know
+/// (deactivated, or the server is unreachable), stay until removed.
 private struct PersonTokens: View {
     let model: EditorModel
     @Binding var people: TOMLValue?
+    /// The rule's servers: its own, else every one.
+    let servers: [String]
+    let footer: String
     @State private var entry = ""
 
-    private var names: [String] {
-        if case .array(let items)? = people { return items.compactMap { if case .string(let s) = $0 { s } else { nil } } }
-        if case .string(let s)? = people { return [s] }
+    private var items: [TOMLValue] {
+        if case .array(let items)? = people { return items }
+        if let people { return [people] }
         return []
     }
 
-    private func set(_ list: [String]) {
-        people = list.isEmpty ? nil : .array(list.map(TOMLValue.string))
+    private var ids: Set<Int> { Set(items.compactMap { if case .integer(let id) = $0 { id } else { nil } }) }
+
+    private func set(_ list: [TOMLValue]) {
+        people = list.isEmpty ? nil : .array(list)
     }
 
-    private func add() {
-        let name = entry.trimmingCharacters(in: .whitespaces)
-        guard !name.isEmpty, !names.contains(where: { $0.lowercased() == name.lowercased() }) else { return }
-        set(names + [name])
+    /// Everyone on the rule's servers, without duplicates of who is listed.
+    private var everyone: [ServerUser] {
+        var seen = ids
+        return servers.flatMap { model.users[$0] ?? [] }.filter { seen.insert($0.id).inserted }
+    }
+
+    private var trimmed: String { entry.trimmingCharacters(in: .whitespaces) }
+
+    private var typed: [ServerUser] {
+        trimmed.isEmpty ? everyone : everyone.filter {
+            $0.fullName.localizedCaseInsensitiveContains(trimmed) || $0.email.localizedCaseInsensitiveContains(trimmed)
+        }
+    }
+
+    private func add(_ user: ServerUser) {
+        set(items + [.integer(user.id)])
         entry = ""
+    }
+
+    /// Return picks the only match, or the one whose name or email is typed whole.
+    private func submit() {
+        let hits = typed
+        if hits.count == 1 {
+            add(hits[0])
+        } else if let exact = hits.first(where: { $0.fullName.lowercased() == trimmed.lowercased() || $0.email.lowercased() == trimmed.lowercased() }) {
+            add(exact)
+        }
+    }
+
+    @ViewBuilder private func token(_ item: TOMLValue) -> some View {
+        switch item {
+        case .integer(let id):
+            if let user = model.person(id, on: servers) {
+                Text(user.fullName).help(user.email)
+            } else {
+                Label("User \(id)", systemImage: "exclamationmark.triangle")
+                    .foregroundStyle(.orange)
+                    .help(model.users.isEmpty ? "People are still loading." : "No active user with this ID on the rule's server.")
+            }
+        case .string(let name):
+            Label(name, systemImage: "exclamationmark.triangle")
+                .foregroundStyle(.orange)
+                .help("Typed by name or email in an older version; remove it and pick the person to match by user ID.")
+        default:
+            EmptyView()
+        }
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            ForEach(Array(names.enumerated()), id: \.offset) { index, name in
+            ForEach(Array(items.enumerated()), id: \.offset) { index, item in
                 HStack {
-                    Text(name)
+                    token(item)
                     Spacer()
-                    Button { set(names.enumerated().filter { $0.offset != index }.map(\.element)) } label: {
+                    Button { set(items.enumerated().filter { $0.offset != index }.map(\.element)) } label: {
                         Image(systemName: "xmark.circle.fill")
                     }
                     .buttonStyle(.borderless)
                     .help("Remove")
                 }
             }
-            HStack {
-                TextField("Person", text: $entry, prompt: Text("Full name or email, such as Ada Lovelace"))
-                    .labelsHidden()
-                    .onSubmit(add)
-                Button("Add", action: add).disabled(entry.trimmingCharacters(in: .whitespaces).isEmpty)
+            if servers.count > 1 {
+                // User IDs belong to one server.
+                Text("Choose the rule's server to pick people.").font(.caption).foregroundStyle(.secondary)
+            } else {
+                picker
             }
-            Text("Their messages anywhere, in channels or direct messages; names and emails match whole, in any case.")
-                .font(.caption).foregroundStyle(.secondary)
+            Text(footer).font(.caption).foregroundStyle(.secondary)
+        }
+    }
+
+    @ViewBuilder private var picker: some View {
+        HStack {
+            TextField("Person", text: $entry, prompt: Text("Name or email"))
+                .labelsHidden()
+                .frame(minWidth: 220)
+                .onSubmit(submit)
+                .textInputSuggestions {
+                    ForEach(typed.prefix(12), id: \.id) { user in
+                        Text("\(user.fullName) · \(user.email)").textInputCompletion(user.email)
+                    }
+                }
+            Menu("People") {
+                ForEach(typed, id: \.id) { user in
+                    Button("\(user.fullName) · \(user.email)") { add(user) }
+                }
+            }
+            .fixedSize()
+            .disabled(typed.isEmpty)
+        }
+        if let problem = servers.compactMap({ model.userErrors[$0] }).first {
+            Text("Could not load people: \(problem)").font(.caption).foregroundStyle(.red)
+        } else if !trimmed.isEmpty, typed.isEmpty {
+            Text("No one by that name or email.").font(.caption).foregroundStyle(.secondary)
         }
     }
 }
@@ -721,7 +797,9 @@ private struct RuleEditor: View {
                 }
                 if match == "sender" {
                     LabeledContent("People") {
-                        PersonTokens(model: model, people: field(model, $rule.fields, "sender"))
+                        PersonTokens(model: model, people: field(model, $rule.fields, "sender"),
+                                     servers: model.peopleServers(rule.fields),
+                                     footer: "Their messages anywhere, in channels or direct messages.")
                     }
                 }
                 if ["topic", "conversation", "reaction"].contains(match) {
