@@ -656,7 +656,7 @@ private struct ChannelTokens: View {
 /// A rule's people, picked from the server's users and saved by user ID.
 /// Names and emails from older configs, and IDs the server does not know
 /// (deactivated, or the server is unreachable), stay until removed.
-private struct PersonTokens: View {
+struct PersonTokens: View {
     let model: EditorModel
     @Binding var people: TOMLValue?
     /// The rule's servers: its own, else every one.
@@ -765,7 +765,7 @@ private struct PersonTokens: View {
 }
 
 /// What a rule or an exception matches on, for its kind.
-private struct ConditionFields: View {
+struct ConditionFields: View {
     let model: EditorModel
     @Binding var fields: [String: TOMLValue]
     /// Where its people come from: the rule's server, else every one.
@@ -807,7 +807,7 @@ private struct ConditionFields: View {
 }
 
 /// A rule's [[rule.except]] tables: if any matches, the rule does not.
-private struct ExceptionsSection: View {
+struct ExceptionsSection: View {
     let model: EditorModel
     @Binding var fields: [String: TOMLValue]
 

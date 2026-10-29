@@ -12,6 +12,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/dduan/TOMLDecoder.git", exact: "0.4.5"),
+        .package(url: "https://github.com/nalexn/ViewInspector.git", exact: "0.10.5"),
     ],
     targets: [
         .target(
@@ -23,7 +24,7 @@ let package = Package(
         .target(name: "ZIrisMac", dependencies: ["ZIrisCore", "ZulipKit"]),
         .executableTarget(name: "ZIrisApp", dependencies: ["ZIrisCore", "ZulipKit", "ZIrisMac"]),
         .executableTarget(name: "ZIrisPriority", dependencies: ["ZIrisMac"]),
-        .testTarget(name: "ZIrisMacTests", dependencies: ["ZIrisMac", "ZIrisCore"]),
+        .testTarget(name: "ZIrisMacTests", dependencies: ["ZIrisMac", "ZIrisCore", "ZulipKit", "ViewInspector"]),
         .testTarget(
             name: "ZulipKitTests",
             dependencies: ["ZulipKit", "ZIrisCore"]
