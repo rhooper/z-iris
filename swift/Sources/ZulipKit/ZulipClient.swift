@@ -29,6 +29,7 @@ public protocol ZulipAPI: Sendable {
     func profile() async throws -> JSONObject
     func messages(_ parameters: [String: any Sendable]) async throws -> JSONObject
     func streams() async throws -> JSONObject
+    func users() async throws -> JSONObject
 }
 
 public struct ZulipClientError: Error, CustomStringConvertible {
@@ -79,6 +80,10 @@ public final class ZulipClient: ZulipAPI, @unchecked Sendable {
 
     public func streams() async throws -> JSONObject {
         try await call("streams", method: "GET", ["include_public": true, "include_subscribed": true])
+    }
+
+    public func users() async throws -> JSONObject {
+        try await call("users", method: "GET", [:])
     }
 
     /// Form values as the Python client sends them: strings as they are,

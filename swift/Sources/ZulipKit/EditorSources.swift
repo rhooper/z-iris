@@ -68,6 +68,72 @@ public actor ChannelSource {
     }
 }
 
+/// Someone on a server, for picking people in rules.
+public struct ServerUser: Sendable, Equatable, Hashable {
+    public var id: Int
+    public var fullName: String
+    public var email: String
+    public var isBot: Bool
+
+    public init(id: Int, fullName: String, email: String, isBot: Bool = false) {
+        self.id = id
+        self.fullName = fullName
+        self.email = email
+        self.isBot = isBot
+    }
+}
+
+/// Each server's active users by name, cached for five minutes. A server
+/// that cannot be reached has none, and its error.
+public actor UserSource {
+    private let client: @Sendable (ServerConfig) throws -> any ZulipAPI
+    private let now: @Sendable () -> Double
+    private let ttl: Double
+    private var cache: [String: (taken: Double, users: [ServerUser])] = [:]
+
+    public init(client: @escaping @Sendable (ServerConfig) throws -> any ZulipAPI = { try ZulipClient(zuliprc: $0.zuliprc) },
+                now: @escaping @Sendable () -> Double = monotonicNow, ttl: Double = 300) {
+        self.client = client
+        self.now = now
+        self.ttl = ttl
+    }
+
+    private func users(_ server: ServerConfig) async throws -> [ServerUser] {
+        if let cached = cache[server.name], now() - cached.taken < ttl {
+            return cached.users
+        }
+        let reply = try await client(server).users()
+        guard reply.succeeded, let members = reply["members"] as? [[String: Any]] else {
+            throw ZulipClientError(description: reply.message(or: "could not fetch users"))
+        }
+        let users = members.compactMap { member -> ServerUser? in
+            guard (member["is_active"] as? Bool) ?? true, let id = (member["user_id"] as? NSNumber)?.intValue,
+                  let name = member["full_name"] as? String else { return nil }
+            return ServerUser(id: id, fullName: name, email: member["email"] as? String ?? "",
+                              isBot: (member["is_bot"] as? Bool) ?? false)
+        }.sorted { a, b in
+            a.fullName.pythonLowercased != b.fullName.pythonLowercased
+                ? pythonOrder(a.fullName.pythonLowercased, b.fullName.pythonLowercased) : a.id < b.id
+        }
+        cache[server.name] = (now(), users)
+        return users
+    }
+
+    /// Each server's users by its name, with an error for any it could not reach.
+    public func users(_ servers: [ServerConfig]) async -> (users: [String: [ServerUser]], errors: [String: String]) {
+        var users: [String: [ServerUser]] = [:]
+        var errors: [String: String] = [:]
+        for server in servers {
+            do {
+                users[server.name] = try await self.users(server)
+            } catch {
+                errors[server.name] = "\(error)"
+            }
+        }
+        return (users, errors)
+    }
+}
+
 public let previewFetchCount = 1000
 public let previewMentionCount = 50
 public let previewMaxMessages = 10_000

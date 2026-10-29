@@ -9,10 +9,13 @@ final class EditorAPI: ZulipAPI, @unchecked Sendable {
     private let lock = NSLock()
     private var recorded: [[String: any Sendable]] = []
     private let traffic: [String: Int?]
+    private let members: [[String: Any]]
     private let pages: @Sendable ([String: any Sendable]) -> [String: Any]
 
-    init(traffic: [String: Int?] = [:], pages: @escaping @Sendable ([String: any Sendable]) -> [String: Any] = { _ in [:] }) {
+    init(traffic: [String: Int?] = [:], members: [[String: Any]] = [],
+         pages: @escaping @Sendable ([String: any Sendable]) -> [String: Any] = { _ in [:] }) {
         self.traffic = traffic
+        self.members = members
         self.pages = pages
     }
 
@@ -35,6 +38,7 @@ final class EditorAPI: ZulipAPI, @unchecked Sendable {
             ["name": entry.key, "stream_id": index, "stream_weekly_traffic": entry.value as Any? ?? NSNull()] as [String: Any]
         }])
     }
+    func users() async throws -> JSONObject { JSONObject(["result": "success", "members": members]) }
 }
 
 private func streamMessage(_ id: Int, channel: String = "ops", flags: [String] = []) -> [String: Any] {
@@ -80,6 +84,32 @@ private func anchor(_ request: [String: any Sendable]) -> String { "\(request["a
         let broken = ChannelSource(client: { _ in throw ZulipClientError(description: "offline") })
         let result = await broken.channels([server("a")])
         #expect(result.servers[0].error?.contains("offline") == true && result.all.isEmpty)
+    }
+}
+
+@Suite struct UserSourceTests {
+    @Test func activeUsersByNamePerServer() async {
+        let api = EditorAPI(members: [
+            ["user_id": 3, "full_name": "bob", "email": "bob@x", "is_active": true, "is_bot": false],
+            ["user_id": 1, "full_name": "Ada", "email": "ada@x", "is_active": true, "is_bot": false],
+            ["user_id": 2, "full_name": "Gone", "email": "gone@x", "is_active": false],
+            ["user_id": 4, "full_name": "Deploy Bot", "email": "deploy-bot@x", "is_bot": true],
+        ])
+        let source = UserSource(client: { _ in api })
+        let result = await source.users([ServerConfig(name: "a", zuliprc: "/a")])
+        #expect(result.users["a"]?.map(\.id) == [1, 3, 4])
+        #expect(result.users["a"]?[2].isBot == true && result.errors.isEmpty)
+    }
+
+    @Test func cachedAndErrorsReportedPerServer() async {
+        let calls = Counter()
+        let source = UserSource(client: { _ in calls.increment(); return EditorAPI() }, now: { 0 })
+        _ = await source.users([ServerConfig(name: "a", zuliprc: "/a")])
+        _ = await source.users([ServerConfig(name: "a", zuliprc: "/a")])
+        #expect(calls.increment() == 2)
+        let broken = UserSource(client: { _ in throw ZulipClientError(description: "offline") })
+        let result = await broken.users([ServerConfig(name: "a", zuliprc: "/a")])
+        #expect(result.errors["a"]?.contains("offline") == true && result.users.isEmpty)
     }
 }
 
