@@ -79,8 +79,12 @@ one sample per kind.
 - `match`: `sender`, `channel`, `topic`, `keyword`, `mention`, `wildcard`,
   `alert_word`, `dm` or `group_dm`; `conversation` and `reaction` are described
   below. `sender` matches someone's messages anywhere, in channels or direct
-  messages: `sender = ["Ada Lovelace", "bob@example.com"]`, each a full name or
-  email, matched whole and in any case. `mention` is @you only and `wildcard` is @all, @everyone,
+  messages: `sender = [8, 2213]`, each a user ID (the editor picks people from
+  the server's users and saves their IDs); a full name or email, matched whole
+  and in any case, still works. `dm` and `group_dm` take an optional `sender`
+  too (only messages from them) and `with` (user IDs, any of whom is in the
+  conversation, whoever sent it). User IDs differ between servers, so a rule
+  with them needs `server` when there is more than one. `mention` is @you only and `wildcard` is @all, @everyone,
   @channel or @topic; `alert_word` is your own Zulip alert words. Topic and
   keyword values are case-insensitive regular expressions, written as Python's
   `re` reads them (as the first version was in Python).
@@ -111,6 +115,18 @@ one sample per kind.
   nine public-domain recordings), or a file in
   `~/.config/z-iris/sounds/` (its name without the extension). `volume`: 0 to
   100. `banner`: `full`, `title` (no message text) or `off`. `server`: one server.
+- Exceptions: `[[rule.except]]` tables after a rule, each a `match` with only
+  `channel`, `topic`, `keyword`, `sender`, `with` or `server`. If any exception
+  matches, the rule does not and the next rule decides (to silence, use a rule
+  with `sound = "none"`). Not for conversation or reaction rules.
+  ```toml
+  [[rule]]
+  match = "keyword"
+  keyword = "deploy"
+  [[rule.except]]
+  match = "channel"
+  channel = "ops-noise"
+  ```
 - Precedence: higher `priority` first, then sender, topic, keyword, mention, wildcard,
   alert word, channel, group DM, DM, then file order.
 - Final volume is rule volume (or `[defaults] volume`) times the server's
