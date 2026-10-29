@@ -29,8 +29,10 @@ private func message(from name: String = "Ada Lovelace", email: String = "ada@ex
     @Test(arguments: [
         ("[[rule]]\nmatch = \"sender\"\n", "rule number 1: a sender rule needs sender"),
         ("[[rule]]\nmatch = \"dm\"\nsender = \"Ada\"\n", "rule number 1: sender only applies to sender rules"),
-        ("[[rule]]\nmatch = \"sender\"\nsender = 3\n", "rule number 1: sender must be a name or email, or a list of them"),
-        ("[[rule]]\nmatch = \"sender\"\nsender = [\"\"]\n", "rule number 1: sender must be a name or email, or a list of them"),
+        ("[[rule]]\nmatch = \"sender\"\nsender = true\n", "rule number 1: sender must be a user ID, name or email, or a list of them"),
+        ("[[rule]]\nmatch = \"sender\"\nsender = 0\n", "rule number 1: sender must be a user ID, name or email, or a list of them"),
+        ("[[rule]]\nmatch = \"sender\"\nsender = []\n", "rule number 1: sender must be a user ID, name or email, or a list of them"),
+        ("[[rule]]\nmatch = \"sender\"\nsender = [\"\"]\n", "rule number 1: sender must be a user ID, name or email, or a list of them"),
     ])
     func refusals(_ rules: String, _ error: String) {
         #expect(throws: ConfigError(error)) { try config(rules) }
@@ -42,6 +44,25 @@ private func message(from name: String = "Ada Lovelace", email: String = "ada@ex
         #expect(pickRule(rules, message(from: "Bob", email: "bob@example.com")) != nil)  // email, any case
         #expect(pickRule(rules, message(channel: nil)) != nil)  // in a direct message too
         #expect(pickRule(rules, message(from: "Ada", email: "a@x")) == nil)  // whole names only
+    }
+
+    @Test func matchesUserIDs() throws {
+        let rule = try config("[[rule]]\nmatch = \"sender\"\nsender = [9, \"bob@example.com\"]\n").rules[0]
+        #expect(rule.senderIDs == [9] && rule.senders == ["bob@example.com"])
+        #expect(rule.label == "Sender bob@example.com, #9")
+        #expect(pickRule([rule], message(from: "Renamed", email: "new@x")) != nil)
+        #expect(pickRule([rule], message(from: "Bob", email: "bob@example.com")) != nil)
+    }
+
+    @Test func userIDsNeedAServerWhenThereAreSeveral() throws {
+        let two = head + "[[server]]\nname = \"v\"\nzuliprc = \"/y\"\n"
+        #expect(throws: ConfigError("rule number 1: sender IDs need server when there is more than one server")) {
+            try parseConfig(two + "[[rule]]\nmatch = \"sender\"\nsender = 9\n", sounds: sounds)
+        }
+        let named = try parseConfig(two + "[[rule]]\nmatch = \"sender\"\nsender = 9\nserver = \"w\"\n", sounds: sounds)
+        #expect(named.rules[0].senderIDs == [9])
+        // Names and emails need no server.
+        #expect(try parseConfig(two + "[[rule]]\nmatch = \"sender\"\nsender = \"Ada\"\n", sounds: sounds).rules.count == 1)
     }
 
     @Test func aSenderRuleBeatsAChannelRule() throws {
@@ -72,5 +93,8 @@ private func message(from name: String = "Ada Lovelace", email: String = "ada@ex
         #expect(rules[0]["sender"] == .array([.string("Ada Lovelace"), .string("bob@example.com")]))
         #expect(rules[1]["sender"] == .array([.string("Cy")]))
         #expect(try applyEdit(text, payload: EditPayload(rules: rules), sounds: sounds) == text)
+        let ids = head + "\n[[rule]]\nmatch = \"sender\"\nsender = [9, \"Cy\"]\n"
+        #expect(try readEditable(ids).rules[0]["sender"] == .array([.integer(9), .string("Cy")]))
+        #expect(try applyEdit(ids, payload: EditPayload(rules: try readEditable(ids).rules), sounds: sounds) == ids)
     }
 }

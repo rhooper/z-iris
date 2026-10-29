@@ -63,6 +63,8 @@ public struct Rule: Sendable, Equatable {
     public var emoji: [String]
     /// For sender rules: full names or emails, matched whole and in any case.
     public var senders: [String]
+    /// For sender rules: user IDs on the rule's server.
+    public var senderIDs: [Int]
     private var reaction: ReactionSubRule?
     private var channelPatterns: [PyRegex]
 
@@ -77,8 +79,9 @@ public struct Rule: Sendable, Equatable {
         description: String?, kind: RuleKind, channels: [String], pattern: PyRegex?,
         server: String?, sound: String?, volume: Int?, banner: String?, priority: Int,
         index: Int, enabled: Bool = true, behaviour: Behaviour = [:],
-        join: Bool = false, emoji: [String] = [], senders: [String] = []
+        join: Bool = false, emoji: [String] = [], senders: [String] = [], senderIDs: [Int] = []
     ) throws(PyRegex.Error) {
+        self.senderIDs = senderIDs
         self.join = join
         self.emoji = emoji
         self.senders = senders
@@ -106,6 +109,7 @@ public struct Rule: Sendable, Equatable {
             && lhs.pattern == rhs.pattern && lhs.server == rhs.server && lhs.sound == rhs.sound
             && lhs.volume == rhs.volume && lhs.banner == rhs.banner && lhs.priority == rhs.priority
             && lhs.index == rhs.index && lhs.enabled == rhs.enabled && lhs.senders == rhs.senders
+            && lhs.senderIDs == rhs.senderIDs
     }
 
     /// The description, else what the rule matches ("Channel #ops, #deploys").
@@ -115,8 +119,8 @@ public struct Rule: Sendable, Equatable {
         }
         let where_ = channels.map { "#\($0)" }.joined(separator: ", ")
         switch kind {
-        case .sender where !senders.isEmpty:
-            return "\(kind.label) \(senders.joined(separator: ", "))"
+        case .sender where !senders.isEmpty || !senderIDs.isEmpty:
+            return "\(kind.label) \((senders + senderIDs.map { "#\($0)" }).joined(separator: ", "))"
         case .channel, .conversation where !channels.isEmpty:
             return "\(kind.label) \(where_)"
         case .topic, .keyword:
@@ -138,6 +142,7 @@ public struct Rule: Sendable, Equatable {
         }
         switch kind {
         case .sender:
+            if senderIDs.contains(message.senderID) { return true }
             let who = [message.senderName, message.senderEmail].filter { !$0.isEmpty }.map(\.pythonLowercased)
             return senders.contains { who.contains($0.pythonLowercased) }
         case .channel:

@@ -428,15 +428,24 @@ private func rules(
             }
         }
 
-        // One name or email, or a list.
+        // A user ID, name or email, or a list of them.
         var senders: [String] = []
+        var senderIDs: [Int] = []
         if let value = raw["sender"] {
-            let names = (value as? String).map { [$0] } ?? (value as? [Any])?.compactMap { $0 as? String }
-            guard let names, !names.isEmpty, names.allSatisfy({ !$0.isEmpty }),
-                  (value as? [Any]).map({ $0.count == names.count }) ?? true
-            else { throw ConfigError("\(label): sender must be a name or email, or a list of them") }
+            let items = (value as? [Any]) ?? [value]
+            for item in items {
+                if let id = pyInt(item), id > 0 {
+                    senderIDs.append(id)
+                } else if let name = item as? String, !name.isEmpty {
+                    senders.append(name)
+                } else {
+                    throw ConfigError("\(label): sender must be a user ID, name or email, or a list of them")
+                }
+            }
+            guard !items.isEmpty else {
+                throw ConfigError("\(label): sender must be a user ID, name or email, or a list of them")
+            }
             guard kind == .sender else { throw ConfigError("\(label): sender only applies to sender rules") }
-            senders = names
         } else if kind == .sender {
             throw ConfigError("\(label): a sender rule needs sender")
         }
@@ -466,6 +475,10 @@ private func rules(
         let server = raw["server"]
         if let server, !((server as? String).map(serverNames.contains) ?? false) {
             throw ConfigError("\(label): unknown server \(pythonRepr(server))")
+        }
+        // User IDs differ from server to server.
+        if !senderIDs.isEmpty, server == nil, serverNames.count > 1 {
+            throw ConfigError("\(label): sender IDs need server when there is more than one server")
         }
 
         let volume = try raw["volume"].map { value throws(ConfigError) in try percent(value, "\(label): volume") }
@@ -529,7 +542,7 @@ private func rules(
                 description: description, kind: kind, channels: channels ?? [], pattern: pattern,
                 server: server as? String, sound: sound, volume: volume, banner: banner as? String,
                 priority: priority, index: index, enabled: enabled, behaviour: found, join: join, emoji: emoji,
-                senders: senders
+                senders: senders, senderIDs: senderIDs
             )
             made.reactionRule = reaction
             rules.append(made)
