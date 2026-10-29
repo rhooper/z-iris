@@ -251,21 +251,30 @@ public final class EditorModel {
     /// name it.
     public func label(_ rule: EditableRule) -> String {
         if case .string(let text)? = rule.fields["description"], !text.isEmpty { return text }
-        let kind = RuleKind(rawValue: { if case .string(let k)? = rule.fields["match"] { return k } else { return "mention" } }()) ?? .mention
-        var channels: [String] = []
-        if case .array(let items)? = rule.fields["channel"] {
-            channels = items.compactMap { if case .string(let c) = $0, !c.isEmpty { c } else { nil } }
-        }
-        let source = { (key: String) -> String? in if case .string(let s)? = rule.fields[key], !s.isEmpty { s } else { nil } }
-        let pattern = (kind == .topic ? source("topic") : kind == .keyword ? source("keyword") : nil).flatMap { try? PyRegex($0) }
-        let people = { (key: String) -> [TOMLValue] in if case .array(let items)? = rule.fields[key] { items } else { [] } }
-        let senders = people("sender").compactMap { if case .string(let s) = $0, !s.isEmpty { s } else { nil } }
-        let ids = { (key: String) in people(key).compactMap { if case .integer(let id) = $0 { id } else { nil } } }
         let from = peopleServers(rule.fields)
-        return (try? Rule(description: nil, kind: kind, channels: channels.filter { (try? PyRegex($0)) != nil }, pattern: pattern,
-                          server: nil, sound: nil, volume: nil, banner: nil, priority: 0, index: 0,
-                          senders: senders, senderIDs: ids("sender"), withIDs: ids("with"))
-            .label { self.person($0, on: from)?.fullName }) ?? kind.rawValue
+        guard var draft = draftRule(rule.fields) else { return rule.fields["match"].flatMap { if case .string(let k) = $0 { k } else { nil } } ?? "mention" }
+        if case .array(let items)? = rule.fields["except"] {
+            draft.exceptions = items.compactMap { if case .table(let keys) = $0 { draftRule(Dictionary(keys) { $1 }) } else { nil } }
+        }
+        return draft.label { self.person($0, on: from)?.fullName }
+    }
+
+    /// A rule or exception's matching part, as far as its fields make sense.
+    private func draftRule(_ fields: [String: TOMLValue]) -> Rule? {
+        let kind = RuleKind(rawValue: { if case .string(let k)? = fields["match"] { return k } else { return "mention" } }()) ?? .mention
+        // A list, or one value written bare.
+        let list = { (key: String) -> [TOMLValue] in
+            if case .array(let items)? = fields[key] { return items }
+            return fields[key].map { [$0] } ?? []
+        }
+        let channels = list("channel").compactMap { if case .string(let c) = $0, !c.isEmpty, (try? PyRegex(c)) != nil { c } else { nil } }
+        let source = { (key: String) -> String? in if case .string(let s)? = fields[key], !s.isEmpty { s } else { nil } }
+        let pattern = (kind == .topic ? source("topic") : kind == .keyword ? source("keyword") : nil).flatMap { try? PyRegex($0) }
+        let senders = list("sender").compactMap { if case .string(let s) = $0, !s.isEmpty { s } else { nil } }
+        let ids = { (key: String) in list(key).compactMap { if case .integer(let id) = $0 { id } else { nil } } }
+        return try? Rule(description: nil, kind: kind, channels: channels, pattern: pattern,
+                         server: nil, sound: nil, volume: nil, banner: nil, priority: 0, index: 0,
+                         senders: senders, senderIDs: ids("sender"), withIDs: ids("with"))
     }
 
     // MARK: sounds

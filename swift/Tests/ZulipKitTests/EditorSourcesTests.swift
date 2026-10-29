@@ -101,6 +101,21 @@ private func anchor(_ request: [String: any Sendable]) -> String { "\(request["a
         #expect(result.users["a"]?[2].isBot == true && result.errors.isEmpty)
     }
 
+    @Test func typingNarrowsAndReturnPicksOnlyOnePerson() {
+        let people = [ServerUser(id: 1, fullName: "Ada Lovelace", email: "ada@x"),
+                      ServerUser(id: 2, fullName: "Ada", email: "ada2@x"),
+                      ServerUser(id: 3, fullName: "Rob Roy", email: "rob@x")]
+        #expect(usersMatching(people, "").count == 3)
+        #expect(usersMatching(people, " ROB ").map(\.id) == [3])
+        #expect(usersMatching(people, "ada2@").map(\.id) == [2])
+        #expect(userPicked(people, "rob")?.id == 3)  // the only match
+        #expect(userPicked(people, "ada")?.id == 2)  // typed whole
+        #expect(userPicked(people, "ada@x")?.id == 1)
+        #expect(userPicked(people, "a") == nil && userPicked(people, "nobody") == nil && userPicked(people, " ") == nil)
+        let twins = [ServerUser(id: 1, fullName: "Sam", email: "a@x"), ServerUser(id: 2, fullName: "Sam", email: "b@x")]
+        #expect(userPicked(twins, "sam") == nil)  // ambiguous: pick from the list
+    }
+
     @Test func cachedAndErrorsReportedPerServer() async {
         let calls = Counter()
         let source = UserSource(client: { _ in calls.increment(); return EditorAPI() }, now: { 0 })

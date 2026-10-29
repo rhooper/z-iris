@@ -684,25 +684,15 @@ private struct PersonTokens: View {
 
     private var trimmed: String { entry.trimmingCharacters(in: .whitespaces) }
 
-    private var typed: [ServerUser] {
-        trimmed.isEmpty ? everyone : everyone.filter {
-            $0.fullName.localizedCaseInsensitiveContains(trimmed) || $0.email.localizedCaseInsensitiveContains(trimmed)
-        }
-    }
+    private var typed: [ServerUser] { usersMatching(everyone, entry) }
 
     private func add(_ user: ServerUser) {
         set(items + [.integer(user.id)])
         entry = ""
     }
 
-    /// Return picks the only match, or the one whose name or email is typed whole.
     private func submit() {
-        let hits = typed
-        if hits.count == 1 {
-            add(hits[0])
-        } else if let exact = hits.first(where: { $0.fullName.lowercased() == trimmed.lowercased() || $0.email.lowercased() == trimmed.lowercased() }) {
-            add(exact)
-        }
+        if let user = userPicked(everyone, entry) { add(user) }
     }
 
     @ViewBuilder private func token(_ item: TOMLValue) -> some View {
@@ -711,7 +701,7 @@ private struct PersonTokens: View {
             if let user = model.person(id, on: servers) {
                 Text(user.fullName).help(user.email)
             } else {
-                Label("User \(id)", systemImage: "exclamationmark.triangle")
+                Label("User \(String(id))", systemImage: "exclamationmark.triangle")
                     .foregroundStyle(.orange)
                     .help(model.users.isEmpty ? "People are still loading." : "No active user with this ID on the rule's server.")
             }
@@ -774,6 +764,100 @@ private struct PersonTokens: View {
     }
 }
 
+/// What a rule or an exception matches on, for its kind.
+private struct ConditionFields: View {
+    let model: EditorModel
+    @Binding var fields: [String: TOMLValue]
+    /// Where its people come from: the rule's server, else every one.
+    let servers: [String]
+
+    private var match: String { if case .string(let m)? = fields["match"] { m } else { "mention" } }
+
+    private func people(_ key: String, _ footer: String) -> some View {
+        PersonTokens(model: model, people: field(model, $fields, key), servers: servers, footer: footer)
+    }
+
+    var body: some View {
+        if ["channel", "topic", "conversation", "reaction"].contains(match) {
+            LabeledContent(match == "channel" ? "Channels" : "Channels (optional)") {
+                ChannelTokens(model: model, channels: field(model, $fields, "channel"))
+            }
+        }
+        if match == "sender" {
+            LabeledContent("People") { people("sender", "Their messages anywhere, in channels or direct messages.") }
+        }
+        if match == "dm" || match == "group_dm" {
+            LabeledContent("From (optional)") {
+                people("sender", match == "dm" ? "Only direct messages from these people." : "Only group messages one of these people sent.")
+            }
+        }
+        if match == "group_dm" {
+            LabeledContent("With (optional)") {
+                people("with", "Only group conversations one of these people is in, whoever sent the message.")
+            }
+        }
+        if ["topic", "conversation", "reaction"].contains(match) {
+            TextField(match == "topic" ? "Topic (regular expression)" : "Topic (regular expression, optional)",
+                      text: field(model, $fields, "topic").text)
+        }
+        if match == "keyword" {
+            TextField("Keyword (regular expression)", text: field(model, $fields, "keyword").text)
+        }
+    }
+}
+
+/// A rule's [[rule.except]] tables: if any matches, the rule does not.
+private struct ExceptionsSection: View {
+    let model: EditorModel
+    @Binding var fields: [String: TOMLValue]
+
+    private var tables: [[(String, TOMLValue)]] {
+        guard case .array(let items)? = fields["except"] else { return [] }
+        return items.compactMap { if case .table(let keys) = $0 { keys } else { nil } }
+    }
+
+    private func set(_ list: [[(String, TOMLValue)]]) {
+        fields["except"] = list.isEmpty ? nil : .array(list.map(TOMLValue.table))
+        model.changed()
+    }
+
+    /// One exception's fields as a dictionary, as the condition fields edit them.
+    private func exception(_ index: Int) -> Binding<[String: TOMLValue]> {
+        Binding(get: { index < tables.count ? Dictionary(tables[index]) { $1 } : [:] }, set: { edited in
+            var list = tables
+            guard index < list.count else { return }
+            list[index] = edited.sorted { a, b in
+                (ruleFields.firstIndex(of: a.key) ?? .max) < (ruleFields.firstIndex(of: b.key) ?? .max)
+            }.map { ($0.key, $0.value) }
+            fields["except"] = .array(list.map(TOMLValue.table))
+        })
+    }
+
+    var body: some View {
+        Section {
+            ForEach(tables.indices, id: \.self) { index in
+                let binding = exception(index)
+                HStack {
+                    Picker("Unless", selection: field(model, binding, "match").choice(empty: "\u{0}")) {
+                        ForEach(kinds.filter { $0.0 != "conversation" && $0.0 != "reaction" }, id: \.0) { Text($0.1).tag($0.0) }
+                    }
+                    Button { set(tables.enumerated().filter { $0.offset != index }.map(\.element)) } label: {
+                        Image(systemName: "minus.circle.fill")
+                    }
+                    .buttonStyle(.borderless)
+                    .help("Remove this exception")
+                }
+                ConditionFields(model: model, fields: binding, servers: model.peopleServers(fields))
+            }
+            Button("Add Exception") { set(tables + [[("match", .string("channel"))]]) }
+        } header: {
+            Text("Except When")
+        } footer: {
+            Text("If any exception matches a message, this rule does not, and the next rule that matches decides.")
+        }
+    }
+}
+
 private struct RuleEditor: View {
     let model: EditorModel
     @Binding var rule: EditableRule
@@ -790,41 +874,9 @@ private struct RuleEditor: View {
                 Picker("Match", selection: field(model, $rule.fields, "match").choice(empty: "\u{0}")) {
                     ForEach(kinds, id: \.0) { Text($0.1).tag($0.0) }
                 }
-                if ["channel", "topic", "conversation", "reaction"].contains(match) {
-                    LabeledContent(match == "channel" ? "Channels" : "Channels (optional)") {
-                        ChannelTokens(model: model, channels: field(model, $rule.fields, "channel"))
-                    }
-                }
-                if match == "sender" {
-                    LabeledContent("People") {
-                        PersonTokens(model: model, people: field(model, $rule.fields, "sender"),
-                                     servers: model.peopleServers(rule.fields),
-                                     footer: "Their messages anywhere, in channels or direct messages.")
-                    }
-                }
-                if match == "dm" || match == "group_dm" {
-                    LabeledContent("From (optional)") {
-                        PersonTokens(model: model, people: field(model, $rule.fields, "sender"),
-                                     servers: model.peopleServers(rule.fields),
-                                     footer: match == "dm" ? "Only direct messages from these people." : "Only group messages one of these people sent.")
-                    }
-                }
-                if match == "group_dm" {
-                    LabeledContent("With (optional)") {
-                        PersonTokens(model: model, people: field(model, $rule.fields, "with"),
-                                     servers: model.peopleServers(rule.fields),
-                                     footer: "Only group conversations one of these people is in, whoever sent the message.")
-                    }
-                }
-                if ["topic", "conversation", "reaction"].contains(match) {
-                    TextField(match == "topic" ? "Topic (regular expression)" : "Topic (regular expression, optional)",
-                              text: field(model, $rule.fields, "topic").text)
-                }
+                ConditionFields(model: model, fields: $rule.fields, servers: model.peopleServers(rule.fields))
                 if match == "reaction" {
                     EmojiField(model: model, fields: $rule.fields).id(rule.id)
-                }
-                if match == "keyword" {
-                    TextField("Keyword (regular expression)", text: field(model, $rule.fields, "keyword").text)
                 }
                 // One server: nothing to choose, unless the rule already names one.
                 if model.servers.count > 1 || rule.fields["server"] != nil {
@@ -838,6 +890,9 @@ private struct RuleEditor: View {
                                                                    set: { rule.fields["join"] = $0 ? .bool(true) : nil; model.changed() }))
                         .help("A message this rule matches joins its topic: later messages there alert until it has been quiet for a while.")
                 }
+            }
+            if match != "conversation", match != "reaction" {
+                ExceptionsSection(model: model, fields: $rule.fields)
             }
             Section {
                 SoundPicker(model: model, sound: field(model, $rule.fields, "sound").choice(), volume: volume, allowDefault: true)

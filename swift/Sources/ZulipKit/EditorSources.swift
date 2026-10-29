@@ -83,6 +83,26 @@ public struct ServerUser: Sendable, Equatable, Hashable {
     }
 }
 
+/// The people whose name or email contains what is typed (everyone when
+/// nothing is).
+public func usersMatching(_ users: [ServerUser], _ typed: String) -> [ServerUser] {
+    let typed = typed.trimmingCharacters(in: .whitespaces)
+    return typed.isEmpty ? users : users.filter {
+        $0.fullName.localizedCaseInsensitiveContains(typed) || $0.email.localizedCaseInsensitiveContains(typed)
+    }
+}
+
+/// Who Return picks: the only match, else the one whose name or email is
+/// typed whole; nobody when that is ambiguous, so free text is never added.
+public func userPicked(_ users: [ServerUser], _ typed: String) -> ServerUser? {
+    let hits = usersMatching(users, typed)
+    let typed = typed.trimmingCharacters(in: .whitespaces).lowercased()
+    guard !typed.isEmpty else { return nil }
+    if hits.count == 1 { return hits[0] }
+    let whole = hits.filter { $0.fullName.lowercased() == typed || $0.email.lowercased() == typed }
+    return whole.count == 1 ? whole[0] : nil
+}
+
 /// Each server's active users by name, cached for five minutes. A server
 /// that cannot be reached has none, and its error.
 public actor UserSource {
