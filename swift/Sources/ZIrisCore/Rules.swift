@@ -32,7 +32,7 @@ public enum RuleKind: String, CaseIterable, Sendable {
     }
 }
 
-/// Boxes a sub-rule, which a struct cannot hold directly.
+/// Boxes a sub-rule or an exception, which a struct cannot hold directly.
 final class ReactionSubRule: Sendable {
     let rule: Rule
 
@@ -68,7 +68,15 @@ public struct Rule: Sendable, Equatable {
     /// For DM rules: user IDs, any of whom is in the conversation.
     public var withIDs: [Int]
     private var reaction: ReactionSubRule?
+    private var excepts: [ReactionSubRule] = []
     private var channelPatterns: [PyRegex]
+
+    /// The rule's [[rule.except]] conditions: any one matching stops the
+    /// rule matching, so the next rule decides.
+    public var exceptions: [Rule] {
+        get { excepts.map(\.rule) }
+        set { excepts = newValue.map(ReactionSubRule.init) }
+    }
 
     /// The rule's [rule.reaction] sub-rule: reactions on your messages that
     /// this rule's place covers.
@@ -112,7 +120,7 @@ public struct Rule: Sendable, Equatable {
             && lhs.pattern == rhs.pattern && lhs.server == rhs.server && lhs.sound == rhs.sound
             && lhs.volume == rhs.volume && lhs.banner == rhs.banner && lhs.priority == rhs.priority
             && lhs.index == rhs.index && lhs.enabled == rhs.enabled && lhs.senders == rhs.senders
-            && lhs.senderIDs == rhs.senderIDs && lhs.withIDs == rhs.withIDs
+            && lhs.senderIDs == rhs.senderIDs && lhs.withIDs == rhs.withIDs && lhs.exceptions == rhs.exceptions
     }
 
     /// The description, else what the rule matches ("Channel #ops, #deploys").
@@ -123,6 +131,12 @@ public struct Rule: Sendable, Equatable {
         if let description, !description.isEmpty {
             return description
         }
+        let own = ownLabel(naming: name)
+        guard !exceptions.isEmpty else { return own }
+        return "\(own), except \(exceptions.map { $0.ownLabel(naming: name) }.joined(separator: " or "))"
+    }
+
+    private func ownLabel(naming name: (Int) -> String?) -> String {
         let where_ = channels.map { "#\($0)" }.joined(separator: ", ")
         func people(_ ids: [Int]) -> [String] { ids.map { name($0) ?? "#\($0)" } }
         let from = (senders + people(senderIDs)).joined(separator: ", ")
@@ -158,6 +172,10 @@ public struct Rule: Sendable, Equatable {
     }
 
     func matches(_ message: Message) -> Bool {
+        matchesItself(message) && !exceptions.contains { $0.matchesItself(message) }
+    }
+
+    private func matchesItself(_ message: Message) -> Bool {
         if let server, server != message.server {
             return false
         }

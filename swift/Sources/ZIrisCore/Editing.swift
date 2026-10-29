@@ -4,12 +4,13 @@ import TOMLDecoder
 // Edit the config file's rules and volumes while keeping its comments. The
 // output is byte for byte what editing.py (tomlkit) writes.
 
-/// "reaction" is the rule's [rule.reaction] sub-table, written after it.
+/// "reaction" is the rule's [rule.reaction] sub-table and "except" its
+/// [[rule.except]] tables, written after it in that order.
 public let ruleFields = [
     "description", "match", "channel", "sender", "with", "topic", "keyword", "emoji", "server", "sound",
     "volume", "banner", "priority", "enabled", "join", "flash", "flash_color",
     "flash_seconds", "repeat", "repeat_every", "repeat_boost", "min_gap",
-    "batch_window", "sticky", "stay", "summarize", "group_after", "reaction",
+    "batch_window", "sticky", "stay", "summarize", "group_after", "reaction", "except",
 ]
 public let focusFields = ["mode", "quiet_hours", "quiet_mode"]
 public let defaultFields = [
@@ -244,7 +245,7 @@ private func blank(_ value: TOMLValue?) -> Bool {
 /// A rule's keys as written: in ruleFields order, without blanks or defaults.
 private func ruleKeys(_ raw: [String: TOMLValue]) -> [(String, TOMLValue)] {
     var keys: [(String, TOMLValue)] = []
-    for key in ruleFields where key != "reaction" {
+    for key in ruleFields where key != "reaction" && key != "except" {
         var value = raw[key]
         if ["channel", "sender", "with"].contains(key), case .array(let items)? = value {
             let kept = items.filter(\.truthy)
@@ -316,6 +317,11 @@ public func applyEdit(_ text: String, payload: EditPayload, sounds: [String: Str
                 let keys = ruleKeys(Dictionary(sub) { $1 })
                 if !keys.isEmpty {
                     spans.append(path: ["rule", "reaction"], isArray: false, keys: keys)
+                }
+            }
+            if case .array(let excepts)? = raw["except"] {
+                for case .table(let fields) in excepts {
+                    spans.append(path: ["rule", "except"], isArray: true, keys: ruleKeys(Dictionary(fields) { $1 }))
                 }
             }
         }

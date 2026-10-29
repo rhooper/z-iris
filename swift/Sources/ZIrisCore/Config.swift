@@ -395,175 +395,210 @@ private func rules(
         }
         let description = (rawDescription as? String).flatMap { $0.isEmpty ? nil : $0 }
         let label = description.map { "rule \(pythonRepr($0))" } ?? "rule number \(index + 1)"
-        guard let kindName = raw["match"] as? String, let kind = RuleKind(rawValue: kindName) else {
-            throw ConfigError("\(label): match must be one of \(RuleKind.allCases.map(\.rawValue).joined(separator: ", "))")
-        }
+        var made = try rule(raw, index: index, description: description, label: label, serverNames: serverNames, sounds: sounds)
 
-        // One channel or a list; each a pattern for the whole channel name.
-        var channels: [String]?
-        switch raw["channel"] {
-        case nil: channels = nil
-        case let one as String: channels = [one]
-        case let list as [Any]:
-            let names = list.compactMap { $0 as? String }.filter { !$0.isEmpty }
-            guard !list.isEmpty, names.count == list.count else { fallthrough }
-            channels = names
-        default:
-            throw ConfigError("\(label): channel must be a channel name or a list of them")
-        }
-        if channels?.contains("") == true {
-            throw ConfigError("\(label): channel must be a channel name or a list of them")
-        }
-        if channels != nil, ![.channel, .topic, .conversation, .reaction].contains(kind) {
-            throw ConfigError("\(label): channel only applies to channel, topic, conversation and reaction rules")
-        }
-        if kind == .channel, channels == nil {
-            throw ConfigError("\(label): a channel rule needs channel")
-        }
-        for source in channels ?? [] {
-            do {
-                _ = try PyRegex(source)
-            } catch {
-                throw ConfigError("\(label): bad channel pattern \(pythonRepr(source)): \(error)")
+        // Exceptions: conditions only, any of which stops the rule matching.
+        if raw["except"] != nil {
+            guard ![.conversation, .reaction].contains(made.kind) else {
+                throw ConfigError("\(label): exceptions do not apply to conversation and reaction rules")
             }
-        }
-
-        // A user ID, name or email, or a list of them.
-        var senders: [String] = []
-        var senderIDs: [Int] = []
-        if let value = raw["sender"] {
-            let items = (value as? [Any]) ?? [value]
-            for item in items {
-                if let id = pyInt(item), id > 0 {
-                    senderIDs.append(id)
-                } else if let name = item as? String, !name.isEmpty {
-                    senders.append(name)
-                } else {
-                    throw ConfigError("\(label): sender must be a user ID, name or email, or a list of them")
+            guard let list = raw["except"] as? [Any], let excepts = list as? [[String: Any]], excepts.count == list.count else {
+                throw ConfigError("\(label): exceptions must be tables, written [[rule.except]]")
+            }
+            made.exceptions = try excepts.enumerated().map { (number, table) throws(ConfigError) -> Rule in
+                let where_ = "\(label), exception \(number + 1)"
+                if let key = table.keys.sorted().first(where: { !exceptionFields.contains($0) }) {
+                    throw ConfigError("\(where_): an exception cannot set \(key)")
                 }
-            }
-            guard !items.isEmpty else {
-                throw ConfigError("\(label): sender must be a user ID, name or email, or a list of them")
-            }
-            guard [.sender, .dm, .groupDM].contains(kind) else {
-                throw ConfigError("\(label): sender only applies to sender, dm and group_dm rules")
-            }
-        } else if kind == .sender {
-            throw ConfigError("\(label): a sender rule needs sender")
-        }
-
-        // Direct messages with someone: user IDs only, as messages carry them.
-        var withIDs: [Int] = []
-        if let value = raw["with"] {
-            let items = (value as? [Any]) ?? [value]
-            withIDs = items.compactMap { pyInt($0) }.filter { $0 > 0 }
-            guard !items.isEmpty, withIDs.count == items.count else {
-                throw ConfigError("\(label): with must be a user ID or a list of them")
-            }
-            guard [.dm, .groupDM].contains(kind) else { throw ConfigError("\(label): with only applies to dm and group_dm rules") }
-        }
-
-        var pattern: PyRegex?
-        if kind == .topic || kind == .keyword {
-            guard let source = raw[kind.rawValue] as? String, !source.isEmpty else {
-                throw ConfigError("\(label): a \(kind.rawValue) rule needs \(kind.rawValue)")
-            }
-            do {
-                pattern = try PyRegex(source)
-            } catch {
-                throw ConfigError("\(label): bad regular expression: \(error)")
-            }
-        } else if kind == .conversation || kind == .reaction, let source = raw["topic"] {
-            // Optional here: only topics matching it.
-            guard let source = source as? String, !source.isEmpty else {
-                throw ConfigError("\(label): topic must be a regular expression")
-            }
-            do {
-                pattern = try PyRegex(source)
-            } catch {
-                throw ConfigError("\(label): bad regular expression: \(error)")
+                // An exception is about the rule's own server.
+                var table = table
+                if table["server"] == nil, let server = made.server { table["server"] = server }
+                let exception = try rule(table, index: index, description: nil, label: where_, serverNames: serverNames, sounds: sounds)
+                guard ![.conversation, .reaction].contains(exception.kind) else {
+                    throw ConfigError("\(where_): match cannot be conversation or reaction")
+                }
+                return exception
             }
         }
-
-        let server = raw["server"]
-        if let server, !((server as? String).map(serverNames.contains) ?? false) {
-            throw ConfigError("\(label): unknown server \(pythonRepr(server))")
-        }
-        // User IDs differ from server to server.
-        if !(senderIDs.isEmpty && withIDs.isEmpty), server == nil, serverNames.count > 1 {
-            throw ConfigError("\(label): user IDs need server when there is more than one server")
-        }
-
-        let volume = try raw["volume"].map { value throws(ConfigError) in try percent(value, "\(label): volume") }
-
-        let banner = raw["banner"]
-        if let banner, !["full", "title", "off"].contains(banner as? String ?? "") {
-            throw ConfigError("\(label): banner must be full, title or off")
-        }
-
-        let sound = try raw["sound"].map { value throws(ConfigError) in try sound(value, label, sounds) }
-
-        guard let enabled = (raw["enabled"] ?? true) as? Bool else {
-            throw ConfigError("\(label): enabled must be true or false")
-        }
-
-        guard let priority = pyInt(raw["priority"] ?? Int64(0)) else {
-            throw ConfigError("\(label): priority must be an integer")
-        }
-
-        let found = try behaviour(raw, label)
-
-        guard let join = (raw["join"] ?? false) as? Bool else {
-            throw ConfigError("\(label): join must be true or false")
-        }
-        var emoji: [String] = []
-        if let value = raw["emoji"] {
-            let names = (value as? String).map { [$0] } ?? (value as? [Any])?.compactMap { $0 as? String }
-            guard let names, !names.isEmpty, names.allSatisfy({ !$0.isEmpty }),
-                  (value as? [Any]).map({ $0.count == names.count }) ?? true
-            else { throw ConfigError("\(label): emoji must be an emoji name or a list of them") }
-            guard kind == .reaction else { throw ConfigError("\(label): emoji only applies to reaction rules") }
-            emoji = names
-        }
-
-        var reaction: Rule?
-        if let sub = raw["reaction"] {
-            guard [.channel, .topic, .conversation].contains(kind) else {
-                throw ConfigError("\(label): reaction settings only apply to channel, topic and conversation rules")
-            }
-            guard let table = sub as? [String: Any] else {
-                throw ConfigError("\(label): reaction settings must be a table, written [rule.reaction]")
-            }
-            if ["match", "channel", "topic", "keyword"].contains(where: { table[$0] != nil }) {
-                throw ConfigError("\(label): reaction settings cannot set match, channel, topic or keyword")
-            }
-            let subVolume = try table["volume"].map { value throws(ConfigError) in try percent(value, "\(label): volume") }
-            let subBanner = table["banner"]
-            if let subBanner, !["full", "title", "off"].contains(subBanner as? String ?? "") {
-                throw ConfigError("\(label): banner must be full, title or off")
-            }
-            let subSound = try table["sound"].map { value throws(ConfigError) in try soundSetting(value, label, sounds) }
-            reaction = try? Rule(
-                description: nil, kind: .reaction, channels: [], pattern: nil, server: nil, sound: subSound,
-                volume: subVolume, banner: subBanner as? String, priority: priority, index: index,
-                behaviour: try behaviour(table, label)
-            )
-        }
-
-        do {
-            var made = try Rule(
-                description: description, kind: kind, channels: channels ?? [], pattern: pattern,
-                server: server as? String, sound: sound, volume: volume, banner: banner as? String,
-                priority: priority, index: index, enabled: enabled, behaviour: found, join: join, emoji: emoji,
-                senders: senders, senderIDs: senderIDs, withIDs: withIDs
-            )
-            made.reactionRule = reaction
-            rules.append(made)
-        } catch {
-            throw ConfigError("\(label): bad channel pattern: \(error)")
-        }
+        rules.append(made)
     }
     return rules
+}
+
+/// What an exception may say: only what decides whether a message matches.
+private let exceptionFields: Set<String> = ["match", "channel", "topic", "keyword", "sender", "with", "server"]
+
+/// One rule from its table; the caller has read its description.
+private func rule(
+    _ raw: [String: Any], index: Int, description: String?, label: String, serverNames: Set<String>, sounds: [String: String]
+) throws(ConfigError) -> Rule {
+    guard let kindName = raw["match"] as? String, let kind = RuleKind(rawValue: kindName) else {
+        throw ConfigError("\(label): match must be one of \(RuleKind.allCases.map(\.rawValue).joined(separator: ", "))")
+    }
+
+    // One channel or a list; each a pattern for the whole channel name.
+    var channels: [String]?
+    switch raw["channel"] {
+    case nil: channels = nil
+    case let one as String: channels = [one]
+    case let list as [Any]:
+        let names = list.compactMap { $0 as? String }.filter { !$0.isEmpty }
+        guard !list.isEmpty, names.count == list.count else { fallthrough }
+        channels = names
+    default:
+        throw ConfigError("\(label): channel must be a channel name or a list of them")
+    }
+    if channels?.contains("") == true {
+        throw ConfigError("\(label): channel must be a channel name or a list of them")
+    }
+    if channels != nil, ![.channel, .topic, .conversation, .reaction].contains(kind) {
+        throw ConfigError("\(label): channel only applies to channel, topic, conversation and reaction rules")
+    }
+    if kind == .channel, channels == nil {
+        throw ConfigError("\(label): a channel rule needs channel")
+    }
+    for source in channels ?? [] {
+        do {
+            _ = try PyRegex(source)
+        } catch {
+            throw ConfigError("\(label): bad channel pattern \(pythonRepr(source)): \(error)")
+        }
+    }
+
+    // A user ID, name or email, or a list of them.
+    var senders: [String] = []
+    var senderIDs: [Int] = []
+    if let value = raw["sender"] {
+        let items = (value as? [Any]) ?? [value]
+        for item in items {
+            if let id = pyInt(item), id > 0 {
+                senderIDs.append(id)
+            } else if let name = item as? String, !name.isEmpty {
+                senders.append(name)
+            } else {
+                throw ConfigError("\(label): sender must be a user ID, name or email, or a list of them")
+            }
+        }
+        guard !items.isEmpty else {
+            throw ConfigError("\(label): sender must be a user ID, name or email, or a list of them")
+        }
+        guard [.sender, .dm, .groupDM].contains(kind) else {
+            throw ConfigError("\(label): sender only applies to sender, dm and group_dm rules")
+        }
+    } else if kind == .sender {
+        throw ConfigError("\(label): a sender rule needs sender")
+    }
+
+    // Direct messages with someone: user IDs only, as messages carry them.
+    var withIDs: [Int] = []
+    if let value = raw["with"] {
+        let items = (value as? [Any]) ?? [value]
+        withIDs = items.compactMap { pyInt($0) }.filter { $0 > 0 }
+        guard !items.isEmpty, withIDs.count == items.count else {
+            throw ConfigError("\(label): with must be a user ID or a list of them")
+        }
+        guard [.dm, .groupDM].contains(kind) else { throw ConfigError("\(label): with only applies to dm and group_dm rules") }
+    }
+
+    var pattern: PyRegex?
+    if kind == .topic || kind == .keyword {
+        guard let source = raw[kind.rawValue] as? String, !source.isEmpty else {
+            throw ConfigError("\(label): a \(kind.rawValue) rule needs \(kind.rawValue)")
+        }
+        do {
+            pattern = try PyRegex(source)
+        } catch {
+            throw ConfigError("\(label): bad regular expression: \(error)")
+        }
+    } else if kind == .conversation || kind == .reaction, let source = raw["topic"] {
+        // Optional here: only topics matching it.
+        guard let source = source as? String, !source.isEmpty else {
+            throw ConfigError("\(label): topic must be a regular expression")
+        }
+        do {
+            pattern = try PyRegex(source)
+        } catch {
+            throw ConfigError("\(label): bad regular expression: \(error)")
+        }
+    }
+
+    let server = raw["server"]
+    if let server, !((server as? String).map(serverNames.contains) ?? false) {
+        throw ConfigError("\(label): unknown server \(pythonRepr(server))")
+    }
+    // User IDs differ from server to server.
+    if !(senderIDs.isEmpty && withIDs.isEmpty), server == nil, serverNames.count > 1 {
+        throw ConfigError("\(label): user IDs need server when there is more than one server")
+    }
+
+    let volume = try raw["volume"].map { value throws(ConfigError) in try percent(value, "\(label): volume") }
+
+    let banner = raw["banner"]
+    if let banner, !["full", "title", "off"].contains(banner as? String ?? "") {
+        throw ConfigError("\(label): banner must be full, title or off")
+    }
+
+    let sound = try raw["sound"].map { value throws(ConfigError) in try sound(value, label, sounds) }
+
+    guard let enabled = (raw["enabled"] ?? true) as? Bool else {
+        throw ConfigError("\(label): enabled must be true or false")
+    }
+
+    guard let priority = pyInt(raw["priority"] ?? Int64(0)) else {
+        throw ConfigError("\(label): priority must be an integer")
+    }
+
+    let found = try behaviour(raw, label)
+
+    guard let join = (raw["join"] ?? false) as? Bool else {
+        throw ConfigError("\(label): join must be true or false")
+    }
+    var emoji: [String] = []
+    if let value = raw["emoji"] {
+        let names = (value as? String).map { [$0] } ?? (value as? [Any])?.compactMap { $0 as? String }
+        guard let names, !names.isEmpty, names.allSatisfy({ !$0.isEmpty }),
+              (value as? [Any]).map({ $0.count == names.count }) ?? true
+        else { throw ConfigError("\(label): emoji must be an emoji name or a list of them") }
+        guard kind == .reaction else { throw ConfigError("\(label): emoji only applies to reaction rules") }
+        emoji = names
+    }
+
+    var reaction: Rule?
+    if let sub = raw["reaction"] {
+        guard [.channel, .topic, .conversation].contains(kind) else {
+            throw ConfigError("\(label): reaction settings only apply to channel, topic and conversation rules")
+        }
+        guard let table = sub as? [String: Any] else {
+            throw ConfigError("\(label): reaction settings must be a table, written [rule.reaction]")
+        }
+        if ["match", "channel", "topic", "keyword"].contains(where: { table[$0] != nil }) {
+            throw ConfigError("\(label): reaction settings cannot set match, channel, topic or keyword")
+        }
+        let subVolume = try table["volume"].map { value throws(ConfigError) in try percent(value, "\(label): volume") }
+        let subBanner = table["banner"]
+        if let subBanner, !["full", "title", "off"].contains(subBanner as? String ?? "") {
+            throw ConfigError("\(label): banner must be full, title or off")
+        }
+        let subSound = try table["sound"].map { value throws(ConfigError) in try soundSetting(value, label, sounds) }
+        reaction = try? Rule(
+            description: nil, kind: .reaction, channels: [], pattern: nil, server: nil, sound: subSound,
+            volume: subVolume, banner: subBanner as? String, priority: priority, index: index,
+            behaviour: try behaviour(table, label)
+        )
+    }
+
+    do {
+        var made = try Rule(
+            description: description, kind: kind, channels: channels ?? [], pattern: pattern,
+            server: server as? String, sound: sound, volume: volume, banner: banner as? String,
+            priority: priority, index: index, enabled: enabled, behaviour: found, join: join, emoji: emoji,
+            senders: senders, senderIDs: senderIDs, withIDs: withIDs
+        )
+        made.reactionRule = reaction
+        return made
+    } catch {
+        throw ConfigError("\(label): bad channel pattern: \(error)")
+    }
 }
 
 private func servers(_ data: [String: Any]) throws(ConfigError) -> [ServerConfig] {
