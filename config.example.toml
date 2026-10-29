@@ -74,8 +74,11 @@ notify_channel_messages = false
 # [[rule]]
 # description = "boss"
 # match = "sender"
-# sender = ["Ada Lovelace", "ada@example.com"]   # full names or emails, any case
+# sender = [8]   # user IDs (the editor picks them); full names or emails also work
 # sound = "dx-brass"
+# [[rule.except]]   # not when they post in #random; the next rule decides
+# match = "channel"
+# channel = "random"
 #
 # [[rule]]
 # description = "outage"
