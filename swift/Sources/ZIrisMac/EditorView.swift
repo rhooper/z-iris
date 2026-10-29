@@ -802,6 +802,20 @@ private struct RuleEditor: View {
                                      footer: "Their messages anywhere, in channels or direct messages.")
                     }
                 }
+                if match == "dm" || match == "group_dm" {
+                    LabeledContent("From (optional)") {
+                        PersonTokens(model: model, people: field(model, $rule.fields, "sender"),
+                                     servers: model.peopleServers(rule.fields),
+                                     footer: match == "dm" ? "Only direct messages from these people." : "Only group messages one of these people sent.")
+                    }
+                }
+                if match == "group_dm" {
+                    LabeledContent("With (optional)") {
+                        PersonTokens(model: model, people: field(model, $rule.fields, "with"),
+                                     servers: model.peopleServers(rule.fields),
+                                     footer: "Only group conversations one of these people is in, whoever sent the message.")
+                    }
+                }
                 if ["topic", "conversation", "reaction"].contains(match) {
                     TextField(match == "topic" ? "Topic (regular expression)" : "Topic (regular expression, optional)",
                               text: field(model, $rule.fields, "topic").text)

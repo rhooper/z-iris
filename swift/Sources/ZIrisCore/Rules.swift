@@ -61,10 +61,12 @@ public struct Rule: Sendable, Equatable {
     public var join: Bool
     /// For reaction rules: only these emoji names (empty: any).
     public var emoji: [String]
-    /// For sender rules: full names or emails, matched whole and in any case.
+    /// For sender and DM rules: full names or emails, matched whole and in any case.
     public var senders: [String]
-    /// For sender rules: user IDs on the rule's server.
+    /// For sender and DM rules: user IDs on the rule's server.
     public var senderIDs: [Int]
+    /// For DM rules: user IDs, any of whom is in the conversation.
+    public var withIDs: [Int]
     private var reaction: ReactionSubRule?
     private var channelPatterns: [PyRegex]
 
@@ -79,9 +81,10 @@ public struct Rule: Sendable, Equatable {
         description: String?, kind: RuleKind, channels: [String], pattern: PyRegex?,
         server: String?, sound: String?, volume: Int?, banner: String?, priority: Int,
         index: Int, enabled: Bool = true, behaviour: Behaviour = [:],
-        join: Bool = false, emoji: [String] = [], senders: [String] = [], senderIDs: [Int] = []
+        join: Bool = false, emoji: [String] = [], senders: [String] = [], senderIDs: [Int] = [], withIDs: [Int] = []
     ) throws(PyRegex.Error) {
         self.senderIDs = senderIDs
+        self.withIDs = withIDs
         self.join = join
         self.emoji = emoji
         self.senders = senders
@@ -109,18 +112,28 @@ public struct Rule: Sendable, Equatable {
             && lhs.pattern == rhs.pattern && lhs.server == rhs.server && lhs.sound == rhs.sound
             && lhs.volume == rhs.volume && lhs.banner == rhs.banner && lhs.priority == rhs.priority
             && lhs.index == rhs.index && lhs.enabled == rhs.enabled && lhs.senders == rhs.senders
-            && lhs.senderIDs == rhs.senderIDs
+            && lhs.senderIDs == rhs.senderIDs && lhs.withIDs == rhs.withIDs
     }
 
     /// The description, else what the rule matches ("Channel #ops, #deploys").
-    public var label: String {
+    public var label: String { label { _ in nil } }
+
+    /// The label, naming people by ID where `name` knows them (else #ID).
+    public func label(naming name: (Int) -> String?) -> String {
         if let description, !description.isEmpty {
             return description
         }
         let where_ = channels.map { "#\($0)" }.joined(separator: ", ")
+        func people(_ ids: [Int]) -> [String] { ids.map { name($0) ?? "#\($0)" } }
+        let from = (senders + people(senderIDs)).joined(separator: ", ")
         switch kind {
-        case .sender where !senders.isEmpty || !senderIDs.isEmpty:
-            return "\(kind.label) \((senders + senderIDs.map { "#\($0)" }).joined(separator: ", "))"
+        case .sender where !from.isEmpty:
+            return "\(kind.label) \(from)"
+        case .dm, .groupDM:
+            var text = kind.label
+            if !from.isEmpty { text += " from \(from)" }
+            if !withIDs.isEmpty { text += " with \(people(withIDs).joined(separator: ", "))" }
+            return text
         case .channel, .conversation where !channels.isEmpty:
             return "\(kind.label) \(where_)"
         case .topic, .keyword:
@@ -130,6 +143,14 @@ public struct Rule: Sendable, Equatable {
         default:
             return kind.label
         }
+    }
+
+    /// Whether one of the rule's people sent the message: by ID, else by
+    /// name or email.
+    func isFrom(_ message: Message) -> Bool {
+        if senderIDs.contains(message.senderID) { return true }
+        let who = [message.senderName, message.senderEmail].filter { !$0.isEmpty }.map(\.pythonLowercased)
+        return senders.contains { who.contains($0.pythonLowercased) }
     }
 
     func inChannels(_ channel: String?) -> Bool {
@@ -142,9 +163,7 @@ public struct Rule: Sendable, Equatable {
         }
         switch kind {
         case .sender:
-            if senderIDs.contains(message.senderID) { return true }
-            let who = [message.senderName, message.senderEmail].filter { !$0.isEmpty }.map(\.pythonLowercased)
-            return senders.contains { who.contains($0.pythonLowercased) }
+            return isFrom(message)
         case .channel:
             return message.kind == .channel && inChannels(message.channelName)
         case .topic:
@@ -161,10 +180,10 @@ public struct Rule: Sendable, Equatable {
             return message.isWildcardMention
         case .alertWord:
             return message.hasAlertWord
-        case .dm:
-            return message.kind == .dm && message.dmUserIDs.count == 1
-        case .groupDM:
-            return message.kind == .dm && message.dmUserIDs.count > 1
+        case .dm, .groupDM:
+            guard message.kind == .dm, (message.dmUserIDs.count > 1) == (kind == .groupDM) else { return false }
+            if !(senders.isEmpty && senderIDs.isEmpty), !isFrom(message) { return false }
+            return withIDs.isEmpty || withIDs.contains(where: message.dmUserIDs.contains)
         case .conversation, .reaction:
             return false  // layers and reactions, never competing for a message
         }

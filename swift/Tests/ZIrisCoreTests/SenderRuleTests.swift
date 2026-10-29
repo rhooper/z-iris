@@ -28,7 +28,10 @@ private func message(from name: String = "Ada Lovelace", email: String = "ada@ex
 
     @Test(arguments: [
         ("[[rule]]\nmatch = \"sender\"\n", "rule number 1: a sender rule needs sender"),
-        ("[[rule]]\nmatch = \"dm\"\nsender = \"Ada\"\n", "rule number 1: sender only applies to sender rules"),
+        ("[[rule]]\nmatch = \"mention\"\nsender = \"Ada\"\n", "rule number 1: sender only applies to sender, dm and group_dm rules"),
+        ("[[rule]]\nmatch = \"sender\"\nsender = 9\nwith = 9\n", "rule number 1: with only applies to dm and group_dm rules"),
+        ("[[rule]]\nmatch = \"group_dm\"\nwith = \"Ada\"\n", "rule number 1: with must be a user ID or a list of them"),
+        ("[[rule]]\nmatch = \"group_dm\"\nwith = []\n", "rule number 1: with must be a user ID or a list of them"),
         ("[[rule]]\nmatch = \"sender\"\nsender = true\n", "rule number 1: sender must be a user ID, name or email, or a list of them"),
         ("[[rule]]\nmatch = \"sender\"\nsender = 0\n", "rule number 1: sender must be a user ID, name or email, or a list of them"),
         ("[[rule]]\nmatch = \"sender\"\nsender = []\n", "rule number 1: sender must be a user ID, name or email, or a list of them"),
@@ -56,13 +59,40 @@ private func message(from name: String = "Ada Lovelace", email: String = "ada@ex
 
     @Test func userIDsNeedAServerWhenThereAreSeveral() throws {
         let two = head + "[[server]]\nname = \"v\"\nzuliprc = \"/y\"\n"
-        #expect(throws: ConfigError("rule number 1: sender IDs need server when there is more than one server")) {
+        #expect(throws: ConfigError("rule number 1: user IDs need server when there is more than one server")) {
             try parseConfig(two + "[[rule]]\nmatch = \"sender\"\nsender = 9\n", sounds: sounds)
         }
         let named = try parseConfig(two + "[[rule]]\nmatch = \"sender\"\nsender = 9\nserver = \"w\"\n", sounds: sounds)
         #expect(named.rules[0].senderIDs == [9])
         // Names and emails need no server.
         #expect(try parseConfig(two + "[[rule]]\nmatch = \"sender\"\nsender = \"Ada\"\n", sounds: sounds).rules.count == 1)
+    }
+
+    @Test func directMessagesFromOrWithSomeone() throws {
+        let rules = try config("""
+        [[rule]]
+        match = "dm"
+        sender = [9, "Bob"]
+        [[rule]]
+        match = "group_dm"
+        with = [12]
+        """).rules
+        #expect(rules[0].label == "Direct message from Bob, #9")
+        #expect(rules[0].label { $0 == 9 ? "Ada" : nil } == "Direct message from Bob, Ada")
+        #expect(rules[1].label == "Group DM with #12")
+        func dm(from sender: Int, name: String = "x", with others: [Int]) -> Message {
+            Message(server: "w", host: "h", id: 1, kind: .dm, senderID: sender, senderName: name, content: "hi", flags: [],
+                    channelID: nil, channelName: nil, topic: nil, dmUserIDs: others)
+        }
+        #expect(pickRule(rules, dm(from: 9, with: [9]))?.index == rules[0].index)
+        #expect(pickRule(rules, dm(from: 3, name: "bob", with: [3]))?.index == rules[0].index)
+        #expect(pickRule(rules, dm(from: 3, with: [3])) == nil)
+        // Anyone in the group, whoever sent it.
+        #expect(pickRule(rules, dm(from: 3, with: [3, 12]))?.index == rules[1].index)
+        #expect(pickRule(rules, dm(from: 3, with: [3, 4])) == nil)
+        // Without people a DM rule takes every DM, as before.
+        let any = try config("[[rule]]\nmatch = \"dm\"\n").rules
+        #expect(pickRule(any, dm(from: 3, with: [3])) != nil && pickRule(any, dm(from: 3, with: [3, 4])) == nil)
     }
 
     @Test func aSenderRuleBeatsAChannelRule() throws {
@@ -96,5 +126,9 @@ private func message(from name: String = "Ada Lovelace", email: String = "ada@ex
         let ids = head + "\n[[rule]]\nmatch = \"sender\"\nsender = [9, \"Cy\"]\n"
         #expect(try readEditable(ids).rules[0]["sender"] == .array([.integer(9), .string("Cy")]))
         #expect(try applyEdit(ids, payload: EditPayload(rules: try readEditable(ids).rules), sounds: sounds) == ids)
+        let with = head + "\n[[rule]]\nmatch = \"group_dm\"\nsender = 9\nwith = [12, 13]\n"
+        let edited = try readEditable(with).rules[0]
+        #expect(edited["sender"] == .array([.integer(9)]) && edited["with"] == .array([.integer(12), .integer(13)]))
+        #expect(try applyEdit(with, payload: EditPayload(rules: [edited]), sounds: sounds) == with)
     }
 }

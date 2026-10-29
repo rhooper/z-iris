@@ -445,9 +445,22 @@ private func rules(
             guard !items.isEmpty else {
                 throw ConfigError("\(label): sender must be a user ID, name or email, or a list of them")
             }
-            guard kind == .sender else { throw ConfigError("\(label): sender only applies to sender rules") }
+            guard [.sender, .dm, .groupDM].contains(kind) else {
+                throw ConfigError("\(label): sender only applies to sender, dm and group_dm rules")
+            }
         } else if kind == .sender {
             throw ConfigError("\(label): a sender rule needs sender")
+        }
+
+        // Direct messages with someone: user IDs only, as messages carry them.
+        var withIDs: [Int] = []
+        if let value = raw["with"] {
+            let items = (value as? [Any]) ?? [value]
+            withIDs = items.compactMap { pyInt($0) }.filter { $0 > 0 }
+            guard !items.isEmpty, withIDs.count == items.count else {
+                throw ConfigError("\(label): with must be a user ID or a list of them")
+            }
+            guard [.dm, .groupDM].contains(kind) else { throw ConfigError("\(label): with only applies to dm and group_dm rules") }
         }
 
         var pattern: PyRegex?
@@ -477,8 +490,8 @@ private func rules(
             throw ConfigError("\(label): unknown server \(pythonRepr(server))")
         }
         // User IDs differ from server to server.
-        if !senderIDs.isEmpty, server == nil, serverNames.count > 1 {
-            throw ConfigError("\(label): sender IDs need server when there is more than one server")
+        if !(senderIDs.isEmpty && withIDs.isEmpty), server == nil, serverNames.count > 1 {
+            throw ConfigError("\(label): user IDs need server when there is more than one server")
         }
 
         let volume = try raw["volume"].map { value throws(ConfigError) in try percent(value, "\(label): volume") }
@@ -542,7 +555,7 @@ private func rules(
                 description: description, kind: kind, channels: channels ?? [], pattern: pattern,
                 server: server as? String, sound: sound, volume: volume, banner: banner as? String,
                 priority: priority, index: index, enabled: enabled, behaviour: found, join: join, emoji: emoji,
-                senders: senders, senderIDs: senderIDs
+                senders: senders, senderIDs: senderIDs, withIDs: withIDs
             )
             made.reactionRule = reaction
             rules.append(made)

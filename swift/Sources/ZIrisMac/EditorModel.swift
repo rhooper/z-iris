@@ -258,22 +258,14 @@ public final class EditorModel {
         }
         let source = { (key: String) -> String? in if case .string(let s)? = rule.fields[key], !s.isEmpty { s } else { nil } }
         let pattern = (kind == .topic ? source("topic") : kind == .keyword ? source("keyword") : nil).flatMap { try? PyRegex($0) }
-        // People the editor knows by ID are shown by name.
-        var senders: [String] = []
-        var senderIDs: [Int] = []
-        if case .array(let items)? = rule.fields["sender"] {
-            let from = peopleServers(rule.fields)
-            for item in items {
-                switch item {
-                case .string(let s) where !s.isEmpty: senders.append(s)
-                case .integer(let id): if let known = person(id, on: from) { senders.append(known.fullName) } else { senderIDs.append(id) }
-                default: break
-                }
-            }
-        }
+        let people = { (key: String) -> [TOMLValue] in if case .array(let items)? = rule.fields[key] { items } else { [] } }
+        let senders = people("sender").compactMap { if case .string(let s) = $0, !s.isEmpty { s } else { nil } }
+        let ids = { (key: String) in people(key).compactMap { if case .integer(let id) = $0 { id } else { nil } } }
+        let from = peopleServers(rule.fields)
         return (try? Rule(description: nil, kind: kind, channels: channels.filter { (try? PyRegex($0)) != nil }, pattern: pattern,
                           server: nil, sound: nil, volume: nil, banner: nil, priority: 0, index: 0,
-                          senders: senders, senderIDs: senderIDs).label) ?? kind.rawValue
+                          senders: senders, senderIDs: ids("sender"), withIDs: ids("with"))
+            .label { self.person($0, on: from)?.fullName }) ?? kind.rawValue
     }
 
     // MARK: sounds
