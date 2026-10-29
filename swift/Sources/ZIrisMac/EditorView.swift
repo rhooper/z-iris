@@ -1257,7 +1257,7 @@ private struct PreviewPane: View {
 /// The editor in its own window, opened from the menubar.
 @MainActor
 public final class EditorWindow {
-    private var window: NSWindow?
+    public private(set) var window: NSWindow?
     private let makeModel: () -> EditorModel
 
     public init(makeModel: @escaping () -> EditorModel) {

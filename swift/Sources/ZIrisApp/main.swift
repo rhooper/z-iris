@@ -264,7 +264,8 @@ if options.command == "edit" {
                     builtinSounds: resource("sounds"), player: SoundPlayer(), flasher: Flasher())
     }
     editor.show()
-    NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: nil, queue: .main) { _ in exit(0) }
+    // Only the editor's own window: completion lists and menus are windows too.
+    NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: editor.window, queue: .main) { _ in exit(0) }
     app.run()
 }
 exit(run(options, config))
