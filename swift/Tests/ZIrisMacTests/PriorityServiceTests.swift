@@ -15,8 +15,12 @@ final class FakeAlerts: AlertCenter, @unchecked Sendable {
     private var _cleared: [String] = []
     private var _prompted = 0
     private let promptNeverAnswers: Bool
+    /// Alerts land only when land(_:) says, as macOS lists them a moment late.
+    private let late: Bool
 
-    init(status: String = "allowed", style: String = "alert", delivered: [String] = [], promptNeverAnswers: Bool = false) {
+    init(status: String = "allowed", style: String = "alert", delivered: [String] = [], promptNeverAnswers: Bool = false,
+         late: Bool = false) {
+        self.late = late
         self.status = status
         self.style = style
         _delivered = delivered
@@ -37,9 +41,10 @@ final class FakeAlerts: AlertCenter, @unchecked Sendable {
     func add(identifier: String, title: String, body: String, attachment: String?, thread: String?) async throws {
         lock.withLock {
             _sent.append(Sent(identifier: identifier, title: title, body: body, attachment: attachment, thread: thread))
-            _delivered.append(identifier)
+            if !late { _delivered.append(identifier) }
         }
     }
+    func land(_ identifier: String) { lock.withLock { _delivered.append(identifier) } }
     func delivered() async -> [String] { delivered }
     func delivered(inThread thread: String) async -> [String] {
         lock.withLock {
@@ -80,9 +85,18 @@ private func folder() -> URL {
 }
 
 private func service(_ dir: URL, _ alerts: FakeAlerts = FakeAlerts(), opened: Lines = Lines(),
-                     comms: Comms = Comms(), entitled: Bool = false) -> PriorityService {
+                     comms: Comms = Comms(), entitled: Bool = false, patience: Double = 30) -> PriorityService {
     PriorityService(center: alerts, urls: URLStore(url: dir.appendingPathComponent("urls.json")),
-                    opener: { opened.add($0) }, comms: comms.send, entitled: entitled, pictures: dir)
+                    opener: { opened.add($0) }, comms: comms.send, entitled: entitled, pictures: dir,
+                    retry: 0.01, patience: patience)
+}
+
+/// Wait up to a second for a condition the service's watch brings about.
+private func eventually(_ condition: () -> Bool) async -> Bool {
+    for _ in 0..<100 where !condition() {
+        try? await Task.sleep(for: .milliseconds(10))
+    }
+    return condition()
 }
 
 @Suite struct PriorityServiceTests {
@@ -156,6 +170,41 @@ private func service(_ dir: URL, _ alerts: FakeAlerts = FakeAlerts(), opened: Li
         #expect(alerts.cleared == ["z-iris-w-3", "z-iris-work-7"])
         svc.clicked("z-iris-work-7")
         #expect(opened.all.isEmpty)
+    }
+
+    @Test func aClearBeforeTheAlertLandsRemovesItWhenItDoes() async {
+        let alerts = FakeAlerts(late: true)
+        let svc = service(folder(), alerts)
+        _ = await svc.handle(show)
+        _ = await svc.handle(["op": "clear", "groups": ["z-iris-work-7", "z-iris-work-8"]])
+        #expect(alerts.cleared.isEmpty)  // not delivered yet
+        alerts.land("z-iris-work-8")  // never shown by this run: left alone
+        alerts.land("z-iris-work-7")
+        #expect(await eventually { alerts.cleared == ["z-iris-work-7"] })
+        try? await Task.sleep(for: .milliseconds(50))
+        #expect(alerts.delivered == ["z-iris-work-8"])
+    }
+
+    @Test func shownAgainAfterTheClearItStays() async {
+        let alerts = FakeAlerts(late: true)
+        let svc = service(folder(), alerts)
+        _ = await svc.handle(show)
+        _ = await svc.handle(["op": "clear", "groups": ["z-iris-work-7"]])
+        _ = await svc.handle(show)
+        alerts.land("z-iris-work-7")
+        try? await Task.sleep(for: .milliseconds(80))
+        #expect(alerts.cleared.isEmpty)
+    }
+
+    @Test func aLateAlertIsWatchedOnlyForItsPatience() async {
+        let alerts = FakeAlerts(late: true)
+        let svc = service(folder(), alerts, patience: 0.05)
+        _ = await svc.handle(show)
+        _ = await svc.handle(["op": "clear", "groups": ["z-iris-work-7"]])
+        try? await Task.sleep(for: .milliseconds(150))
+        alerts.land("z-iris-work-7")
+        try? await Task.sleep(for: .milliseconds(80))
+        #expect(alerts.cleared.isEmpty)
     }
 
     @Test func clearServerKeepsUnreadAndOtherServers() async {

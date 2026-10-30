@@ -98,6 +98,14 @@ public final class PriorityService: @unchecked Sendable {
     private let pictures: URL
     private let lock = NSLock()
     private var prompt: Task<Void, Never>?
+    /// Alerts this run showed, by when: macOS lists an alert as delivered a
+    /// moment after add returns, so a clear can come before it lands.
+    private var shown: [String: Double] = [:]
+    /// Cleared before they landed: removed when they do.
+    private var landing: Set<String> = []
+    private var watch: Task<Void, Never>?
+    private let retry: Double
+    private let patience: Double
 
     public init(
         center: any AlertCenter = UserNotificationAlerts(), urls: URLStore = URLStore(url: priorityURLs),
@@ -106,8 +114,11 @@ public final class PriorityService: @unchecked Sendable {
             try await sendCommunication(identifier: id, title: title, body: body, sender: sender,
                                         urgency: .timeSensitive, groupImage: picture)
         },
-        entitled: Bool = hasCommunicationEntitlement, pictures: URL = groupPictures
+        entitled: Bool = hasCommunicationEntitlement, pictures: URL = groupPictures,
+        retry: Double = 0.25, patience: Double = 30
     ) {
+        self.retry = retry
+        self.patience = patience
         self.center = center
         self.urls = urls
         self.opener = opener
@@ -155,6 +166,12 @@ public final class PriorityService: @unchecked Sendable {
             return bad("waiting for permission")
         }
         guard status == "allowed" else { return bad("not allowed") }
+        let now = ProcessInfo.processInfo.systemUptime
+        lock.withLock {
+            shown = shown.filter { now - $0.value < patience }
+            shown[group] = now
+            landing.remove(group)  // shown again since it was cleared
+        }
         let image = (request["image"] as? String).flatMap { FileManager.default.fileExists(atPath: $0) ? $0 : nil }
         urls.put(group, url)
         var plain: String?
@@ -188,6 +205,42 @@ public final class PriorityService: @unchecked Sendable {
             await center.remove(onScreen)
         }
         urls.drop(groups)
+        let now = ProcessInfo.processInfo.systemUptime
+        let late = lock.withLock {
+            groups.filter { !delivered.contains($0) && now - (shown[$0] ?? -.infinity) < patience }
+        }
+        if !late.isEmpty {
+            awaitLanding(late)
+        }
+    }
+
+    /// Remove these as they land, until none is left or each has had its
+    /// patience since it was shown.
+    private func awaitLanding(_ groups: [String]) {
+        lock.withLock {
+            landing.formUnion(groups)
+            guard watch == nil else { return }
+            watch = Task { [self] in
+                while true {
+                    try? await Task.sleep(for: .seconds(retry))
+                    let now = ProcessInfo.processInfo.systemUptime
+                    // Stop in the same step that finds nothing left, so a
+                    // clear arriving meanwhile starts a new watch.
+                    let waiting = lock.withLock {
+                        landing = landing.filter { now - (shown[$0] ?? -.infinity) < patience }
+                        if landing.isEmpty { watch = nil }
+                        return landing
+                    }
+                    if waiting.isEmpty { return }
+                    let landed = await center.delivered().filter(waiting.contains)
+                    if !landed.isEmpty {
+                        // Unless shown again meanwhile.
+                        let doomed = lock.withLock { landed.filter { landing.remove($0) != nil } }
+                        await center.remove(doomed)
+                    }
+                }
+            }
+        }
     }
 
     private func clearServer(_ request: [String: Any]) async -> [String: Any] {
