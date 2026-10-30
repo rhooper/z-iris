@@ -113,6 +113,12 @@ private final class Fields {
         #expect(fields.value["except"] == nil)
     }
 
+    @Test func aSliderReplaysTheRulesSoundElseTheDefault() throws {
+        let model = try model()
+        #expect(model.soundName(.string("ping")) == "ping")
+        #expect(model.soundName(nil) == "chime" && model.soundName(.string("")) == "chime")
+    }
+
     @Test func theSidebarLabelNamesExceptions() throws {
         let model = try model()
         let rule = EditableRule(["match": .string("keyword"), "keyword": .string("deploy"),

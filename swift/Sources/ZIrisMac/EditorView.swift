@@ -901,8 +901,10 @@ private struct RuleEditor: View {
                     model.changed()
                 }))
                 if rule.fields["volume"] != nil {
+                    // Released: hear the rule's sound at the new volume.
                     Slider(value: Binding(get: { Double(volume) }, set: { rule.fields["volume"] = .integer(Int($0)); model.changed() }),
-                           in: 0...100, step: 1) { Text("Volume \(volume)%") }
+                           in: 0...100, step: 1, label: { Text("Volume \(volume)%") },
+                           onEditingChanged: { if !$0 { model.test(sound: model.soundName(rule.fields["sound"]), volume: volume) } })
                 }
             } header: {
                 Text("Sound")
@@ -984,7 +986,8 @@ private struct ReactionSection: View {
                 Toggle("Custom volume", isOn: Binding(get: { sub["volume"] != nil }, set: { set("volume", $0 ? .integer(subVolume) : nil) }))
                 if sub["volume"] != nil {
                     Slider(value: Binding(get: { Double(subVolume) }, set: { set("volume", .integer(Int($0))) }),
-                           in: 0...100, step: 1) { Text("Volume \(subVolume)%") }
+                           in: 0...100, step: 1, label: { Text("Volume \(subVolume)%") },
+                           onEditingChanged: { if !$0 { model.test(sound: model.soundName(sub["sound"] ?? fields["sound"]), volume: subVolume) } })
                 }
                 Picker("Notification", selection: Binding(get: { if case .string(let s)? = sub["banner"] { s } else { "" } },
                                                          set: { set("banner", $0.isEmpty ? nil : .string($0)) })) {

@@ -149,6 +149,12 @@ public final class EditorModel {
         return "chime"
     }
 
+    /// The sound a rule's sound field plays: its own, else the default's.
+    public func soundName(_ value: TOMLValue?) -> String {
+        if case .string(let name)? = value, !name.isEmpty { return name }
+        return defaultSound
+    }
+
     /// Which rules use each sound, as the editor shows them now.
     public var soundUsage: [String: [String]] {
         let string = { (value: TOMLValue?) -> String? in if case .string(let s)? = value { s } else { nil } }
