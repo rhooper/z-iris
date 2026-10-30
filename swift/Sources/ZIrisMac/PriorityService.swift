@@ -148,6 +148,8 @@ public final class PriorityService: @unchecked Sendable {
             return ["ok": true]
         case "clear_server":
             return await clearServer(request)
+        case "delivered":
+            return ["ok": true, "groups": await center.delivered()]
         default:
             return bad("unknown op \(pythonRepr(request["op"]))")
         }

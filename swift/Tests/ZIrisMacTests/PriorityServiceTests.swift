@@ -207,6 +207,11 @@ private func eventually(_ condition: () -> Bool) async -> Bool {
         #expect(alerts.cleared.isEmpty)
     }
 
+    @Test func deliveredListsWhatIsOnScreen() async {
+        let svc = service(folder(), FakeAlerts(delivered: ["z-iris-w-3", "z-iris-w-4"]))
+        #expect(NSDictionary(dictionary: await svc.handle(["op": "delivered"])) == ["ok": true, "groups": ["z-iris-w-3", "z-iris-w-4"]])
+    }
+
     @Test func clearServerKeepsUnreadAndOtherServers() async {
         let alerts = FakeAlerts(delivered: ["z-iris-w-1", "z-iris-w-2", "z-iris-w-2-5", "z-iris-a.b-3", "z-iris-axb-4", "other"])
         let svc = service(folder(), alerts)

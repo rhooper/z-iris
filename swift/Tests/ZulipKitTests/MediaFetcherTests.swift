@@ -59,6 +59,7 @@ private struct FakeClient: ZulipAPI {
     func messages(_ parameters: [String: any Sendable]) async throws -> JSONObject { JSONObject([:]) }
     func streams() async throws -> JSONObject { JSONObject([:]) }
     func users() async throws -> JSONObject { JSONObject([:]) }
+    func message(_ id: Int) async throws -> JSONObject { JSONObject([:]) }
 }
 
 private func message(_ content: String = "hi", avatar: String? = nil, server: String = "main") -> Message {

@@ -39,6 +39,7 @@ final class EditorAPI: ZulipAPI, @unchecked Sendable {
         }])
     }
     func users() async throws -> JSONObject { JSONObject(["result": "success", "members": members]) }
+    func message(_ id: Int) async throws -> JSONObject { JSONObject([:]) }
 }
 
 private func streamMessage(_ id: Int, channel: String = "ops", flags: [String] = []) -> [String: Any] {

@@ -30,6 +30,8 @@ public protocol ZulipAPI: Sendable {
     func messages(_ parameters: [String: any Sendable]) async throws -> JSONObject
     func streams() async throws -> JSONObject
     func users() async throws -> JSONObject
+    /// One message, with your flags on it.
+    func message(_ id: Int) async throws -> JSONObject
 }
 
 public struct ZulipClientError: Error, CustomStringConvertible {
@@ -84,6 +86,10 @@ public final class ZulipClient: ZulipAPI, @unchecked Sendable {
 
     public func users() async throws -> JSONObject {
         try await call("users", method: "GET", [:])
+    }
+
+    public func message(_ id: Int) async throws -> JSONObject {
+        try await call("messages/\(id)", method: "GET", ["apply_markdown": false])
     }
 
     /// Form values as the Python client sends them: strings as they are,

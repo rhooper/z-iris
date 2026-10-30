@@ -218,6 +218,14 @@ public final class PriorityLink: Notifying, @unchecked Sendable {
         clear(["op": "clear_server", "server": server, "keep": keep.sorted(), "keep_groups": keepGroups.sorted()])
     }
 
+    /// The alerts on screen, or nil without an answer.
+    public func delivered() -> [String]? {
+        guard FileManager.default.fileExists(atPath: priorityExecutable(app).path) else { return nil }
+        let reply = lock.withLock { request(["op": "delivered"]) }
+        guard let reply, (reply["ok"] as? Bool) == true, let groups = reply["groups"] as? [String] else { return nil }
+        return groups
+    }
+
     private func clear(_ body: [String: Any]) {
         guard FileManager.default.fileExists(atPath: priorityExecutable(app).path) else {
             return  // no app, so no alerts to clear

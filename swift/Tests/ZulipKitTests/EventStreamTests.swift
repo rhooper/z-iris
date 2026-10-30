@@ -61,6 +61,7 @@ final class FakeAPI: ZulipAPI, @unchecked Sendable {
     }
     func streams() async throws -> JSONObject { JSONObject([:]) }
     func users() async throws -> JSONObject { JSONObject([:]) }
+    func message(_ id: Int) async throws -> JSONObject { JSONObject([:]) }
 
     var counts: (registered: Int, calls: Int) { lock.withLock { (registered, calls) } }
 }
@@ -201,6 +202,7 @@ private func start(_ api: FakeAPI, _ sink: Sink, _ statuses: Statuses = Statuses
             func messages(_ parameters: [String: any Sendable]) async throws -> JSONObject { JSONObject([:]) }
             func streams() async throws -> JSONObject { JSONObject([:]) }
             func users() async throws -> JSONObject { JSONObject([:]) }
+            func message(_ id: Int) async throws -> JSONObject { JSONObject([:]) }
         }
         let statuses = Statuses()
         let stream = EventStream(server: "w", makeClient: { Refusing() }, sink: Sink(), config: { config },

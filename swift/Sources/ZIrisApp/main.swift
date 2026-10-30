@@ -156,6 +156,18 @@ func run(_ options: Options, _ config: Config) -> Int32 {
         let resolver = ImageResolver(clients: { clients.get($0) }, externalImages: { settings.config.externalImages })
         // Sticky alerts come from z-iris-priority.app; it falls back to our banners.
         box.link = inBundle ? PriorityLink(fallback: banners) : nil
+        if let link = box.link {
+            // Once a minute, clear sticky alerts whose messages were read or
+            // deleted without z-iris hearing of it.
+            let stale = StaleAlerts(servers: { settings.config.servers.map(\.name) }, client: { clients.get($0) },
+                                    delivered: { link.delivered() }, clear: { link.clearGroups($0) })
+            Task.detached {
+                while true {
+                    try? await Task.sleep(for: .seconds(60))
+                    await stale.sweep()
+                }
+            }
+        }
         output = RealOutput(
             config: { settings.config }, notifier: banners,
             priority: box.link,
