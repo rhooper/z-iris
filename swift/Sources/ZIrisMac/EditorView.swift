@@ -1024,7 +1024,8 @@ private struct DefaultsEditor: View {
                 // Always sent: a save only changes the [defaults] keys it is given.
                 SoundPicker(model: model, sound: field(model, $model.defaults, "sound").choice(empty: "\u{0}"), volume: volume, allowDefault: false)
                 Slider(value: Binding(get: { Double(volume) }, set: { model.defaults["volume"] = .integer(Int($0)); model.changed() }),
-                       in: 0...100, step: 1) { Text("Volume \(volume)%") }
+                       in: 0...100, step: 1, label: { Text("Volume \(volume)%") },
+                       onEditingChanged: { if !$0 { model.test(sound: model.defaultSound, volume: volume) } })
                 Toggle("Notify for every channel message", isOn: Binding(get: { model.defaults["notify_channel_messages"] == .bool(true) },
                                                              set: { model.defaults["notify_channel_messages"] = .bool($0); model.changed() }))
                     .help("When this is off, only mentions, direct messages and rules notify. When it's on, every unmuted channel message does too.")
