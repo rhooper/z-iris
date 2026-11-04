@@ -1,9 +1,10 @@
 import AppKit
+import ServiceManagement
 import ZIrisCore
 
 // The menubar item (menubar.py): a template icon (◌ beside it while paused),
 // the config's state, one status line per server, Pause, Edit rules…, Reload
-// config, Open config file and Quit.
+// config, Open config file, Start at login and Quit.
 
 private let pausedTitle = "◌"
 private let activeTitle = "◉"
@@ -29,6 +30,7 @@ public final class MenuBar: NSObject {
     private let hasIcon: Bool
     private let errorItem = NSMenuItem(title: "", action: nil, keyEquivalent: "")
     private let pauseItem = NSMenuItem(title: "Pause", action: #selector(togglePause), keyEquivalent: "")
+    private let loginItem = NSMenuItem(title: "Start at login", action: #selector(toggleLogin), keyEquivalent: "")
     private var serverItems: [String: NSMenuItem] = [:]
     private var timer: Timer?
 
@@ -64,9 +66,12 @@ public final class MenuBar: NSObject {
             menu.addItem(entry)
         }
         menu.addItem(.separator())
+        loginItem.target = self
+        menu.addItem(loginItem)
         menu.addItem(NSMenuItem(title: "Quit z-iris", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         item.menu = menu
         showPauseState()
+        showLoginState()
         showConfigError(settings.error)
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated { self?.showConfigError(self?.settings.reload()) }
@@ -86,6 +91,28 @@ public final class MenuBar: NSObject {
     private func showPauseState() {
         let paused = pause.isPaused
         item.button?.title = hasIcon ? (paused ? pausedTitle : "") : (paused ? pausedTitle : activeTitle)
+    }
+
+    // SMAppService registers the running app bundle; from `swift run` it throws.
+    @objc private func toggleLogin() {
+        let service = SMAppService.mainApp
+        do {
+            if service.status == .enabled {
+                try service.unregister()
+            } else {
+                try service.register()
+            }
+        } catch {
+            logProblem("start at login: \(error.localizedDescription)")
+        }
+        if service.status == .requiresApproval {
+            SMAppService.openSystemSettingsLoginItems()
+        }
+        showLoginState()
+    }
+
+    private func showLoginState() {
+        loginItem.state = SMAppService.mainApp.status == .enabled ? .on : .off
     }
 
     private func showConfigError(_ error: String?) {
